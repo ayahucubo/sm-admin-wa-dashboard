@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://wecare.techconnect.co.id/webhook-test/100/app",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://wecare.techconnect.co.id/webhook/100/app",
 });
 
 api.interceptors.request.use(config => {
