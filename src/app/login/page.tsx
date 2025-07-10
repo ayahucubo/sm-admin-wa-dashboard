@@ -33,7 +33,7 @@ export default function LoginPage() {
       if (res.data && res.data.success && res.data.token) {
         localStorage.setItem("token", res.data.token);
         const basePath = getBasePath();
-        router.push(`${basePath}/dashboard`);
+        router.push("/dashboard");
       } else {
         setError(res.data?.message || "Login gagal: token tidak ditemukan.");
       }
