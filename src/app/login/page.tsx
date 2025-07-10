@@ -15,6 +15,15 @@ export default function LoginPage() {
     if (token) router.replace("/dashboard");
   }, [router]);
 
+  function getBasePath() {
+    if (typeof window !== "undefined") {
+      const pathArr = window.location.pathname.split('/');
+      if (pathArr.length <= 2) return "";
+      return "/" + pathArr[1];
+    }
+    return "";
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -23,7 +32,8 @@ export default function LoginPage() {
       const res = await api.post("/api/login", { email, password });
       if (res.data && res.data.success && res.data.token) {
         localStorage.setItem("token", res.data.token);
-        router.push("/dashboard");
+        const basePath = getBasePath();
+        router.push(`${basePath}/dashboard`);
       } else {
         setError(res.data?.message || "Login gagal: token tidak ditemukan.");
       }
