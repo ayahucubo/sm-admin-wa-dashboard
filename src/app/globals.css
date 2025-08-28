@@ -1,26 +1,302 @@
 @import "tailwindcss";
 
 :root {
+  /* Light theme - Modern, high contrast colors */
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --foreground: #1f2937;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --border-color: #d1d5db;
+  --hover-bg: #f3f4f6;
+  
+  /* Brand colors */
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-light: #dbeafe;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  
+  /* UI colors */
+  --card-bg: #ffffff;
+  --sidebar-bg: #f8fafc;
+  --input-bg: #ffffff;
+  --button-primary: #3b82f6;
+  --button-primary-hover: #2563eb;
+  --button-secondary: #6b7280;
+  --button-secondary-hover: #4b5563;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Dark theme - High contrast, readable colors */
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-light: #64748b;
+    --border-color: #334155;
+    --hover-bg: #1e293b;
+    
+    /* Brand colors for dark mode */
+    --primary: #60a5fa;
+    --primary-dark: #3b82f6;
+    --primary-light: #1e3a8a;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #f87171;
+    
+    /* UI colors for dark mode */
+    --card-bg: #1e293b;
+    --sidebar-bg: #0f172a;
+    --input-bg: #1e293b;
+    --button-primary: #60a5fa;
+    --button-primary-hover: #3b82f6;
+    --button-secondary: #64748b;
+    --button-secondary-hover: #475569;
   }
+}
+
+/* Prevent body scrolling */
+html, body {
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Enhanced text visibility classes with better contrast */
+.text-primary {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+  font-weight: 400;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+  font-weight: 400;
+}
+
+.text-light {
+  color: var(--text-light) !important;
+  font-weight: 300;
+}
+
+/* Improved form elements with better contrast */
+input, textarea, select {
+  color: var(--text-primary) !important;
+  background-color: var(--input-bg) !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  transition: all 0.2s ease !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted) !important;
+  font-weight: 400 !important;
+}
+
+/* Enhanced button styles */
+button {
+  color: inherit;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--button-primary) !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  font-weight: 600 !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--button-primary-hover) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+.btn-secondary {
+  background-color: var(--button-secondary) !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  font-weight: 600 !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--button-secondary-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Improved link visibility */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* Dark mode link adjustments */
+@media (prefers-color-scheme: dark) {
+  a {
+    color: var(--primary);
+  }
+  
+  a:hover {
+    color: var(--primary-dark);
+  }
+}
+
+/* DatePicker improvements */
+.react-datepicker-wrapper {
+  display: block;
+}
+
+.react-datepicker__input-container input {
+  color: var(--text-primary) !important;
+  background-color: var(--input-bg) !important;
+  border: 2px solid var(--border-color) !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  width: 100% !important;
+}
+
+.react-datepicker__input-container input:focus {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.react-datepicker__input-container input::placeholder {
+  color: var(--text-muted) !important;
+  font-weight: 400 !important;
+}
+
+/* Improve overall text contrast and readability */
+* {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced focus states for better accessibility */
+button:focus, input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Better contrast for disabled states */
+button:disabled, input:disabled, textarea:disabled, select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Card and container styles */
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar {
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+  position: relative;
+  z-index: 10;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--primary);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dashboard specific styles */
+.dashboard-container {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar-fixed {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 320px;
+  z-index: 20;
+}
+
+.main-content {
+  margin-left: 320px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Ensure proper scrolling behavior */
+.scrollable-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 3px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-muted);
 }

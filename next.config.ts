@@ -2,8 +2,10 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
-  assetPrefix: '/genai-admin',
-  basePath: '/genai-admin' // <-- Tambahkan ini!
+  ...(process.env.NODE_ENV === 'production' && {
+    assetPrefix: '/genai-admin',
+    basePath: '/genai-admin'
+  })
 }
 
 export default nextConfig
