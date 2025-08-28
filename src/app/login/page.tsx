@@ -12,7 +12,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) router.replace("/dashboard");
+    if (token) router.replace("/admin");
   }, [router]);
 
   function getBasePath() {
@@ -33,7 +33,7 @@ export default function LoginPage() {
       if (res.data && res.data.success && res.data.token) {
         localStorage.setItem("token", res.data.token);
         const basePath = getBasePath();
-        router.push("/dashboard");
+        router.push("/admin");
       } else {
         setError(res.data?.message || "Login gagal: token tidak ditemukan.");
       }

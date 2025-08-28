@@ -300,3 +300,73 @@ button:disabled, input:disabled, textarea:disabled, select:disabled {
 .scrollable-content::-webkit-scrollbar-thumb:hover {
   background-color: var(--text-muted);
 }
+
+/* Table specific styles for better data display */
+.data-table-container {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 400px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.data-table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.data-table-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.data-table-container::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
+}
+
+.data-table-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-muted);
+}
+
+.data-table-container::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Compact table styles */
+.compact-table th,
+.compact-table td {
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.compact-table th {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: var(--sidebar-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Cell content handling */
+.table-cell-content {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-cell-content:hover {
+  white-space: normal;
+  word-break: break-word;
+  max-width: none;
+  position: relative;
+  z-index: 5;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
