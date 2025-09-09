@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface MenuCard {
   id: string;
@@ -152,9 +153,9 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }} className="shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
@@ -164,11 +165,12 @@ export default function AdminPage() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Kelola sistem dan database</p>
+                <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Admin Panel</h1>
+                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Kelola sistem dan database</p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
               <button
                 onClick={triggerPdfToMdPipeline}
                 disabled={isPdfToMdRunning || isMdToVectorRunning}
@@ -220,7 +222,8 @@ export default function AdminPage() {
                   localStorage.removeItem("token");
                   router.replace("/login");
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+                className="px-4 py-2 text-sm font-medium transition-colors duration-200"
+                style={{ color: 'var(--text-secondary)' }}
               >
                 Logout
               </button>
@@ -232,10 +235,10 @@ export default function AdminPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
             Pilih Menu Admin
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p style={{ color: 'var(--text-muted)' }}>
             Akses berbagai fitur admin untuk mengelola sistem dan database
           </p>
         </div>
@@ -246,7 +249,11 @@ export default function AdminPage() {
             <div
               key={item.id}
               onClick={() => handleMenuClick(item.href)}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-105 group"
+              className="rounded-xl shadow-sm border p-6 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-105 group"
+              style={{ 
+                backgroundColor: 'var(--card-bg)', 
+                borderColor: 'var(--border-color)' 
+              }}
             >
               <div className="flex items-start space-x-4">
                 <div className={`w-12 h-12 ${item.color} rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200`}>
@@ -255,10 +262,10 @@ export default function AdminPage() {
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                  <h3 className="text-lg font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                     {item.title}
                   </h3>
-                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                  <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                     {item.description}
                   </p>
                 </div>
@@ -273,8 +280,8 @@ export default function AdminPage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="mt-12 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="mt-12 rounded-xl shadow-sm border p-6" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}>
+          <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
             Statistik Sistem
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

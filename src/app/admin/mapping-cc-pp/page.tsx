@@ -26,6 +26,7 @@ export default function MappingCCPPPage() {
   const [error, setError] = useState<string | null>(null);
   const [usingFallbackData, setUsingFallbackData] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isMappingRunning, setIsMappingRunning] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -174,6 +175,43 @@ export default function MappingCCPPPage() {
     }
   };
 
+  // Function to trigger mapping via API (reusing /api/n8n-webhook)
+  const triggerMappingCCPP = async () => {
+    try {
+      setIsMappingRunning(true);
+
+      const apiUrl = "/api/n8n-webhook";
+      console.log('Triggering CC PP mapping via API:', apiUrl);
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ body: "2" })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        console.log('CC PP mapping triggered successfully:', result);
+        alert(`CC PP mapping workflow started successfully!\n\nWebhook URL: ${result.webhookUrl || result.webhookCandidates?.join(', ') || 'n/a'}`);
+        setTimeout(() => {
+          fetchSheetData(true);
+        }, 5000);
+      } else {
+        const errorMessage = result.error || `HTTP error! status: ${response.status}`;
+        const details = result.details ? `\nDetails: ${typeof result.details === 'string' ? result.details : JSON.stringify(result.details)}` : '';
+        throw new Error(`${errorMessage}${details}`);
+      }
+    } catch (err) {
+      console.error('Error triggering CC PP mapping:', err);
+      alert(`Failed to start CC PP mapping: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setIsMappingRunning(false);
+    }
+  };
+
   const filteredPlans = paymentPlans.filter(plan =>
     Object.entries(plan).some(([key, value]) => {
       if (key === 'id' || key === '_originalRow' || key === '_headers') return false;
@@ -252,18 +290,25 @@ export default function MappingCCPPPage() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => {
-                  // Start mapping CC PP functionality
-                  console.log('Starting CC PP mapping process...');
-                  // You can add your mapping logic here
-                  alert('Starting CC PP mapping process...');
-                }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center"
+                onClick={triggerMappingCCPP}
+                disabled={isMappingRunning}
+                className={`px-4 py-2 text-white rounded-lg transition-colors duration-200 flex items-center ${
+                  isMappingRunning ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                }`}
               >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Start Mapping CC PP
+                {isMappingRunning ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Running Mapping...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Start Mapping CC PP
+                  </>
+                )}
               </button>
               <button
                 onClick={() => setShowAddModal(true)}

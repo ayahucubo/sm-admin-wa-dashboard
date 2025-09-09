@@ -250,11 +250,22 @@ export default function MenuMasterPage() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => {
-                  // Start master menu functionality
-                  console.log('Starting Master Menu process...');
-                  // You can add your mapping logic here
-                  alert('Starting Master Menu process...');
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/n8n-webhook', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ body: "3" })
+                    });
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                      alert('Master Menu mapping triggered successfully');
+                    } else {
+                      throw new Error(result.error || `HTTP ${response.status}`);
+                    }
+                  } catch (err) {
+                    alert(`Failed to start Master Menu mapping: ${err instanceof Error ? err.message : 'Unknown error'}`);
+                  }
                 }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center"
               >

@@ -1,0 +1,860 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_mapping_sme_cb_cc_benefit",
+          "mode": "list",
+          "cachedResultName": "n8n_mapping_sme_cb_cc_benefit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_code": "={{ $json.company_code }}",
+            "company_code_text": "={{ $json.company_code_text }}",
+            "personnel_area": "={{ $json.personnel_area }}",
+            "personnel_area_text": "={{ $json.personnel_area_text }}",
+            "personnel_subarea": "={{ $json.personnel_subarea }}",
+            "personnel_subarea_text": "={{ $json.personnel_subarea_text }}",
+            "skema_code": "={{ $json.skema_code }}",
+            "skema_code_text": "={{ $json.skema }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_code",
+              "displayName": "company_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company_code_text",
+              "displayName": "company_code_text",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "personnel_area",
+              "displayName": "personnel_area",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "personnel_area_text",
+              "displayName": "personnel_area_text",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "personnel_subarea",
+              "displayName": "personnel_subarea",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "personnel_subarea_text",
+              "displayName": "personnel_subarea_text",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "skema_code",
+              "displayName": "skema_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "skema_code_text",
+              "displayName": "skema_code_text",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        820,
+        120
+      ],
+      "id": "e347fa10-7d1c-4a94-9427-079ed2c246ba",
+      "name": "n8n_mapping_sme_cb_cc_benefit",
+      "credentials": {
+        "postgres": {
+          "id": "bQG6sglC94G4W0sJ",
+          "name": "n8n-postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_mapping_bu_cc_pp",
+          "mode": "list",
+          "cachedResultName": "n8n_mapping_bu_cc_pp"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_code": "={{ $('gs_mapping_cc_pp').item.json.company_code }}",
+            "knowledge_code": "={{ $('gs_mapping_cc_pp').item.json.knowledge_code }}",
+            "company": "={{ $('gs_mapping_cc_pp').item.json.company }}",
+            "sme": "={{ $('gs_mapping_cc_pp').item.json.sme }}",
+            "kategori": "={{ $('gs_mapping_cc_pp').item.json.kategori }}",
+            "kategori_sub": "={{ $('gs_mapping_cc_pp').item.json.kategori_sub }}",
+            "daftar_isi_file_id": "={{ $('gs_mapping_cc_pp').item.json.daftar_isi_file_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_code",
+              "displayName": "company_code",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "knowledge_code",
+              "displayName": "knowledge_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sme",
+              "displayName": "sme",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "kategori",
+              "displayName": "kategori",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "kategori_sub",
+              "displayName": "kategori_sub",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "daftar_isi_file_id",
+              "displayName": "daftar_isi_file_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        820,
+        280
+      ],
+      "id": "a2911814-fc1b-4336-9399-31a6674de135",
+      "name": "n8n_mapping_bu_cc_pp",
+      "credentials": {
+        "postgres": {
+          "id": "bQG6sglC94G4W0sJ",
+          "name": "n8n-postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Qvcx-g5py-Y4MJTllAHtcLfaNXQNmBQKHhAETcVbwDc",
+          "mode": "list",
+          "cachedResultName": "ADM-UPLOAD MANAGER",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Qvcx-g5py-Y4MJTllAHtcLfaNXQNmBQKHhAETcVbwDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1358267710,
+          "mode": "list",
+          "cachedResultName": "MAPPING_CC_PP",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Qvcx-g5py-Y4MJTllAHtcLfaNXQNmBQKHhAETcVbwDc/edit#gid=1358267710"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        620,
+        280
+      ],
+      "id": "58004835-4577-4ccc-b9f0-5b93ebb5126a",
+      "name": "gs_mapping_cc_pp",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bwWmLQtZWh0feMwm",
+          "name": "Google Sheets HRIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Menu",
+        "height": 680,
+        "width": 1000
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "1bcbe904-4665-42ea-90f5-2ce03c88360e",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Qvcx-g5py-Y4MJTllAHtcLfaNXQNmBQKHhAETcVbwDc",
+          "mode": "list",
+          "cachedResultName": "ADM-UPLOAD MANAGER",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Qvcx-g5py-Y4MJTllAHtcLfaNXQNmBQKHhAETcVbwDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 333075918,
+          "mode": "list",
+          "cachedResultName": "MAPPING_CC_BENEFIT",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Qvcx-g5py-Y4MJTllAHtcLfaNXQNmBQKHhAETcVbwDc/edit#gid=333075918"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        620,
+        120
+      ],
+      "id": "1fcc8c3b-881f-4673-85cf-5f6b48f5af39",
+      "name": "gs_mapping_cc_benefit",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bwWmLQtZWh0feMwm",
+          "name": "Google Sheets HRIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_mapping_bu_cc_pp",
+          "mode": "list",
+          "cachedResultName": "n8n_mapping_bu_cc_pp"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        420,
+        280
+      ],
+      "id": "9c30373d-6ce2-4643-807d-b2e26e9eeb5b",
+      "name": "n8n_mapping_bu_cc_pp_del",
+      "credentials": {
+        "postgres": {
+          "id": "bQG6sglC94G4W0sJ",
+          "name": "n8n-postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_mapping_sme_cb_cc_benefit",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        420,
+        120
+      ],
+      "id": "d0712051-10c8-4568-a86d-81b7f7c348a5",
+      "name": "n8n_mapping_sme_cb_cc_benefit_del",
+      "credentials": {
+        "postgres": {
+          "id": "bQG6sglC94G4W0sJ",
+          "name": "n8n-postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_param_menu_master",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        420,
+        460
+      ],
+      "id": "cfaa0c90-e18e-4089-9973-7bed14d91914",
+      "name": "n8n_param_menu_master_del",
+      "credentials": {
+        "postgres": {
+          "id": "bQG6sglC94G4W0sJ",
+          "name": "n8n-postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Qvcx-g5py-Y4MJTllAHtcLfaNXQNmBQKHhAETcVbwDc",
+          "mode": "list",
+          "cachedResultName": "ADM-UPLOAD MANAGER",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Qvcx-g5py-Y4MJTllAHtcLfaNXQNmBQKHhAETcVbwDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2112688959,
+          "mode": "list",
+          "cachedResultName": "MENU_MASTER",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Qvcx-g5py-Y4MJTllAHtcLfaNXQNmBQKHhAETcVbwDc/edit#gid=2112688959"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        620,
+        460
+      ],
+      "id": "2a635220-aaf8-4088-8378-69b9c5210b68",
+      "name": "gs_menu_master",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bwWmLQtZWh0feMwm",
+          "name": "Google Sheets HRIS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_param_menu_master",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_code": "ALL",
+            "menu": "={{ $json.menu }}",
+            "description": "={{ $json.description }}",
+            "keyword": "={{ $json.keyword }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "company_code",
+              "displayName": "company_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "menu",
+              "displayName": "menu",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        820,
+        460
+      ],
+      "id": "7cca147d-d028-4441-88ea-d61e60c65f30",
+      "name": "n8n_param_menu_master",
+      "credentials": {
+        "postgres": {
+          "id": "bQG6sglC94G4W0sJ",
+          "name": "n8n-postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body }}",
+                    "rightValue": "1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f8429999-7733-4b1f-987b-2776e0cad1d0"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fb84e4eb-8d92-4d57-ba8a-8af4f9d6d1dc",
+                    "leftValue": "={{ $json.body }}",
+                    "rightValue": "2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "915b8919-4707-43e1-8b4b-0279db890518",
+                    "leftValue": "={{ $json.body }}",
+                    "rightValue": "3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -500,
+        320
+      ],
+      "id": "7dc725a7-ae55-431d-a57a-f42cece2eb23",
+      "name": "Switch",
+      "retryOnFail": false,
+      "executeOnce": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "menudAdmin",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        320
+      ],
+      "id": "98aaa61e-460e-4c68-8c9a-562090cd93dc",
+      "name": "Webhook1",
+      "webhookId": "8dbafa3b-3d04-404e-a8bc-53a6a6fca218"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "gs_mapping_cc_pp": {
+      "main": [
+        [
+          {
+            "node": "n8n_mapping_bu_cc_pp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gs_mapping_cc_benefit": {
+      "main": [
+        [
+          {
+            "node": "n8n_mapping_sme_cb_cc_benefit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_mapping_bu_cc_pp_del": {
+      "main": [
+        [
+          {
+            "node": "gs_mapping_cc_pp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_mapping_sme_cb_cc_benefit_del": {
+      "main": [
+        [
+          {
+            "node": "gs_mapping_cc_benefit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_param_menu_master_del": {
+      "main": [
+        [
+          {
+            "node": "gs_menu_master",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gs_menu_master": {
+      "main": [
+        [
+          {
+            "node": "n8n_param_menu_master",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "n8n_mapping_sme_cb_cc_benefit_del",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "n8n_mapping_bu_cc_pp_del",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "n8n_param_menu_master_del",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "79466bf8-776b-478a-b797-8d92a0e37a90",
+  "meta": {
+    "instanceId": "15aa62b805c3bd587793a7e457d30e6ab79e58925ec10e269c6b8a9d606c1505"
+  },
+  "id": "p8GHylxULkDfEHIF",
+  "tags": []
+}

@@ -2,7 +2,26 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://wecare.techconnect.co.id/webhook/100/app",
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
+
+// Response interceptor untuk better error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      console.error('API Response Error:', error.response.status, error.response.data);
+    } else if (error.request) {
+      console.error('API Request Error:', error.request);
+    } else {
+      console.error('API Error:', error.message);
+    }
+    return Promise.reject(error);
+  }
+);
 
 api.interceptors.request.use(config => {
   if (typeof window !== "undefined") {

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchGoogleSheetData, parseCCBenefitData } from "@/utils/sheets";
+import api from "@/utils/api";
 
 interface CCBenefit {
   id: string;
@@ -33,39 +34,176 @@ export default function MappingCCBenefitPage() {
 
   // Function to trigger N8N workflow
   const triggerN8NMapping = async () => {
+    // Define webhook URL at the top so it's accessible in catch block
+    const webhookUrl = "https://wecare.techconnect.co.id/webhook/100/app/api/ButtonActive";
+    
     try {
       setIsMappingRunning(true);
       
-      // Use local API route instead of direct N8N call
-      const apiUrl = "/api/n8n-webhook";
+      console.log('Triggering N8N workflow:', webhookUrl);
       
-      console.log('Triggering N8N workflow via API:', apiUrl);
-      
-      const response = await fetch(apiUrl, {
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 
+          action: "start_mapping",
+          timestamp: new Date().toISOString(),
+          source: "CC_Benefit_Mapping_Button"
+        })
       });
+      
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
+      if (response.ok) {
+        let responseData;
+        const contentType = response.headers.get('content-type');
+        
+        try {
+          if (contentType && contentType.includes('application/json')) {
+            responseData = await response.json();
+          } else {
+            responseData = await response.text();
+          }
+        } catch (parseError) {
+          console.log('Could not parse response, but request was successful');
+          responseData = 'Workflow triggered successfully';
+        }
+        
+        console.log('N8N workflow triggered successfully:', responseData);
+        
+        // Send feedback to the webhook about successful trigger
+        const sendFeedback = async (status: 'success' | 'completed' | 'error', message: string, data?: any) => {
+          try {
+            const feedbackResponse = await fetch(webhookUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                feedback: true,
+                status: status,
+                message: message,
+                timestamp: new Date().toISOString(),
+                source: "CC_Benefit_Mapping_Button",
+                originalTriggerData: {
+                  action: "start_mapping",
+                  timestamp: new Date().toISOString(),
+                  source: "CC_Benefit_Mapping_Button"
+                },
+                additionalData: data
+              })
+            });
+            
+            console.log(`Feedback sent (${status}):`, message);
+            return feedbackResponse.ok;
+          } catch (error) {
+            console.error('Failed to send feedback:', error);
+            return false;
+          }
+        };
+        
+        // Send initial success feedback
+        await sendFeedback('success', 'Workflow triggered successfully from UI', responseData);
+        
+        // Send periodic progress updates
+        const progressInterval = setInterval(async () => {
+          await sendFeedback('success', 'Workflow still processing...', {
+            progressUpdate: true,
+            timestamp: new Date().toISOString()
+          });
+        }, 15000); // Send progress update every 15 seconds
+        
+        alert(`✅ N8N Mapping Workflow Started Successfully!
 
-      const result = await response.json();
+🔗 Workflow URL: https://wecare.techconnect.co.id/workflow/p8GHylxULkDfEHIF
 
-      if (response.ok && result.success) {
-        console.log('N8N workflow triggered successfully:', result);
-        alert(`N8N mapping workflow started successfully!\n\nWorkflow URL: ${result.webhookUrl}\n\nThe workflow will:\n1. Clear existing CC benefit data\n2. Read fresh data from Google Sheet\n3. Insert updated data into database`);
+📋 The workflow will:
+1. Clear existing CC benefit data
+2. Read fresh data from Google Sheet  
+3. Insert updated data into database
+4. Process CC benefit mappings
+
+⏱️ Processing time: Usually takes 30-60 seconds
+📊 Data will refresh automatically in 5 seconds
+📤 Feedback sent to webhook for tracking
+📈 Progress updates will be sent every 15 seconds`);
         
         // Refresh the data after a delay to show updated results
-        setTimeout(() => {
-          fetchSheetData(true);
+        setTimeout(async () => {
+          clearInterval(progressInterval); // Stop progress updates
+          try {
+            await fetchSheetData(true);
+            // Send completion feedback after data refresh
+            await sendFeedback('completed', 'Data refresh completed successfully', {
+              refreshTime: new Date().toISOString(),
+              dataCount: benefits.length,
+              processingCompleted: true
+            });
+          } catch (error) {
+            await sendFeedback('error', 'Data refresh failed', {
+              error: error instanceof Error ? error.message : 'Unknown error',
+              refreshTime: new Date().toISOString()
+            });
+          }
         }, 5000);
+        
       } else {
-        const errorMessage = result.error || `HTTP error! status: ${response.status}`;
-        const hint = result.hint || '';
-        throw new Error(`${errorMessage}\n\n${hint}`);
+        const errorText = await response.text();
+        console.error('Webhook call failed:', response.status, errorText);
+        throw new Error(`Webhook call failed with status ${response.status}: ${errorText}`);
       }
+      
     } catch (error) {
       console.error('Error triggering N8N workflow:', error);
-      alert(`Failed to start N8N mapping workflow: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      // Send error feedback to webhook
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            feedback: true,
+            status: 'error',
+            message: 'Failed to trigger workflow from UI',
+            timestamp: new Date().toISOString(),
+            source: "CC_Benefit_Mapping_Button",
+            error: error instanceof Error ? error.message : 'Unknown error',
+            errorDetails: {
+              stack: error instanceof Error ? error.stack : null,
+              timestamp: new Date().toISOString()
+            }
+          })
+        });
+        console.log('Error feedback sent to webhook');
+      } catch (feedbackError) {
+        console.error('Failed to send error feedback:', feedbackError);
+      }
+      
+      let errorMessage = 'Unknown error occurred';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      alert(`❌ Failed to start N8N mapping workflow
+
+🔍 Error Details: ${errorMessage}
+
+🛠️ Troubleshooting:
+1. Check if the n8n workflow is active
+2. Verify the webhook URL is accessible
+3. Check network connectivity
+4. Ensure CORS is properly configured
+
+🔗 Workflow URL: https://wecare.techconnect.co.id/workflow/p8GHylxULkDfEHIF
+📤 Error feedback sent to webhook for debugging`);
     } finally {
       setIsMappingRunning(false);
     }
