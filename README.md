@@ -1,19 +1,3 @@
-src/
-├── app/
-│   ├── admin/
-│   │   ├── mapping-cc-benefit/     # CC Benefit mapping page
-│   │   ├── mapping-cc-pp/          # CC PP mapping page
-│   │   ├── menu-master/            # Menu master management
-│   │   └── page.tsx                # Main admin dashboard
-│   ├── api/
-│   │   ├── md-to-vector-pipeline/  # MD to Vector API
-│   │   ├── n8n-webhook/            # N8N workflow integration
-│   │   ├── pdf-to-md-pipeline/     # PDF to MD API
-│   │   └── sheets/                 # Google Sheets API
-│   ├── dashboard/                  # WhatsApp dashboard
-│   ├── login/                      # Authentication page
-│   └── page.tsx                    # Landing page
-
 # SM Admin WA Dashboard
 
 Admin dashboard for WhatsApp workflow management, built with Next.js and TypeScript.
