@@ -367,15 +367,15 @@ export default function MappingCCBenefitPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 px-4">
+        <div className="text-center max-w-sm w-full">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+            <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
           </div>
           <div className="loading-spinner mx-auto mb-4"></div>
-                     <p className="text-primary font-medium">Memuat data...</p>
+          <p className="text-primary font-medium text-sm sm:text-base">Memuat data...</p>
         </div>
       </div>
     );
@@ -385,85 +385,88 @@ export default function MappingCCBenefitPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 gap-4 sm:gap-0">
+            <div className="flex items-center w-full sm:w-auto">
               <button
                 onClick={() => router.push("/admin")}
-                className="mr-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                className="mr-3 sm:mr-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 flex-shrink-0"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center mr-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
-                             <div>
-                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Data Mapping</h1>
-                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                   {usingFallbackData 
-                     ? "Menggunakan data sample - Google Sheet tidak dapat diakses" 
-                     : "Data real-time dari Google Spreadsheet - Auto-refresh otomatis setiap 30 detik"
-                   }
-                 </p>
-               </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">Data Mapping</h1>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                  {usingFallbackData 
+                    ? "Menggunakan data sample - Google Sheet tidak dapat diakses" 
+                    : "Data real-time dari Google Spreadsheet - Auto-refresh otomatis setiap 30 detik"
+                  }
+                </p>
+              </div>
             </div>
-                         <div className="flex gap-2">
-               <button
-                 onClick={triggerN8NMapping}
-                 disabled={isMappingRunning}
-                 className={`px-4 py-2 text-white rounded-lg transition-colors duration-200 flex items-center ${
-                   isMappingRunning 
-                     ? 'bg-gray-400 cursor-not-allowed' 
-                     : 'bg-blue-600 hover:bg-blue-700'
-                 }`}
-               >
-                 {isMappingRunning ? (
-                   <>
-                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                     Running Mapping...
-                   </>
-                 ) : (
-                   <>
-                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                     </svg>
-                     Start Mapping CC Benefit
-                   </>
-                 )}
-               </button>
-               <button
-                 onClick={() => setShowAddModal(true)}
-                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center"
-               >
-                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                 </svg>
-                 Tambah Data
-               </button>
-             </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <button
+                onClick={triggerN8NMapping}
+                disabled={isMappingRunning}
+                className={`px-3 sm:px-4 py-2 text-white rounded-lg transition-colors duration-200 flex items-center justify-center text-sm sm:text-base ${
+                  isMappingRunning 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+              >
+                {isMappingRunning ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    <span className="hidden sm:inline">Running Mapping...</span>
+                    <span className="sm:hidden">Running...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span className="hidden sm:inline">Start Mapping CC Benefit</span>
+                    <span className="sm:hidden">Start Mapping</span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center justify-center text-sm sm:text-base"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span className="hidden sm:inline">Tambah Data</span>
+                <span className="sm:hidden">Tambah</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 sm:p-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                <h3 className="text-xs sm:text-sm font-medium text-yellow-800 dark:text-yellow-200">
                   Warning: Google Sheet Access Issue
                 </h3>
-                <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+                <div className="mt-2 text-xs sm:text-sm text-yellow-700 dark:text-yellow-300">
                   <p>{error}</p>
                   {usingFallbackData && (
                     <p className="mt-1">
@@ -477,8 +480,8 @@ export default function MappingCCBenefitPage() {
           </div>
           
           {/* Debug Information */}
-          <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Debug Information:</h4>
+          <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg p-3 sm:p-4">
+            <h4 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white mb-2">Debug Information:</h4>
             <div className="text-xs text-gray-600 dark:text-gray-400">
               <p><strong>Benefits count:</strong> {benefits.length}</p>
               <p><strong>Using fallback data:</strong> {usingFallbackData ? 'Yes' : 'No'}</p>
@@ -496,110 +499,110 @@ export default function MappingCCBenefitPage() {
       )}
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         {/* Search and Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  {/*<svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>*/}
+                  </svg>
                 </div>
-                                 <input
-                   type="text"
-                   placeholder="Cari data..."
-                   className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                   value={searchTerm}
-                   onChange={(e) => setSearchTerm(e.target.value)}
-                 />
+                <input
+                  type="text"
+                  placeholder="Cari data..."
+                  className="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm sm:text-base"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
             </div>
-                         <div className="flex gap-2">
-               <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                 Search across all columns
-               </div>
-             </div>
+            <div className="flex gap-2">
+              <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                Search across all columns
+              </div>
+            </div>
           </div>
         </div>
 
-                 {/* Data Table */}
-         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-           {/* Table Header Info */}
-           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-             <div className="flex justify-between items-center">
-               <div className="flex items-center gap-2">
-                 <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                   Total Records: {filteredBenefits.length}
-                 </h3>
-                 {isRefreshing && (
-                   <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
-                     <div className="w-3 h-3 border border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                     <span>Refreshing...</span>
-                   </div>
-                 )}
-               </div>
-               <div className="text-xs text-gray-500 dark:text-gray-400">
-                 Scroll horizontally and vertically to view all data
-               </div>
-             </div>
-           </div>
-           <div className="data-table-container">
-             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 compact-table">
-               <thead>
-                 <tr>
-                   {allHeaders.map((header) => (
-                     <th key={header} className="text-left whitespace-nowrap">
-                       {header.replace(/_/g, ' ')}
-                     </th>
-                   ))}
-                   <th className="text-left whitespace-nowrap">
-                     Actions
-                   </th>
-                 </tr>
-               </thead>
-               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                 {filteredBenefits.map((benefit) => (
-                   <tr key={benefit.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                     {allHeaders.map((header) => {
-                       const cellValue = benefit[header] || '-';
-                       
-                       return (
-                         <td key={header} className="text-gray-900 dark:text-white">
-                           <div className="table-cell-content" title={cellValue}>
-                             {cellValue}
-                           </div>
-                         </td>
-                       );
-                     })}
-                     <td className="font-medium whitespace-nowrap">
-                       <div className="flex space-x-1">
-                         <button className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 text-xs">
-                           Edit
-                         </button>
-                         <button className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-xs">
-                           Delete
-                         </button>
-                       </div>
-                     </td>
-                   </tr>
-                 ))}
-               </tbody>
-             </table>
-           </div>
-         </div>
+        {/* Data Table */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+          {/* Table Header Info */}
+          <div className="px-3 sm:px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
+                  Total Records: {filteredBenefits.length}
+                </h3>
+                {isRefreshing && (
+                  <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+                    <div className="w-3 h-3 border border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Refreshing...</span>
+                  </div>
+                )}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Scroll horizontally and vertically to view all data
+              </div>
+            </div>
+          </div>
+          <div className="data-table-container">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 compact-table">
+              <thead>
+                <tr>
+                  {allHeaders.map((header) => (
+                    <th key={header} className="text-left whitespace-nowrap text-xs sm:text-sm">
+                      {header.replace(/_/g, ' ')}
+                    </th>
+                  ))}
+                  <th className="text-left whitespace-nowrap text-xs sm:text-sm">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredBenefits.map((benefit) => (
+                  <tr key={benefit.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    {allHeaders.map((header) => {
+                      const cellValue = benefit[header] || '-';
+                      
+                      return (
+                        <td key={header} className="text-gray-900 dark:text-white text-xs sm:text-sm">
+                          <div className="table-cell-content" title={cellValue}>
+                            {cellValue}
+                          </div>
+                        </td>
+                      );
+                    })}
+                    <td className="font-medium whitespace-nowrap">
+                      <div className="flex space-x-1">
+                        <button className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 text-xs">
+                          Edit
+                        </button>
+                        <button className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-xs">
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         {/* Empty State */}
         {filteredBenefits.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center py-8 sm:py-12">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
             </div>
-                         <p className="text-gray-500 dark:text-gray-400 font-medium">Tidak ada data</p>
-             <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Data akan muncul setelah berhasil mengambil dari Google Spreadsheet</p>
+            <p className="text-gray-500 dark:text-gray-400 font-medium text-sm sm:text-base">Tidak ada data</p>
+            <p className="text-gray-400 dark:text-gray-500 text-xs sm:text-sm mt-1">Data akan muncul setelah berhasil mengambil dari Google Spreadsheet</p>
           </div>
         )}
       </div>

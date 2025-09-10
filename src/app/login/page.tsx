@@ -47,32 +47,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+    <div className="min-h-screen flex items-center justify-center p-3 sm:p-4 md:p-6" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
       {/* Theme Toggle positioned in top-right corner */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
         <ThemeToggle />
       </div>
       
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-sm sm:max-w-md">
         <div className="card">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-primary mb-2">Admin Login</h1>
-            <p className="text-secondary">Masuk ke dashboard admin</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Admin Login</h1>
+            <p className="text-secondary text-sm sm:text-base">Masuk ke dashboard admin</p>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
-              <label className="block text-secondary font-semibold mb-2">
+              <label className="block text-secondary font-semibold mb-2 text-sm sm:text-base">
                 Email
               </label>
               <input
                 type="email"
-                className="w-full"
+                className="w-full text-sm sm:text-base"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="Masukkan email Anda"
@@ -81,12 +81,12 @@ export default function LoginPage() {
             </div>
             
             <div>
-              <label className="block text-secondary font-semibold mb-2">
+              <label className="block text-secondary font-semibold mb-2 text-sm sm:text-base">
                 Password
               </label>
               <input
                 type="password"
-                className="w-full"
+                className="w-full text-sm sm:text-base"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Masukkan password Anda"
@@ -95,19 +95,19 @@ export default function LoginPage() {
             </div>
             
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
                 <div className="flex">
-                  <svg className="w-5 h-5 text-red-400 mt-0.5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
-                  <p className="text-red-600 font-medium text-sm">{error}</p>
+                  <p className="text-red-600 font-medium text-xs sm:text-sm">{error}</p>
                 </div>
               </div>
             )}
             
             <button
               type="submit"
-              className="w-full btn-primary"
+              className="w-full btn-primary text-sm sm:text-base"
               disabled={loading}
             >
               {loading ? (
@@ -121,8 +121,8 @@ export default function LoginPage() {
             </button>
           </form>
           
-          <div className="mt-6 text-center">
-            <p className="text-muted text-sm">
+          <div className="mt-4 sm:mt-6 text-center">
+            <p className="text-muted text-xs sm:text-sm">
               Sistem Admin Dashboard WhatsApp
             </p>
           </div>
