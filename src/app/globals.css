@@ -534,3 +534,116 @@ div[class*="bg-"] {
   padding: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
+/* Enhanced table scrolling styles */
+.enhanced-table-scroll {
+  overflow: auto;
+  max-height: 60vh;
+  width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+  border-radius: 8px;
+}
+
+.enhanced-table-scroll::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.enhanced-table-scroll::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 6px;
+}
+
+.enhanced-table-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 6px;
+  border: 2px solid #f7fafc;
+}
+
+.enhanced-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+.enhanced-table-scroll::-webkit-scrollbar-corner {
+  background: #f7fafc;
+}
+
+/* Dark mode scrollbar */
+.dark .enhanced-table-scroll {
+  scrollbar-color: #4a5568 #2d3748;
+}
+
+.dark .enhanced-table-scroll::-webkit-scrollbar-track {
+  background: #2d3748;
+}
+
+.dark .enhanced-table-scroll::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border: 2px solid #2d3748;
+}
+
+.dark .enhanced-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+.dark .enhanced-table-scroll::-webkit-scrollbar-corner {
+  background: #2d3748;
+}
+
+/* Table cell styling for better readability */
+.table-cell-enhanced {
+  position: relative;
+  min-width: 120px;
+  max-width: 300px;
+  word-wrap: break-word;
+  white-space: normal;
+  vertical-align: top;
+}
+
+/* Sticky header enhancement */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: inherit;
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--border-color);
+}
+
+/* Responsive table improvements */
+@media (max-width: 768px) {
+  .enhanced-table-scroll {
+    max-height: 60vh;
+  }
+  
+  .table-cell-enhanced {
+    min-width: 100px;
+    max-width: 200px;
+    font-size: 12px;
+    padding: 8px;
+  }
+}
+
+/* Page scroll behavior - ensure body and html allow scrolling */
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: auto;
+}
+
+/* Ensure the main page container allows scrolling */
+.min-h-screen {
+  min-height: 100vh;
+  height: auto;
+}
+
+/* Fix for page scrolling with table */
+body {
+  position: static;
+}
+
+#__next {
+  height: auto;
+  min-height: 100vh;
+}

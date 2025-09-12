@@ -1,11 +1,14 @@
+import { getBackupData, convertBackupDataToRows } from './backupData';
+
 // Utility function to fetch data from Google Sheets
 export async function fetchGoogleSheetData(sheetId: string, range: string = 'A:Z', tabId?: string) {
   try {
-    // Convert Google Sheets URL to API endpoint
-    const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=YOUR_API_KEY`;
+    console.log('=== FETCHING GOOGLE SHEET DATA ===');
+    console.log('Sheet ID:', sheetId);
+    console.log('Range:', range);
+    console.log('Tab ID:', tabId);
     
-    // For now, we'll use a proxy approach since we need API key
-    // You can replace this with actual Google Sheets API implementation
+    // Convert Google Sheets URL to API endpoint
     const params = new URLSearchParams({
       sheetId: sheetId,
       range: range
@@ -15,24 +18,88 @@ export async function fetchGoogleSheetData(sheetId: string, range: string = 'A:Z
       params.append('tabId', tabId);
     }
     
-    const response = await fetch(`/api/sheets?${params.toString()}`);
+    const apiUrl = `/api/sheets?${params.toString()}`;
+    console.log('API URL:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      // Add timeout for client-side requests
+      signal: AbortSignal.timeout(20000) // 20 seconds timeout
+    });
+    
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
     
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.details || errorData.error || 'Failed to fetch sheet data');
+      let errorData: any = {};
+      const contentType = response.headers.get('content-type');
+      
+      try {
+        if (contentType && contentType.includes('application/json')) {
+          errorData = await response.json();
+        } else {
+          const textResponse = await response.text();
+          console.log('Non-JSON error response:', textResponse);
+          errorData = { 
+            error: 'Server returned non-JSON response', 
+            details: textResponse.substring(0, 500) 
+          };
+        }
+      } catch (parseError) {
+        console.error('Failed to parse error response:', parseError);
+        errorData = { 
+          error: 'Failed to parse server response', 
+          details: `HTTP ${response.status}: ${response.statusText}` 
+        };
+      }
+      
+      console.error('Sheet fetch failed:', errorData);
+      throw new Error(errorData.details || errorData.error || `HTTP ${response.status}: ${response.statusText}`);
     }
     
     const data = await response.json();
+    console.log('Response data structure:', {
+      hasValues: !!data.values,
+      valuesLength: data.values?.length,
+      hasMetadata: !!data.metadata,
+      message: data.message
+    });
     
     if (!data.values) {
       console.warn('No values found in sheet data:', data);
       return [];
     }
     
+    console.log('✅ Successfully fetched sheet data:', data.values.length, 'rows');
     return data.values || [];
   } catch (error) {
-    console.error('Error fetching sheet data:', error);
-    throw error; // Re-throw to let the calling code handle it
+    console.error('❌ Error fetching sheet data:', error);
+    
+    // Determine backup data type based on tabId or sheet context
+    let backupType = 'cc-benefit'; // default
+    if (tabId === '333075918') backupType = 'cc-benefit';
+    // Add more tab ID mappings as needed
+    
+    console.log('🔄 Falling back to backup data type:', backupType);
+    const backupData = getBackupData(backupType);
+    const backupRows = convertBackupDataToRows(backupData);
+    
+    console.log('📋 Using backup data:', backupRows.length, 'rows');
+    
+    // Re-throw error but provide backup data context
+    const enhancedError = new Error(
+      `Google Sheets API Error: ${error instanceof Error ? error.message : 'Unknown error'}. Using backup data with ${backupRows.length} rows.`
+    );
+    
+    // Attach backup data to error for fallback handling
+    (enhancedError as any).backupData = backupRows;
+    (enhancedError as any).isBackupData = true;
+    
+    throw enhancedError;
   }
 }
 

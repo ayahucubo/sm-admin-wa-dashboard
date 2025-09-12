@@ -1,9 +1,0 @@
-function doGet(e) {
-  var sheetName = e.parameters.sheetName;
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  var data = sheet.getDataRange().getValues();
-  var jsonData = JSON.stringify(data);
-  return ContentService.createTextOutput(jsonData).setMimeType(
-    ContentService.MimeType.JSON
-  );
-}
