@@ -4,25 +4,20 @@ import { Pool } from 'pg';
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-// Database configuration - FIXED to use environment variables properly
+// Database configuration - use environment variables directly
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5488'), // Remove production default override
+  port: parseInt(process.env.DB_PORT || '5488'),
   database: process.env.DB_NAME || 'postgres',
   user: process.env.DB_USER || 'n8nuser',
   password: process.env.DB_PASSWORD || 'P0stgres99',
   max: 20, // maximum number of clients in the pool
   idleTimeoutMillis: 30000, // close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // return an error after 2 seconds if connection could not be established
-  ssl: isProduction ? { rejectUnauthorized: false } : false, // Enable SSL for production
+  connectionTimeoutMillis: 5000, // increased timeout for server connections
+  ssl: false, // disable SSL for localhost connections
 };
 
-// Validate required environment variables in production
-if (isProduction && !process.env.DB_PASSWORD) {
-  throw new Error('DB_PASSWORD must be set in production environment');
-}
-
-// Log configuration (without password) for debugging
+// Validate database configuration
 console.log('Database configuration:', {
   ...dbConfig,
   password: dbConfig.password ? '[REDACTED]' : '[NOT SET]',
@@ -34,17 +29,27 @@ const pool = new Pool(dbConfig);
 
 // Generic query function with better error handling
 export async function query(text: string, params?: any[]) {
-  const client = await pool.connect();
+  let client;
   try {
+    client = await pool.connect();
     const result = await client.query(text, params);
     return result;
   } catch (error) {
     console.error('Database query error:', error);
     console.error('Query:', text);
     console.error('Params:', params);
+    console.error('DB Config Debug:', {
+      host: dbConfig.host,
+      port: dbConfig.port,
+      database: dbConfig.database,
+      user: dbConfig.user,
+      env: process.env.NODE_ENV
+    });
     throw error;
   } finally {
-    client.release();
+    if (client) {
+      client.release();
+    }
   }
 }
 
@@ -56,11 +61,12 @@ export async function checkDatabaseConnection() {
     
     // Test the specific table
     const tableTest = await query('SELECT COUNT(*) as count FROM n8n_mapping_sme_cb_cc_benefit');
+    console.log('Table test successful:', tableTest.rows[0]);
     
     return {
       success: true,
       data: result.rows[0],
-      tableCount: tableTest.rows[0].count,
+      tableCount: tableTest.rows[0]?.count || 0,
       environment: process.env.NODE_ENV,
     };
   } catch (error) {
@@ -91,13 +97,13 @@ export async function createCCBenefitMapping(data: Record<string, any>) {
     const columns = Object.keys(data).filter(key => key !== 'id');
     const values = columns.map(col => data[col]);
     const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
-
+    
     const query_text = `
       INSERT INTO n8n_mapping_sme_cb_cc_benefit (${columns.join(', ')})
       VALUES (${placeholders})
       RETURNING *
     `;
-
+    
     const result = await query(query_text, values);
     return result.rows[0];
   } catch (error) {
@@ -113,14 +119,14 @@ export async function updateCCBenefitMapping(id: number, data: Record<string, an
     const columns = Object.keys(data).filter(key => key !== 'id');
     const values = columns.map(col => data[col]);
     const setClause = columns.map((col, index) => `${col} = $${index + 1}`).join(', ');
-
+    
     const query_text = `
-      UPDATE n8n_mapping_sme_cb_cc_benefit
+      UPDATE n8n_mapping_sme_cb_cc_benefit 
       SET ${setClause}
       WHERE id = $${columns.length + 1}
       RETURNING *
     `;
-
+    
     const result = await query(query_text, [...values, id]);
     return result.rows[0];
   } catch (error) {
@@ -148,7 +154,7 @@ export async function getCCBenefitMappingSchema() {
   try {
     const result = await query(`
       SELECT column_name, data_type, is_nullable, column_default
-      FROM information_schema.columns
+      FROM information_schema.columns 
       WHERE table_name = 'n8n_mapping_sme_cb_cc_benefit'
       ORDER BY ordinal_position
     `);
