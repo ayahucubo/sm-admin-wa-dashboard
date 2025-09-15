@@ -4,13 +4,13 @@ import { Pool } from 'pg';
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-// Database configuration with environment-specific defaults
+// Database configuration - FIXED to use environment variables properly
 const dbConfig = {
-  host: process.env.DB_HOST || (isProduction ? 'localhost' : 'localhost'),
-  port: parseInt(process.env.DB_PORT || (isProduction ? '5432' : '5488')),
-  database: process.env.DB_NAME || (isProduction ? 'production_db' : 'postgres'),
-  user: process.env.DB_USER || (isProduction ? 'production_user' : 'n8nuser'),
-  password: process.env.DB_PASSWORD || (isProduction ? '' : 'P0stgres99'),
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5488'), // Remove production default override
+  database: process.env.DB_NAME || 'postgres',
+  user: process.env.DB_USER || 'n8nuser',
+  password: process.env.DB_PASSWORD || 'P0stgres99',
   max: 20, // maximum number of clients in the pool
   idleTimeoutMillis: 30000, // close idle clients after 30 seconds
   connectionTimeoutMillis: 2000, // return an error after 2 seconds if connection could not be established
@@ -53,9 +53,14 @@ export async function checkDatabaseConnection() {
   try {
     const result = await query('SELECT NOW() as current_time, version() as db_version');
     console.log('Database connection successful:', result.rows[0]);
+    
+    // Test the specific table
+    const tableTest = await query('SELECT COUNT(*) as count FROM n8n_mapping_sme_cb_cc_benefit');
+    
     return {
       success: true,
       data: result.rows[0],
+      tableCount: tableTest.rows[0].count,
       environment: process.env.NODE_ENV,
     };
   } catch (error) {
@@ -86,13 +91,13 @@ export async function createCCBenefitMapping(data: Record<string, any>) {
     const columns = Object.keys(data).filter(key => key !== 'id');
     const values = columns.map(col => data[col]);
     const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
-    
+
     const query_text = `
       INSERT INTO n8n_mapping_sme_cb_cc_benefit (${columns.join(', ')})
       VALUES (${placeholders})
       RETURNING *
     `;
-    
+
     const result = await query(query_text, values);
     return result.rows[0];
   } catch (error) {
@@ -108,14 +113,14 @@ export async function updateCCBenefitMapping(id: number, data: Record<string, an
     const columns = Object.keys(data).filter(key => key !== 'id');
     const values = columns.map(col => data[col]);
     const setClause = columns.map((col, index) => `${col} = $${index + 1}`).join(', ');
-    
+
     const query_text = `
-      UPDATE n8n_mapping_sme_cb_cc_benefit 
+      UPDATE n8n_mapping_sme_cb_cc_benefit
       SET ${setClause}
       WHERE id = $${columns.length + 1}
       RETURNING *
     `;
-    
+
     const result = await query(query_text, [...values, id]);
     return result.rows[0];
   } catch (error) {
@@ -143,7 +148,7 @@ export async function getCCBenefitMappingSchema() {
   try {
     const result = await query(`
       SELECT column_name, data_type, is_nullable, column_default
-      FROM information_schema.columns 
+      FROM information_schema.columns
       WHERE table_name = 'n8n_mapping_sme_cb_cc_benefit'
       ORDER BY ordinal_position
     `);
