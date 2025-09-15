@@ -4,20 +4,25 @@ import { Pool } from 'pg';
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-// Database configuration - use environment variables directly
+// Database configuration with environment-specific defaults
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5488'),
-  database: process.env.DB_NAME || 'postgres',
-  user: process.env.DB_USER || 'n8nuser',
-  password: process.env.DB_PASSWORD || 'P0stgres99',
+  host: process.env.DB_HOST || (isProduction ? 'localhost' : 'localhost'),
+  port: parseInt(process.env.DB_PORT || (isProduction ? '5432' : '5488')),
+  database: process.env.DB_NAME || (isProduction ? 'production_db' : 'postgres'),
+  user: process.env.DB_USER || (isProduction ? 'production_user' : 'n8nuser'),
+  password: process.env.DB_PASSWORD || (isProduction ? '' : 'P0stgres99'),
   max: 20, // maximum number of clients in the pool
   idleTimeoutMillis: 30000, // close idle clients after 30 seconds
-  connectionTimeoutMillis: 5000, // increased timeout for server connections
-  ssl: false, // disable SSL for localhost connections
+  connectionTimeoutMillis: 2000, // return an error after 2 seconds if connection could not be established
+  ssl: isProduction ? { rejectUnauthorized: false } : false, // Enable SSL for production
 };
 
-// Validate database configuration
+// Validate required environment variables in production
+if (isProduction && !process.env.DB_PASSWORD) {
+  throw new Error('DB_PASSWORD must be set in production environment');
+}
+
+// Log configuration (without password) for debugging
 console.log('Database configuration:', {
   ...dbConfig,
   password: dbConfig.password ? '[REDACTED]' : '[NOT SET]',
@@ -29,27 +34,17 @@ const pool = new Pool(dbConfig);
 
 // Generic query function with better error handling
 export async function query(text: string, params?: any[]) {
-  let client;
+  const client = await pool.connect();
   try {
-    client = await pool.connect();
     const result = await client.query(text, params);
     return result;
   } catch (error) {
     console.error('Database query error:', error);
     console.error('Query:', text);
     console.error('Params:', params);
-    console.error('DB Config Debug:', {
-      host: dbConfig.host,
-      port: dbConfig.port,
-      database: dbConfig.database,
-      user: dbConfig.user,
-      env: process.env.NODE_ENV
-    });
     throw error;
   } finally {
-    if (client) {
-      client.release();
-    }
+    client.release();
   }
 }
 
@@ -58,15 +53,9 @@ export async function checkDatabaseConnection() {
   try {
     const result = await query('SELECT NOW() as current_time, version() as db_version');
     console.log('Database connection successful:', result.rows[0]);
-    
-    // Test the specific table
-    const tableTest = await query('SELECT COUNT(*) as count FROM n8n_mapping_sme_cb_cc_benefit');
-    console.log('Table test successful:', tableTest.rows[0]);
-    
     return {
       success: true,
       data: result.rows[0],
-      tableCount: tableTest.rows[0]?.count || 0,
       environment: process.env.NODE_ENV,
     };
   } catch (error) {
