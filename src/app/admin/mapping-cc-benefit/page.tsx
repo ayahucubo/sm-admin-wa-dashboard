@@ -254,7 +254,7 @@ export default function MappingCCBenefitPage() {
   const fetchData = async () => {
     try {
       setError(null);
-      const response = await fetch('/sm-admin/api/cc-benefit-mapping');
+      const response = await fetch('https://localhost:5688/sm-admin/api/cc-benefit-mapping/');
       const result = await response.json();
       
       if (result.success) {
