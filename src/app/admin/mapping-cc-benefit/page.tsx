@@ -112,6 +112,12 @@ const FormModal = memo(({
           })}
         </div>
         
+        {formErrors.general && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mt-4">
+            <p className="text-red-600 dark:text-red-400 text-sm">{formErrors.general}</p>
+          </div>
+        )}
+        
         <div className="flex justify-end space-x-3 mt-6">
           <button
             onClick={onClose}
@@ -422,6 +428,15 @@ export default function MappingCCBenefitPage() {
       !col.includes('created_at') && 
       !col.includes('updated_at')
     );
+    
+    // Check if we have any data at all
+    const hasAnyData = Object.keys(formData).some(key => 
+      formData[key] !== null && formData[key] !== undefined && formData[key] !== ''
+    );
+    
+    if (!hasAnyData) {
+      errors.general = 'Please fill in at least one field';
+    }
     
     editableColumns.forEach(col => {
       const schemaCol = schema.find(s => s.column_name === col);
