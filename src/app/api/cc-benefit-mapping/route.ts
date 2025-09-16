@@ -10,10 +10,12 @@ import {
 // GET - Fetch all records or schema
 export async function GET(request: NextRequest) {
   try {
+    console.log('CC Benefit Mapping GET request received');
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
     
     if (action === 'schema') {
+      console.log('Fetching table schema...');
       const schema = await getCCBenefitMappingSchema();
       return NextResponse.json({ 
         success: true, 
@@ -21,7 +23,10 @@ export async function GET(request: NextRequest) {
       });
     }
     
+    console.log('Fetching CC benefit mapping data...');
     const data = await getCCBenefitMappingData();
+    console.log(`Successfully fetched ${data.length} records`);
+    
     return NextResponse.json({ 
       success: true, 
       data: data,
@@ -29,9 +34,16 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('API GET Error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
+    
     return NextResponse.json({ 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error',
+      details: 'Check database connection and table existence',
       data: []
     }, { status: 500 });
   }

@@ -6,11 +6,11 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
 // Database configuration with environment-specific defaults
 const dbConfig = {
-  host: process.env.DB_HOST || (isProduction ? 'localhost' : 'localhost'),
-  port: parseInt(process.env.DB_PORT || (isProduction ? '5432' : '5488')),
-  database: process.env.DB_NAME || (isProduction ? 'production_db' : 'postgres'),
-  user: process.env.DB_USER || (isProduction ? 'production_user' : 'n8nuser'),
-  password: process.env.DB_PASSWORD || (isProduction ? '' : 'P0stgres99'),
+  host: process.env.DB_POSTGRESDB_HOST || process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_POSTGRESDB_PORT || process.env.DB_PORT || '5488'),
+  database: process.env.DB_POSTGRESDB_DATABASE || process.env.DB_NAME || 'postgres',
+  user: process.env.DB_POSTGRESDB_USER || process.env.DB_USER || 'n8nuser',
+  password: process.env.DB_POSTGRESDB_PASSWORD || process.env.DB_PASSWORD || 'P0stgres99',
   max: 20, // maximum number of clients in the pool
   idleTimeoutMillis: 30000, // close idle clients after 30 seconds
   connectionTimeoutMillis: 2000, // return an error after 2 seconds if connection could not be established
@@ -18,8 +18,8 @@ const dbConfig = {
 };
 
 // Validate required environment variables in production
-if (isProduction && !process.env.DB_PASSWORD) {
-  throw new Error('DB_PASSWORD must be set in production environment');
+if (isProduction && !process.env.DB_POSTGRESDB_PASSWORD && !process.env.DB_PASSWORD) {
+  throw new Error('DB_POSTGRESDB_PASSWORD or DB_PASSWORD must be set in production environment');
 }
 
 // Log configuration (without password) for debugging
