@@ -41,12 +41,20 @@ const FormModal = memo(({
 
   // Get editable columns (exclude id and system columns)
   const getEditableColumns = () => {
-    const allColumns = schema.map(col => col.column_name);
-    return allColumns.filter(col => 
-      col !== 'id' && 
-      !col.includes('created_at') && 
-      !col.includes('updated_at')
-    );
+    console.log('getEditableColumns called, schema:', schema);
+    if (schema.length > 0) {
+      const allColumns = schema.map(col => col.column_name);
+      const filtered = allColumns.filter(col => 
+        col !== 'id' && 
+        !col.includes('created_at') && 
+        !col.includes('updated_at')
+      );
+      console.log('Schema-based editable columns:', filtered);
+      return filtered;
+    }
+    
+    console.log('No schema available, no editable columns');
+    return [];
   };
 
   const editableColumns = getEditableColumns();
@@ -70,6 +78,25 @@ const FormModal = memo(({
         </div>
         
         <div className="space-y-4">
+          {/* Debug info */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded text-xs">
+              <p>Schema length: {schema.length}</p>
+              <p>Editable columns: {editableColumns.length}</p>
+              <p>Schema: {JSON.stringify(schema.map(s => s.column_name))}</p>
+              <p>Editable: {JSON.stringify(editableColumns)}</p>
+            </div>
+          )}
+          
+          {editableColumns.length === 0 && (
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+              <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                No editable fields found. Schema length: {schema.length}
+                {schema.length === 0 && " - Schema not loaded yet."}
+              </p>
+            </div>
+          )}
+          
           {editableColumns.map(column => {
             const schemaCol = schema.find(s => s.column_name === column);
             const isRequired = schemaCol?.is_nullable === 'NO';
@@ -279,11 +306,16 @@ export default function MappingCCPPPage() {
 
   const fetchSchema = async () => {
     try {
+      console.log('Fetching schema from:', getApiPath('api/cc-pp-mapping?action=schema'));
       const response = await fetch(getApiPath('api/cc-pp-mapping?action=schema'));
       const result = await response.json();
+      console.log('Schema response:', result);
       
       if (result.success) {
+        console.log('Setting schema:', result.schema);
         setSchema(Array.isArray(result.schema) ? result.schema : []);
+      } else {
+        console.error('Schema fetch failed:', result);
       }
     } catch (error) {
       console.error('Error fetching schema:', error);
