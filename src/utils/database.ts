@@ -14,7 +14,7 @@ const dbConfig = {
   max: 20, // maximum number of clients in the pool
   idleTimeoutMillis: 30000, // close idle clients after 30 seconds
   connectionTimeoutMillis: 2000, // return an error after 2 seconds if connection could not be established
-  ssl: isProduction ? { rejectUnauthorized: false } : false, // Enable SSL for production
+  //ssl: isProduction ? { rejectUnauthorized: false } : false, // Enable SSL for production
 };
 
 // Validate required environment variables in production
