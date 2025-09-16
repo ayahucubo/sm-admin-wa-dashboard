@@ -78,15 +78,13 @@ const FormModal = memo(({
         </div>
         
         <div className="space-y-4">
-          {/* Debug info */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded text-xs">
-              <p>Schema length: {schema.length}</p>
-              <p>Editable columns: {editableColumns.length}</p>
-              <p>Schema: {JSON.stringify(schema.map(s => s.column_name))}</p>
-              <p>Editable: {JSON.stringify(editableColumns)}</p>
-            </div>
-          )}
+          {/* Debug info - always show for troubleshooting */}
+          <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded text-xs">
+            <p>Schema length: {schema.length}</p>
+            <p>Editable columns: {editableColumns.length}</p>
+            <p>Schema: {JSON.stringify(schema.map(s => s.column_name))}</p>
+            <p>Editable: {JSON.stringify(editableColumns)}</p>
+          </div>
           
           {editableColumns.length === 0 && (
             <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
