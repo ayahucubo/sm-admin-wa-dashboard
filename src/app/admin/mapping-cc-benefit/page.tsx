@@ -259,7 +259,7 @@ export default function MappingCCBenefitPage() {
       const result = await response.json();
       
       if (result.success) {
-        setData(result.data);
+        setData(Array.isArray(result.data) ? result.data : []);
       } else {
         setError(result.error || 'Failed to fetch data');
       }
@@ -277,7 +277,7 @@ export default function MappingCCBenefitPage() {
       const result = await response.json();
       
       if (result.success) {
-        setSchema(result.schema);
+        setSchema(Array.isArray(result.schema) ? result.schema : []);
       }
     } catch (error) {
       console.error('Error fetching schema:', error);
@@ -446,10 +446,10 @@ export default function MappingCCBenefitPage() {
 
   // Get all unique column names from the data or schema
   const getAllColumns = () => {
-    if (schema.length > 0) {
+    if (schema && Array.isArray(schema) && schema.length > 0) {
       return schema.map(col => col.column_name);
     }
-    if (data.length === 0) return [];
+    if (!data || !Array.isArray(data) || data.length === 0) return [];
     const columns = new Set<string>();
     data.forEach(row => {
       Object.keys(row).forEach(key => {
@@ -460,7 +460,7 @@ export default function MappingCCBenefitPage() {
   };
 
   // Filter data based on search term
-  const filteredData = data.filter(row =>
+  const filteredData = (data && Array.isArray(data) ? data : []).filter(row =>
     Object.values(row).some(value => 
       value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -676,7 +676,7 @@ export default function MappingCCBenefitPage() {
           <div className="px-3 sm:px-4 py-2 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
             <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
               <span>💡 Scroll horizontally and vertically within the table area • Scroll page to see more content</span>
-              <span>Showing {filteredData.length} of {data.length} records</span>
+              <span>Showing {filteredData.length} of {(data && Array.isArray(data) ? data : []).length} records</span>
             </div>
           </div>
         </div>
