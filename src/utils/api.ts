@@ -5,13 +5,13 @@ export const getApiPath = (path: string): string => {
   // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   
-  // In production, prepend the base path
+  // In production, prepend the base path and ensure trailing slash
   if (process.env.NODE_ENV === 'production') {
-    return `/sm-admin/${cleanPath}`;
+    return `/sm-admin/${cleanPath}/`;
   }
   
-  // In development, use the path as-is
-  return `/${cleanPath}`;
+  // In development, use the path as-is with trailing slash
+  return `/${cleanPath}/`;
 };
 
 const api = axios.create({
