@@ -154,6 +154,92 @@ export async function getCCBenefitMappingSchema() {
   }
 }
 
+// Function to get CC PP mapping data
+export async function getCCPPMappingData() {
+  try {
+    const result = await query('SELECT * FROM n8n_mapping_bu_cc_pp ORDER BY id');
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching CC PP mapping data:', error);
+    throw error;
+  }
+}
+
+// Function to create new CC PP mapping record
+export async function createCCPPMapping(data: Record<string, any>) {
+  try {
+    // Get column names from the data object (excluding id as it's auto-generated)
+    const columns = Object.keys(data).filter(key => key !== 'id');
+    const values = columns.map(col => data[col]);
+    const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
+    
+    const query_text = `
+      INSERT INTO n8n_mapping_bu_cc_pp (${columns.join(', ')})
+      VALUES (${placeholders})
+      RETURNING *
+    `;
+    
+    const result = await query(query_text, values);
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error creating CC PP mapping record:', error);
+    throw error;
+  }
+}
+
+// Function to update CC PP mapping record
+export async function updateCCPPMapping(id: number, data: Record<string, any>) {
+  try {
+    // Get column names from the data object (excluding id)
+    const columns = Object.keys(data).filter(key => key !== 'id');
+    const values = columns.map(col => data[col]);
+    const setClause = columns.map((col, index) => `${col} = $${index + 1}`).join(', ');
+    
+    const query_text = `
+      UPDATE n8n_mapping_bu_cc_pp 
+      SET ${setClause}
+      WHERE id = $${columns.length + 1}
+      RETURNING *
+    `;
+    
+    const result = await query(query_text, [...values, id]);
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error updating CC PP mapping record:', error);
+    throw error;
+  }
+}
+
+// Function to delete CC PP mapping record
+export async function deleteCCPPMapping(id: number) {
+  try {
+    const result = await query(
+      'DELETE FROM n8n_mapping_bu_cc_pp WHERE id = $1 RETURNING *',
+      [id]
+    );
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error deleting CC PP mapping record:', error);
+    throw error;
+  }
+}
+
+// Function to get CC PP mapping table schema/columns
+export async function getCCPPMappingSchema() {
+  try {
+    const result = await query(`
+      SELECT column_name, data_type, is_nullable, column_default
+      FROM information_schema.columns 
+      WHERE table_name = 'n8n_mapping_bu_cc_pp'
+      ORDER BY ordinal_position
+    `);
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching CC PP mapping table schema:', error);
+    throw error;
+  }
+}
+
 // Close the pool when the application shuts down
 export async function closePool() {
   await pool.end();
