@@ -129,6 +129,12 @@ tail -f app.log
 
 ### Step 7: Verify Deployment
 ```bash
+# Test simple endpoint first
+curl http://localhost:3000/api/test
+
+# Test debug endpoint for detailed information
+curl http://localhost:3000/api/debug
+
 # Test health endpoint
 curl http://localhost:3000/api/health
 
@@ -138,6 +144,12 @@ curl http://localhost:3000/api/cc-benefit-mapping
 # Check logs for database connection
 tail -f app.log | grep "Database configuration"
 ```
+
+**Important**: If you get HTML responses instead of JSON, check:
+1. Next.js build completed successfully
+2. API routes are properly deployed
+3. Server is running in production mode
+4. No web server (Apache/Nginx) is interfering with API routes
 
 Expected successful output:
 ```json
@@ -187,7 +199,27 @@ Records: 62 existing records
 
 ### Common Issues
 
-1. **Port 5488 not accessible**
+1. **API Returns HTML Instead of JSON (SyntaxError: Unexpected token '<')**
+   ```bash
+   # This indicates API routes aren't working properly
+   
+   # Check if Next.js is running correctly
+   ps aux | grep node
+   
+   # Verify the build completed successfully
+   ls -la .next/
+   
+   # Test simple API endpoint
+   curl -v http://localhost:3000/api/test
+   
+   # Check if a web server (Apache/Nginx) is proxying requests incorrectly
+   curl -H "Accept: application/json" http://localhost:3000/api/health
+   
+   # If still getting HTML, check build logs
+   npm run build 2>&1 | tee build.log
+   ```
+
+2. **Port 5488 not accessible**
    ```bash
    # Check if PostgreSQL is running
    sudo systemctl status postgresql
@@ -196,25 +228,37 @@ Records: 62 existing records
    netstat -ln | grep 5488
    ```
 
-2. **Permission Issues**
+3. **Permission Issues**
    ```bash
    sudo chown -R gibra:gibra /var/www/sm-admin-wa-new
    chmod -R 755 /var/www/sm-admin-wa-new
    ```
 
-3. **Database Connection Failed**
+4. **Database Connection Failed**
    ```bash
    # Test direct database connection
    psql -h localhost -p 5488 -U n8nuser -d postgres -c "SELECT COUNT(*) FROM n8n_mapping_sme_cb_cc_benefit;"
    ```
 
-4. **Environment Variables Not Loading**
+5. **Environment Variables Not Loading**
    ```bash
    # Check environment file
    cat .env
    
    # Restart application after env changes
    pm2 restart sm-admin-wa-dashboard
+   ```
+
+6. **Next.js API Routes Not Working on Server**
+   ```bash
+   # Ensure proper build
+   npm run build
+   
+   # Check if .next directory exists and has proper structure
+   ls -la .next/server/app/api/
+   
+   # Verify no web server is intercepting API calls
+   # If using Nginx/Apache, ensure API routes are properly proxied
    ```
 
 ### Log Locations
