@@ -83,7 +83,12 @@ export async function getCCBenefitMappingData() {
 export async function createCCBenefitMapping(data: Record<string, any>) {
   try {
     // Get column names from the data object (excluding id as it's auto-generated)
-    const columns = Object.keys(data).filter(key => key !== 'id');
+    const columns = Object.keys(data).filter(key => key !== 'id' && data[key] !== undefined && data[key] !== null);
+    
+    if (columns.length === 0) {
+      throw new Error('No valid data provided for insert operation');
+    }
+    
     const values = columns.map(col => data[col]);
     const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
     
@@ -105,7 +110,12 @@ export async function createCCBenefitMapping(data: Record<string, any>) {
 export async function updateCCBenefitMapping(id: number, data: Record<string, any>) {
   try {
     // Get column names from the data object (excluding id)
-    const columns = Object.keys(data).filter(key => key !== 'id');
+    const columns = Object.keys(data).filter(key => key !== 'id' && data[key] !== undefined && data[key] !== null);
+    
+    if (columns.length === 0) {
+      throw new Error('No valid data provided for update operation');
+    }
+    
     const values = columns.map(col => data[col]);
     const setClause = columns.map((col, index) => `${col} = $${index + 1}`).join(', ');
     
@@ -169,7 +179,12 @@ export async function getCCPPMappingData() {
 export async function createCCPPMapping(data: Record<string, any>) {
   try {
     // Get column names from the data object (excluding id as it's auto-generated)
-    const columns = Object.keys(data).filter(key => key !== 'id');
+    const columns = Object.keys(data).filter(key => key !== 'id' && data[key] !== undefined && data[key] !== null);
+    
+    if (columns.length === 0) {
+      throw new Error('No valid data provided for insert operation');
+    }
+    
     const values = columns.map(col => data[col]);
     const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
     
@@ -191,7 +206,12 @@ export async function createCCPPMapping(data: Record<string, any>) {
 export async function updateCCPPMapping(id: number, data: Record<string, any>) {
   try {
     // Get column names from the data object (excluding id)
-    const columns = Object.keys(data).filter(key => key !== 'id');
+    const columns = Object.keys(data).filter(key => key !== 'id' && data[key] !== undefined && data[key] !== null);
+    
+    if (columns.length === 0) {
+      throw new Error('No valid data provided for update operation');
+    }
+    
     const values = columns.map(col => data[col]);
     const setClause = columns.map((col, index) => `${col} = $${index + 1}`).join(', ');
     
