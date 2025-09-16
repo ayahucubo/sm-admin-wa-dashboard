@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { getApiPath } from '@/utils/api';
 
 export default function TestSheetsPage() {
   const [sheetId, setSheetId] = useState("2PACX-1vS0mDV9rxyyDEtW61ZT07q6IVUV_P17sOej5jB-GpJb8Yg3RGpxvh_tdeD8_56FTJEUIkwn9B8xn93_");
@@ -14,7 +15,7 @@ export default function TestSheetsPage() {
     setResult(null);
 
     try {
-      const response = await fetch(`/api/sheets?sheetId=${sheetId}&range=${range}`);
+      const response = await fetch(getApiPath(`api/sheets?sheetId=${sheetId}&range=${range}`));
       const data = await response.json();
 
       if (!response.ok) {

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
+import { getApiPath } from '@/utils/api';
 
 interface CCBenefitMapping {
   id: number;
@@ -254,7 +255,7 @@ export default function MappingCCBenefitPage() {
   const fetchData = async () => {
     try {
       setError(null);
-      const response = await fetch('/api/cc-benefit-mapping');
+      const response = await fetch(getApiPath('api/cc-benefit-mapping'));
       const result = await response.json();
       
       if (result.success) {
@@ -272,7 +273,7 @@ export default function MappingCCBenefitPage() {
 
   const fetchSchema = async () => {
     try {
-      const response = await fetch('/api/cc-benefit-mapping?action=schema');
+      const response = await fetch(getApiPath('api/cc-benefit-mapping?action=schema'));
       const result = await response.json();
       
       if (result.success) {
@@ -289,7 +290,7 @@ export default function MappingCCBenefitPage() {
     setFormErrors({});
     
     try {
-      const response = await fetch('/api/cc-benefit-mapping', {
+      const response = await fetch(getApiPath('api/cc-benefit-mapping'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -321,7 +322,7 @@ export default function MappingCCBenefitPage() {
     setFormErrors({});
     
     try {
-      const response = await fetch('/api/cc-benefit-mapping', {
+      const response = await fetch(getApiPath('api/cc-benefit-mapping'), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -351,7 +352,7 @@ export default function MappingCCBenefitPage() {
     setSubmitting(true);
     
     try {
-      const response = await fetch(`/api/cc-benefit-mapping?id=${selectedRecord.id}`, {
+      const response = await fetch(getApiPath(`api/cc-benefit-mapping?id=${selectedRecord.id}`), {
         method: 'DELETE',
       });
       

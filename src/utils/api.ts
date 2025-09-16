@@ -1,5 +1,19 @@
 import axios from "axios";
 
+// Helper function to get the correct API path based on environment
+export const getApiPath = (path: string): string => {
+  // Remove leading slash if present
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  
+  // In production, prepend the base path
+  if (process.env.NODE_ENV === 'production') {
+    return `/sm-admin/${cleanPath}`;
+  }
+  
+  // In development, use the path as-is
+  return `/${cleanPath}`;
+};
+
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://wecare.techconnect.co.id/webhook/100/app",
   timeout: 30000,
