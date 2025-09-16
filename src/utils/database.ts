@@ -9,7 +9,7 @@ const dbConfig = {
   host: process.env.DB_POSTGRESDB_HOST || process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_POSTGRESDB_PORT || process.env.DB_PORT || '5488'),
   database: process.env.DB_POSTGRESDB_DATABASE || process.env.DB_NAME || 'postgres',
-  user: process.env.DB_POSTGRESDB_USER || process.env.DB_USER || 'n8nuser',
+  user: process.env.DB_POSTGRESDB_USER || process.env.DB_USER || 'postgres',
   password: process.env.DB_POSTGRESDB_PASSWORD || process.env.DB_PASSWORD || 'P0stgres99',
   max: 20, // maximum number of clients in the pool
   idleTimeoutMillis: 30000, // close idle clients after 30 seconds
