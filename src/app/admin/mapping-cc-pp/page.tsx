@@ -81,8 +81,8 @@ const FormModal = memo(({
         <div className="space-y-4">
           {/* Debug info - always show for troubleshooting */}
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-            <h4 className="text-blue-800 dark:text-blue-200 text-sm font-medium mb-2">Form Status</h4>
-            <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+            <h4 className="text-blue-950 dark:text-blue-100 text-sm font-medium mb-2">Form Status</h4>
+            <div className="text-xs text-blue-950 dark:text-blue-200 space-y-1">
               <p>Schema length: {schema.length}</p>
               <p>Editable columns: {editableColumns.length}</p>
               <p>Schema source: {schema.length > 0 ? 'Loaded successfully' : 'Using fallback schema'}</p>
@@ -566,13 +566,13 @@ export default function MappingCCPPPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+              <div className="w-8 h-8 sm:w-10 sm:hForm Status-10 bg-purple-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
                 <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">CC Payment Plan Mapping</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">CC PP(Peraturan Perusahaan) Mapping</h1>
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
                   Database: n8n_mapping_bu_cc_pp ({filteredData.length} records)
                 </p>
