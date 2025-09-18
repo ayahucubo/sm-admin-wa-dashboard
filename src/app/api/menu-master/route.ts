@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateAdmin, createUnauthorizedResponse } from '@/utils/auth';
 import { 
   getMenuMasterData, 
   createMenuMaster, 
@@ -9,6 +10,11 @@ import {
 
 // GET - Fetch all records or schema
 export async function GET(request: NextRequest) {
+  const authPayload = await authenticateAdmin(request);
+  if (!authPayload) {
+    return createUnauthorizedResponse();
+  }
+
   try {
     console.log('Menu Master GET request received');
     const { searchParams } = new URL(request.url);
@@ -51,6 +57,11 @@ export async function GET(request: NextRequest) {
 
 // POST - Create new record
 export async function POST(request: NextRequest) {
+  const authPayload = await authenticateAdmin(request);
+  if (!authPayload) {
+    return createUnauthorizedResponse();
+  }
+
   try {
     const body = await request.json();
     const newRecord = await createMenuMaster(body);
@@ -71,6 +82,11 @@ export async function POST(request: NextRequest) {
 
 // PUT - Update existing record
 export async function PUT(request: NextRequest) {
+  const authPayload = await authenticateAdmin(request);
+  if (!authPayload) {
+    return createUnauthorizedResponse();
+  }
+
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -107,6 +123,11 @@ export async function PUT(request: NextRequest) {
 
 // DELETE - Delete record
 export async function DELETE(request: NextRequest) {
+  const authPayload = await authenticateAdmin(request);
+  if (!authPayload) {
+    return createUnauthorizedResponse();
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

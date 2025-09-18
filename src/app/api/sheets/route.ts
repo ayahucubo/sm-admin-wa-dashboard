@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateAdmin, createUnauthorizedResponse } from '@/utils/auth';
 
 export async function GET(request: NextRequest) {
+  const authPayload = await authenticateAdmin(request);
+  if (!authPayload) {
+    return createUnauthorizedResponse();
+  }
+
   const startTime = Date.now();
   
   try {

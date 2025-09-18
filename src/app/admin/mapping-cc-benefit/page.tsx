@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 import { getApiPath } from '@/utils/api';
+import { authenticatedGet, authenticatedPost, authenticatedPut, authenticatedDelete } from '@/utils/authenticatedFetch';
 
 interface CCBenefitMapping {
   id: number;
@@ -291,7 +292,7 @@ export default function MappingCCBenefitPage() {
   const fetchData = async () => {
     try {
       setError(null);
-      const response = await fetch(getApiPath('api/cc-benefit-mapping'));
+      const response = await authenticatedGet(getApiPath('api/cc-benefit-mapping'));
       const result = await response.json();
       
       if (result.success) {
@@ -310,7 +311,7 @@ export default function MappingCCBenefitPage() {
   const fetchSchema = async () => {
     try {
       console.log('Fetching schema from:', getApiPath('api/cc-benefit-mapping?action=schema'));
-      const response = await fetch(getApiPath('api/cc-benefit-mapping?action=schema'));
+      const response = await authenticatedGet(getApiPath('api/cc-benefit-mapping?action=schema'));
       const result = await response.json();
       console.log('Schema response:', result);
       
@@ -366,13 +367,7 @@ export default function MappingCCBenefitPage() {
     setFormErrors({});
     
     try {
-      const response = await fetch(getApiPath('api/cc-benefit-mapping'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await authenticatedPost(getApiPath('api/cc-benefit-mapping'), formData);
       
       const result = await response.json();
       
@@ -398,13 +393,7 @@ export default function MappingCCBenefitPage() {
     setFormErrors({});
     
     try {
-      const response = await fetch(getApiPath('api/cc-benefit-mapping'), {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: selectedRecord.id, ...formData }),
-      });
+      const response = await authenticatedPut(getApiPath('api/cc-benefit-mapping'), { id: selectedRecord.id, ...formData });
       
       const result = await response.json();
       
@@ -428,10 +417,7 @@ export default function MappingCCBenefitPage() {
     setSubmitting(true);
     
     try {
-      const response = await fetch(getApiPath(`api/cc-benefit-mapping?id=${selectedRecord.id}`), {
-        method: 'DELETE',
-      });
-      
+      const response = await authenticatedDelete(getApiPath(`api/cc-benefit-mapping?id=${selectedRecord.id}`));
       const result = await response.json();
       
       if (result.success) {

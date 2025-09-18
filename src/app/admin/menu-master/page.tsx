@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 import { getApiPath } from '@/utils/api';
+import { authenticatedGet, authenticatedPost, authenticatedPut, authenticatedDelete } from '@/utils/authenticatedFetch';
 
 interface MenuMaster {
   id: number;
@@ -291,7 +292,7 @@ export default function MenuMasterPage() {
   const fetchData = async () => {
     try {
       setError(null);
-      const response = await fetch(getApiPath('api/menu-master'));
+      const response = await authenticatedGet(getApiPath('api/menu-master'));
       const result = await response.json();
       
       if (result.success) {
@@ -310,7 +311,7 @@ export default function MenuMasterPage() {
   const fetchSchema = async () => {
     try {
       console.log('Fetching schema from:', getApiPath('api/menu-master?action=schema'));
-      const response = await fetch(getApiPath('api/menu-master?action=schema'));
+      const response = await authenticatedGet(getApiPath('api/menu-master?action=schema'));
       const result = await response.json();
       console.log('Schema response:', result);
       
@@ -354,13 +355,7 @@ export default function MenuMasterPage() {
     setFormErrors({});
     
     try {
-      const response = await fetch(getApiPath('api/menu-master'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await authenticatedPost(getApiPath('api/menu-master'), formData);
       
       const result = await response.json();
       
@@ -386,13 +381,7 @@ export default function MenuMasterPage() {
     setFormErrors({});
     
     try {
-      const response = await fetch(getApiPath('api/menu-master'), {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: selectedRecord.id, ...formData }),
-      });
+      const response = await authenticatedPut(getApiPath('api/menu-master'), { id: selectedRecord.id, ...formData });
       
       const result = await response.json();
       
@@ -416,9 +405,7 @@ export default function MenuMasterPage() {
     setSubmitting(true);
     
     try {
-      const response = await fetch(getApiPath(`api/menu-master?id=${selectedRecord.id}`), {
-        method: 'DELETE',
-      });
+      const response = await authenticatedDelete(getApiPath(`api/menu-master?id=${selectedRecord.id}`));
       
       const result = await response.json();
       

@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateAdmin, createUnauthorizedResponse } from '@/utils/auth';
 import { checkDatabaseConnection } from '@/utils/database';
 
 export async function GET(request: NextRequest) {
+  const authPayload = await authenticateAdmin(request);
+  if (!authPayload) {
+    return createUnauthorizedResponse();
+  }
+
   try {
     console.log('=== DEBUG API ENDPOINT ===');
     console.log('Timestamp:', new Date().toISOString());

@@ -6,11 +6,22 @@ import {
   deleteCCBenefitMapping,
   getCCBenefitMappingSchema 
 } from '@/utils/database';
+import { authenticateAdmin, createUnauthorizedResponse } from '@/utils/auth';
 
-// GET - Fetch all records or schema
+// GET - Fetch all records or schema (PROTECTED)
 export async function GET(request: NextRequest) {
   try {
     console.log('CC Benefit Mapping GET request received');
+    
+    // Check authentication first
+    const authPayload = await authenticateAdmin(request);
+    if (!authPayload) {
+      console.log('⚠️ Unauthorized access attempt blocked');
+      return createUnauthorizedResponse('Access denied. Please login to view this data.');
+    }
+    
+    console.log(`✅ Authenticated admin: ${authPayload.email}`);
+    
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
     
@@ -49,9 +60,18 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Create new record
+// POST - Create new record (PROTECTED)
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication
+    const authPayload = await authenticateAdmin(request);
+    if (!authPayload) {
+      console.log('⚠️ Unauthorized POST attempt blocked');
+      return createUnauthorizedResponse();
+    }
+    
+    console.log(`✅ Authenticated admin creating record: ${authPayload.email}`);
+    
     const body = await request.json();
     const newRecord = await createCCBenefitMapping(body);
     
@@ -69,9 +89,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT - Update existing record
+// PUT - Update existing record (PROTECTED)
 export async function PUT(request: NextRequest) {
   try {
+    // Check authentication
+    const authPayload = await authenticateAdmin(request);
+    if (!authPayload) {
+      console.log('⚠️ Unauthorized PUT attempt blocked');
+      return createUnauthorizedResponse();
+    }
+    
+    console.log(`✅ Authenticated admin updating record: ${authPayload.email}`);
+    
     const body = await request.json();
     const { id, ...updateData } = body;
     
@@ -105,9 +134,18 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Delete record
+// DELETE - Delete record (PROTECTED)
 export async function DELETE(request: NextRequest) {
   try {
+    // Check authentication
+    const authPayload = await authenticateAdmin(request);
+    if (!authPayload) {
+      console.log('⚠️ Unauthorized DELETE attempt blocked');
+      return createUnauthorizedResponse();
+    }
+    
+    console.log(`✅ Authenticated admin deleting record: ${authPayload.email}`);
+    
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
@@ -139,4 +177,16 @@ export async function DELETE(request: NextRequest) {
       error: error instanceof Error ? error.message : 'Failed to delete record'
     }, { status: 500 });
   }
+}
+
+// OPTIONS - Handle CORS
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

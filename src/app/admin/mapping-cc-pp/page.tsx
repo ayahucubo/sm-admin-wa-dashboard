@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 import { getApiPath } from '@/utils/api';
+import { authenticatedGet, authenticatedPost, authenticatedPut, authenticatedDelete } from '@/utils/authenticatedFetch';
 
 interface CCPPMapping {
   id: number;
@@ -291,7 +292,7 @@ export default function MappingCCPPPage() {
   const fetchData = async () => {
     try {
       setError(null);
-      const response = await fetch(getApiPath('api/cc-pp-mapping'));
+      const response = await authenticatedGet(getApiPath('api/cc-pp-mapping'));
       const result = await response.json();
       
       if (result.success) {
@@ -310,7 +311,7 @@ export default function MappingCCPPPage() {
   const fetchSchema = async () => {
     try {
       console.log('Fetching schema from:', getApiPath('api/cc-pp-mapping?action=schema'));
-      const response = await fetch(getApiPath('api/cc-pp-mapping?action=schema'));
+      const response = await authenticatedGet(getApiPath('api/cc-pp-mapping?action=schema'));
       const result = await response.json();
       console.log('Schema response:', result);
       
@@ -362,13 +363,7 @@ export default function MappingCCPPPage() {
     setFormErrors({});
     
     try {
-      const response = await fetch(getApiPath('api/cc-pp-mapping'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await authenticatedPost(getApiPath('api/cc-pp-mapping'), formData);
       
       const result = await response.json();
       
@@ -394,13 +389,7 @@ export default function MappingCCPPPage() {
     setFormErrors({});
     
     try {
-      const response = await fetch(getApiPath('api/cc-pp-mapping'), {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: selectedRecord.id, ...formData }),
-      });
+      const response = await authenticatedPut(getApiPath('api/cc-pp-mapping'), { id: selectedRecord.id, ...formData });
       
       const result = await response.json();
       
@@ -424,9 +413,7 @@ export default function MappingCCPPPage() {
     setSubmitting(true);
     
     try {
-      const response = await fetch(getApiPath(`api/cc-pp-mapping?id=${selectedRecord.id}`), {
-        method: 'DELETE',
-      });
+      const response = await authenticatedDelete(getApiPath(`api/cc-pp-mapping?id=${selectedRecord.id}`));
       
       const result = await response.json();
       
