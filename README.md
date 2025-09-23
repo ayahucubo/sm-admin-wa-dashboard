@@ -8,13 +8,15 @@ Admin dashboard for WhatsApp workflow management, built with Next.js and TypeScr
 - PDF to Markdown & Markdown to Vector pipelines
 - Admin modules: Dashboard, Mapping CC Benefit/PP, Menu Master
 - Responsive UI with dark/light mode
+- **🎬 Enhanced Animations**: Integrated with Framer Motion, Anime.js, and GSAP
 
 ## Tech Stack
-- Next.js 14
+- Next.js 15
 - TypeScript
 - Tailwind CSS
 - Google Sheets API
 - N8N webhooks
+- **Animation Libraries**: Framer Motion, Anime.js, GSAP
 
 ## Quick Start
 1. Install dependencies:
@@ -26,6 +28,15 @@ Admin dashboard for WhatsApp workflow management, built with Next.js and TypeScr
    npm run dev
    ```
 3. Open [http://localhost:3000](http://localhost:3000)
+
+## Animation Showcase
+Visit `/animations` to see the interactive demonstration of all three animation libraries with:
+- Live demos and code examples
+- Performance comparisons
+- Integration tutorials
+- Ready-to-use animation utilities
+
+For detailed animation documentation, see [ANIMATIONS.md](./ANIMATIONS.md).
 
 ## Project Structure
 See `src/` for app, api, components, contexts, and utils.
