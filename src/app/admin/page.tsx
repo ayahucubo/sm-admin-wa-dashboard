@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
+import ChatMonitoringDashboard from "@/components/ChatMonitoringDashboard";
 
 interface MenuCard {
   id: string;
@@ -131,6 +132,11 @@ export default function AdminPage() {
           <p className="text-sm sm:text-base" style={{ color: 'var(--text-muted)' }}>
             Akses berbagai fitur admin untuk mengelola sistem dan database
           </p>
+        </div>
+
+        {/* Chat Monitoring Dashboard */}
+        <div className="mb-8">
+          <ChatMonitoringDashboard />
         </div>
 
         {/* Menu Grid */}
