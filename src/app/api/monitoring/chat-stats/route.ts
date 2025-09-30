@@ -50,7 +50,9 @@ function generateMockChatStats(days: number = 30): DailyChatStats[] {
 // GET - Fetch daily chat statistics
 export async function GET(request: NextRequest) {
   try {
-    console.log('Chat statistics API called');
+    console.log('💻 Chat statistics API called');
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Request URL:', request.url);
     
     // Check authentication first
     const authPayload = await authenticateAdmin(request);
@@ -85,18 +87,22 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Chat statistics API Error:', error);
+    console.error('💥 Chat statistics API Error:', error);
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined
+      name: error instanceof Error ? error.name : undefined,
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
     });
     
     return NextResponse.json({ 
       success: false, 
       error: error instanceof Error ? error.message : 'Failed to fetch chat statistics',
       details: 'Unable to generate chat statistics',
-      data: []
+      data: [],
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
     }, { status: 500 });
   }
 }

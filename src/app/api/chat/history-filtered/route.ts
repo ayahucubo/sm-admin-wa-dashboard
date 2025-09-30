@@ -31,12 +31,14 @@ interface FormattedChatHistoryItem {
 // GET - Fetch filtered chat history from database
 export async function GET(request: NextRequest) {
   try {
-    console.log('Chat history API called');
+    console.log('💬 Chat history API called');
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Request URL:', request.url);
     
     // Check authentication
     const authResult = await authenticateAdmin(request);
     if (!authResult) {
-      console.log('Authentication failed');
+      console.log('⚠️ Authentication failed');
       return createUnauthorizedResponse('Access denied. Please login to view chat history.');
     }
 

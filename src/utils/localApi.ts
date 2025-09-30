@@ -1,8 +1,23 @@
 import axios from "axios";
 
+// Helper function to get the correct base URL based on environment
+const getBaseURL = (): string => {
+  if (typeof window !== 'undefined') {
+    // In browser, use current origin
+    const origin = window.location.origin;
+    // In production, add the basePath
+    if (process.env.NODE_ENV === 'production') {
+      return `${origin}/sm-admin`;
+    }
+    return origin;
+  }
+  // Server-side fallback
+  return '';
+};
+
 // Local API client for Next.js API routes
 const localApi = axios.create({
-  baseURL: typeof window !== 'undefined' ? window.location.origin : '',
+  baseURL: getBaseURL(),
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
