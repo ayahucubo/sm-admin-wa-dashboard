@@ -478,6 +478,137 @@ export async function deleteMenuMaster(id: number) {
   }
 }
 
+// Function to get chat history with filters
+export async function getChatHistory(filters?: {
+  currentMenu?: string;
+  startDate?: string;
+  endDate?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  try {
+    // Base query as provided in the requirements
+    let queryText = `
+      SELECT
+        em."executionId" as "execution_id",
+        ee."startedAt" as "started_at",
+        em.value as "nohp",
+        em1.value as "chat",
+        em2.value as "chat_response",
+        em3.value as "current_menu",
+        em4.value as "chat_name",
+        ee."workflowId" as "workflow_id",
+        we."name" as "workflow_name"
+      FROM
+        execution_metadata em
+      INNER JOIN execution_metadata em1 ON em1."executionId" = em."executionId" AND em1."key" = 'chatInput'
+      INNER JOIN execution_metadata em2 ON em2."executionId" = em."executionId" AND em2.key = 'chatResponse'
+      INNER JOIN execution_metadata em3 ON em3."executionId" = em."executionId" AND em3.key = 'currentMenu'
+      LEFT JOIN execution_metadata em4 ON em4."executionId" = em."executionId" AND em4.key = 'chatName'
+      INNER JOIN "execution_entity" ee ON ee.id = em."executionId"
+      INNER JOIN workflow_entity we ON we.id = ee."workflowId"
+      WHERE em."key" = 'chatId'
+    `;
+
+    const queryParams: any[] = [];
+    let paramIndex = 1;
+
+    // Add dynamic filters
+    if (filters?.currentMenu) {
+      queryText += ` AND em3.value = $${paramIndex}`;
+      queryParams.push(filters.currentMenu);
+      paramIndex++;
+    }
+
+    if (filters?.startDate) {
+      queryText += ` AND ee."startedAt" >= $${paramIndex}`;
+      queryParams.push(filters.startDate);
+      paramIndex++;
+    }
+
+    if (filters?.endDate) {
+      queryText += ` AND ee."startedAt" <= $${paramIndex}`;
+      queryParams.push(filters.endDate + 'T23:59:59.999Z'); // Include full end date
+      paramIndex++;
+    }
+
+    // Add ordering
+    queryText += ` ORDER BY ee."startedAt" DESC`;
+
+    // Add pagination
+    if (filters?.limit) {
+      queryText += ` LIMIT $${paramIndex}`;
+      queryParams.push(filters.limit);
+      paramIndex++;
+    }
+
+    if (filters?.offset) {
+      queryText += ` OFFSET $${paramIndex}`;
+      queryParams.push(filters.offset);
+      paramIndex++;
+    }
+
+    console.log('Executing chat history query:', queryText);
+    console.log('Query parameters:', queryParams);
+
+    const result = await query(queryText, queryParams);
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    throw error;
+  }
+}
+
+// Function to get total count of chat history (for pagination)
+export async function getChatHistoryCount(filters?: {
+  currentMenu?: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  try {
+    let queryText = `
+      SELECT COUNT(*) as total
+      FROM
+        execution_metadata em
+      INNER JOIN execution_metadata em1 ON em1."executionId" = em."executionId" AND em1."key" = 'chatInput'
+      INNER JOIN execution_metadata em2 ON em2."executionId" = em."executionId" AND em2.key = 'chatResponse'
+      INNER JOIN execution_metadata em3 ON em3."executionId" = em."executionId" AND em3.key = 'currentMenu'
+      LEFT JOIN execution_metadata em4 ON em4."executionId" = em."executionId" AND em4.key = 'chatName'
+      INNER JOIN "execution_entity" ee ON ee.id = em."executionId"
+      INNER JOIN workflow_entity we ON we.id = ee."workflowId"
+      WHERE em."key" = 'chatId'
+    `;
+
+    const queryParams: any[] = [];
+    let paramIndex = 1;
+
+    // Add same filters as the main query
+    if (filters?.currentMenu) {
+      queryText += ` AND em3.value = $${paramIndex}`;
+      queryParams.push(filters.currentMenu);
+      paramIndex++;
+    }
+
+    if (filters?.startDate) {
+      queryText += ` AND ee."startedAt" >= $${paramIndex}`;
+      queryParams.push(filters.startDate);
+      paramIndex++;
+    }
+
+    if (filters?.endDate) {
+      queryText += ` AND ee."startedAt" <= $${paramIndex}`;
+      queryParams.push(filters.endDate + 'T23:59:59.999Z');
+      paramIndex++;
+    }
+
+    const result = await query(queryText, queryParams);
+    return parseInt(result.rows[0].total);
+  } catch (error) {
+    console.error('Error fetching chat history count:', error);
+    throw error;
+  }
+}
+
 // Close the pool when the application shuts down
 export async function closePool() {
   await pool.end();

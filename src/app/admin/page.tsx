@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import ChatMonitoringDashboard from "@/components/ChatMonitoringDashboard";
+import FilterableChatHistoryTable from "@/components/FilterableChatHistoryTable";
 
 interface MenuCard {
   id: string;
@@ -137,6 +138,11 @@ export default function AdminPage() {
         {/* Chat Monitoring Dashboard */}
         <div className="mb-8">
           <ChatMonitoringDashboard />
+        </div>
+
+        {/* Filterable Chat History Table */}
+        <div className="mb-8">
+          <FilterableChatHistoryTable />
         </div>
 
         {/* Menu Grid */}
