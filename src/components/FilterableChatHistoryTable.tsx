@@ -259,7 +259,7 @@ export default function FilterableChatHistoryTable() {
       </div>
 
       {/* Table Container */}
-      <div className="overflow-x-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="flex items-center space-x-2">
@@ -300,79 +300,109 @@ export default function FilterableChatHistoryTable() {
             </div>
           </div>
         ) : (
-          <table className="w-full table-fixed">
-            <colgroup>
-              <col className="w-32" />
-              <col className="w-36" />
-              <col className="w-32" />
-              <col className="w-64" />
-              <col className="w-auto" />
-            </colgroup>
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Kontak
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Tanggal
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Current Menu
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Pesan Masuk
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Jawaban
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {chatHistory.map((item, index) => (
-                <tr key={item.executionId} className={index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-750'}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                    <div className="font-medium">
-                      {item.contact}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                    {formatDate(item.startedAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                      {item.currentMenu}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                    <div>
-                      <p className="whitespace-pre-wrap break-words">
-                        {item.chat}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                    <div className="max-w-2xl">
-                      <p className="whitespace-pre-wrap break-words">
-                        {item.chatResponse}
-                      </p>
-                      {item.workflowId && (
-                        <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-600">
-                          <a
-                            href={`https://wecare.techconnect.co.id/workflow/${item.workflowId}/executions/${item.executionId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-                          >
-                            Lihat Eksekusi →
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <>
+            {/* Table Header Info */}
+            <div className="px-3 sm:px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
+                    Total Records: {totalItems} | Showing: {chatHistory.length}
+                  </h3>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    (Columns: 5)
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Chat history • Scroll horizontally and vertically
+                </div>
+              </div>
+            </div>
+            
+            {/* Table Container with Compact Height */}
+            <div className="enhanced-table-scroll" style={{ maxHeight: '60vh' }}>
+              <div className="min-w-max">
+                <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700 sticky-header">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[120px]">
+                        Kontak
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[140px]">
+                        Tanggal
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[150px]">
+                        Current Menu
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[250px]">
+                        Pesan Masuk
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r-0 min-w-[300px]">
+                        Jawaban
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {chatHistory.map((item, index) => (
+                      <tr key={item.executionId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                            title={item.contact || '-'}>
+                          <div className="break-words font-medium">
+                            {item.contact || '-'}
+                          </div>
+                        </td>
+                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                            title={formatDate(item.startedAt)}>
+                          <div className="break-words">
+                            {formatDate(item.startedAt)}
+                          </div>
+                        </td>
+                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                            title={item.currentMenu || '-'}>
+                          <div className="break-words">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                              {item.currentMenu || '-'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                            title={item.chat || '-'}>
+                          <div className="break-words">
+                            {item.chat || '-'}
+                          </div>
+                        </td>
+                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r-0"
+                            title={item.chatResponse || '-'}>
+                          <div className="break-words">
+                            {item.chatResponse || '-'}
+                            {item.workflowId && (
+                              <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+                                <a
+                                  href={`https://wecare.techconnect.co.id/workflow/${item.workflowId}/executions/${item.executionId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                                >
+                                  Lihat Eksekusi →
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            {/* Scrolling Instructions */}
+            <div className="px-3 sm:px-4 py-2 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                <span>💡 Scroll horizontally and vertically within the table area • Scroll page to see more content</span>
+                <span>Showing {chatHistory.length} of {totalItems} records</span>
+              </div>
+            </div>
+          </>
         )}
       </div>
 
