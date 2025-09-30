@@ -4,13 +4,26 @@ import { Pool } from 'pg';
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-// Database configuration with environment-specific defaults
-const dbConfig = {
+// PRIMARY DATABASE CONFIGURATION (postgres) - Custom tables and mappings
+const primaryDbConfig = {
   host: process.env.DB_POSTGRESDB_HOST || process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_POSTGRESDB_PORT || process.env.DB_PORT || '5488'),
   database: process.env.DB_POSTGRESDB_DATABASE || process.env.DB_NAME || 'postgres',
   user: process.env.DB_POSTGRESDB_USER || process.env.DB_USER || 'n8nuser',
   password: process.env.DB_POSTGRESDB_PASSWORD || process.env.DB_PASSWORD || 'P0stgres99',
+  max: 20, // maximum number of clients in the pool
+  idleTimeoutMillis: 30000, // close idle clients after 30 seconds
+  connectionTimeoutMillis: 2000, // return an error after 2 seconds if connection could not be established
+  ssl: false, // Disable SSL for local PostgreSQL Docker instance
+};
+
+// N8N CORE DATABASE CONFIGURATION (n8ndb) - Execution and workflow data
+const n8nDbConfig = {
+  host: process.env.DB_N8N_HOST || 'localhost',
+  port: parseInt(process.env.DB_N8N_PORT || '5488'),
+  database: process.env.DB_N8N_DATABASE || 'n8ndb',
+  user: process.env.DB_N8N_USER || 'n8nuser',
+  password: process.env.DB_N8N_PASSWORD || 'P0stgres99',
   max: 20, // maximum number of clients in the pool
   idleTimeoutMillis: 30000, // close idle clients after 30 seconds
   connectionTimeoutMillis: 2000, // return an error after 2 seconds if connection could not be established
@@ -23,23 +36,46 @@ if (isProduction && !process.env.DB_POSTGRESDB_PASSWORD && !process.env.DB_PASSW
 }
 
 // Log configuration (without password) for debugging
-console.log('Database configuration:', {
-  ...dbConfig,
-  password: dbConfig.password ? '[REDACTED]' : '[NOT SET]',
+console.log('Primary Database configuration:', {
+  ...primaryDbConfig,
+  password: primaryDbConfig.password ? '[REDACTED]' : '[NOT SET]',
   environment: process.env.NODE_ENV,
 });
 
-// Create a connection pool for PostgreSQL
-const pool = new Pool(dbConfig);
+console.log('N8N Database configuration:', {
+  ...n8nDbConfig,
+  password: n8nDbConfig.password ? '[REDACTED]' : '[NOT SET]',
+  environment: process.env.NODE_ENV,
+});
 
-// Generic query function with better error handling
+// Create connection pools for both databases
+const primaryPool = new Pool(primaryDbConfig);
+const n8nPool = new Pool(n8nDbConfig);
+
+// Generic query function for primary database (custom tables)
 export async function query(text: string, params?: any[]) {
-  const client = await pool.connect();
+  const client = await primaryPool.connect();
   try {
     const result = await client.query(text, params);
     return result;
   } catch (error) {
-    console.error('Database query error:', error);
+    console.error('Primary Database query error:', error);
+    console.error('Query:', text);
+    console.error('Params:', params);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+// Query function for n8n core database (execution tables)
+export async function queryN8n(text: string, params?: any[]) {
+  const client = await n8nPool.connect();
+  try {
+    const result = await client.query(text, params);
+    return result;
+  } catch (error) {
+    console.error('N8N Database query error:', error);
     console.error('Query:', text);
     console.error('Params:', params);
     throw error;
@@ -551,7 +587,7 @@ export async function getChatHistory(filters?: {
     console.log('Executing chat history query:', queryText);
     console.log('Query parameters:', queryParams);
 
-    const result = await query(queryText, queryParams);
+    const result = await queryN8n(queryText, queryParams);
     return result.rows;
   } catch (error) {
     console.error('Error fetching chat history:', error);
@@ -601,7 +637,7 @@ export async function getChatHistoryCount(filters?: {
       paramIndex++;
     }
 
-    const result = await query(queryText, queryParams);
+    const result = await queryN8n(queryText, queryParams);
     return parseInt(result.rows[0].total);
   } catch (error) {
     console.error('Error fetching chat history count:', error);
@@ -609,9 +645,12 @@ export async function getChatHistoryCount(filters?: {
   }
 }
 
-// Close the pool when the application shuts down
+// Close both pools when the application shuts down
 export async function closePool() {
-  await pool.end();
+  await Promise.all([
+    primaryPool.end(),
+    n8nPool.end()
+  ]);
 }
 
-export default pool;
+export default primaryPool;
