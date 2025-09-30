@@ -32,14 +32,15 @@ interface ChatHistoryResponse {
   };
 }
 
-// Available menu options as specified in requirements
+// Available menu options - using actual values from database
 const MENU_OPTIONS = [
-  'industrial relation',
-  'jenny', 
-  'benefit',
-  'peraturan perusahaan',
-  'promosi',
-  'cuti'
+  'Industrial Relation',
+  'Jeanny', 
+  'Benefit',
+  'Peraturan Perusahaan',
+  'Promosi',
+  'Cuti',
+  'Data Cuti'
 ];
 
 export default function FilterableChatHistoryTable() {
@@ -187,7 +188,7 @@ export default function FilterableChatHistoryTable() {
               <option value="">Semua Menu</option>
               {MENU_OPTIONS.map(menu => (
                 <option key={menu} value={menu}>
-                  {menu.charAt(0).toUpperCase() + menu.slice(1)}
+                  {menu}
                 </option>
               ))}
             </select>
