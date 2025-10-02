@@ -2,10 +2,11 @@ module.exports = {
   apps: [
     {
       name: 'sm-admin-wa-dashboard',
-      script: 'node_modules/.bin/next',
+      script: 'npm',
       args: 'start',
       cwd: '/var/www/sm-admin-wa-new',
       instances: 1,
+      exec_mode: 'fork',
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
@@ -17,7 +18,7 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3001
       },
-      env_file: '.env'
+      env_file: '.env.production'
     }
   ]
 };
