@@ -84,8 +84,16 @@ const UniqueContactsChart: React.FC = () => {
       
       console.log(`Fetching unique contacts data for ${days} days`);
       
-      // Use correct API path based on environment
-      const apiPath = process.env.NODE_ENV === 'production' ? '/sm-admin/api/monitoring/unique-contacts' : '/api/monitoring/unique-contacts';
+      // Detect environment based on current URL
+      const isProduction = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+      const apiPath = isProduction ? '/sm-admin/api/monitoring/unique-contacts' : '/api/monitoring/unique-contacts';
+      
+      console.log('Environment detection:', { 
+        hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
+        isProduction,
+        apiPath 
+      });
+      
       const response = await authenticatedFetch(`${apiPath}?days=${days}`);
       
       if (!response.ok) {
@@ -117,8 +125,16 @@ const UniqueContactsChart: React.FC = () => {
       
       console.log(`Fetching contact details for date: ${date}`);
       
-      // Use correct API path based on environment
-      const apiPath = process.env.NODE_ENV === 'production' ? '/sm-admin/api/monitoring/unique-contacts' : '/api/monitoring/unique-contacts';
+      // Detect environment based on current URL
+      const isProduction = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+      const apiPath = isProduction ? '/sm-admin/api/monitoring/unique-contacts' : '/api/monitoring/unique-contacts';
+      
+      console.log('Environment detection for contact details:', { 
+        hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
+        isProduction,
+        apiPath 
+      });
+      
       const response = await authenticatedFetch(`${apiPath}?date=${date}`);
       
       if (!response.ok) {
