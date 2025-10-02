@@ -134,6 +134,16 @@ export function getTokenFromRequest(request: NextRequest): string | null {
  * Authenticate admin user
  */
 export async function authenticateAdmin(request: NextRequest): Promise<AuthPayload | null> {
+  // In development mode, bypass authentication
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Development mode: bypassing authentication');
+    return {
+      email: 'dev@example.com',
+      role: 'admin',
+      iat: Math.floor(Date.now() / 1000)
+    };
+  }
+  
   const token = getTokenFromRequest(request);
   
   if (!token) {
