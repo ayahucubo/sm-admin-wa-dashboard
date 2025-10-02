@@ -84,7 +84,7 @@ const UniqueContactsChart: React.FC = () => {
       
       console.log(`Fetching unique contacts data for ${days} days`);
       
-      const response = await authenticatedFetch(`/api/monitoring/unique-contacts?days=${days}`);
+      const response = await authenticatedFetch(`/sm-admin/api/monitoring/unique-contacts?days=${days}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -115,7 +115,7 @@ const UniqueContactsChart: React.FC = () => {
       
       console.log(`Fetching contact details for date: ${date}`);
       
-      const response = await authenticatedFetch(`/api/monitoring/unique-contacts?date=${date}`);
+      const response = await authenticatedFetch(`/sm-admin/api/monitoring/unique-contacts?date=${date}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
