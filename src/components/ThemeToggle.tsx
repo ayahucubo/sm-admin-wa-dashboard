@@ -51,7 +51,7 @@ const ThemeToggleInner: React.FC = () => {
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
     >
       <motion.div 
-        className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+        className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 touch-target"
         whileHover={{ scale: 1.02 }}
         transition={{ type: "spring", stiffness: 400, damping: 30 }}
       >
@@ -60,7 +60,7 @@ const ThemeToggleInner: React.FC = () => {
             key={themeOption.value}
             onClick={() => handleThemeChange(themeOption.value)}
             className={`
-              flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 relative overflow-hidden
+              flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 relative overflow-hidden touch-target
               ${
                 theme === themeOption.value
                   ? 'text-gray-900 dark:text-white shadow-sm'

@@ -1,22 +1,124 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ThemeToggle from "@/components/ThemeToggle";
+import AdminLayout from "@/components/AdminLayout";
 import ChatMonitoringDashboard from "@/components/ChatMonitoringDashboard";
 import FilterableChatHistoryTable from "@/components/FilterableChatHistoryTable";
+import UniqueContactsChart from "@/components/UniqueContactsChart";
+import localApi from "@/utils/localApi";
 
-interface MenuCard {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  href: string;
-  color: string;
+// Interface for chat history item
+interface ChatHistoryItem {
+  executionId: string;
+  startedAt: string;
+  contact: string;
+  chat: string;
+  chatResponse: string;
+  currentMenu: string;
+  workflowId: string;
+  workflowName: string;
+  date: string;
 }
+
+// Interface for aggregated chart data
+interface DailyChatStats {
+  date: string;
+  menuCounts: Record<string, number>;
+  total: number;
+}
+
+
 
 export default function AdminPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  
+  // Shared state for chat data
+  const [chartData, setChartData] = useState<DailyChatStats[]>([]);
+  const [dataLoading, setDataLoading] = useState(false);
+  const [dataError, setDataError] = useState<string | null>(null);
+
+  // Fetch comprehensive chat history data for both chart and table
+  const fetchChatData = async (days: number = 30) => {
+    setDataLoading(true);
+    setDataError(null);
+    
+    try {
+      // Calculate date range for the last N days
+      const endDate = new Date().toISOString().split('T')[0];
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      const startDateStr = startDate.toISOString().split('T')[0];
+      
+      // Fetch all chat history data without pagination for comprehensive chart data
+      const params = new URLSearchParams({
+        startDate: startDateStr,
+        endDate: endDate,
+        limit: '10000', // Large limit to get all data for aggregation
+        page: '1'
+      });
+      
+      console.log(`Fetching chat data for chart aggregation (${days} days)`);
+      const response = await localApi.get(`/api/chat/history-filtered?${params.toString()}`);
+      
+      if (response.data.success) {
+        const rawData: ChatHistoryItem[] = response.data.data;
+        
+        // Process data for chart visualization
+        const aggregatedData = aggregateDataForChart(rawData, days);
+        setChartData(aggregatedData);
+        
+        console.log(`Processed ${rawData.length} chat records into ${aggregatedData.length} daily aggregations`);
+      } else {
+        throw new Error('Failed to fetch chat data');
+      }
+    } catch (err) {
+      console.error('Error fetching chat data:', err);
+      setDataError(err instanceof Error ? err.message : 'Failed to load chat data');
+      setChartData([]);
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
+  // Process raw chat history into daily aggregated data for charts
+  const aggregateDataForChart = (rawData: ChatHistoryItem[], days: number): DailyChatStats[] => {
+    // Create a map to hold daily stats
+    const dailyStatsMap = new Map<string, Record<string, number>>();
+    
+    // Initialize all days in the range with zero counts
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      dailyStatsMap.set(dateStr, {});
+    }
+    
+    // Process each chat record
+    rawData.forEach(item => {
+      const dateStr = new Date(item.startedAt).toISOString().split('T')[0];
+      const menu = item.currentMenu || 'Unknown';
+      
+      // Only include data within our date range
+      if (dailyStatsMap.has(dateStr)) {
+        const dayStats = dailyStatsMap.get(dateStr)!;
+        dayStats[menu] = (dayStats[menu] || 0) + 1;
+      }
+    });
+
+    // Convert map to array format expected by chart
+    const result: DailyChatStats[] = [];
+    dailyStatsMap.forEach((menuCounts, date) => {
+      const total = Object.values(menuCounts).reduce((sum, count) => sum + count, 0);
+      result.push({
+        date,
+        menuCounts,
+        total
+      });
+    });
+
+    return result.sort((a, b) => a.date.localeCompare(b.date));
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -24,55 +126,14 @@ export default function AdminPage() {
       router.replace("/login");
     } else {
       setLoading(false);
+      // Fetch data on component mount
+      fetchChatData(30); // Default to 30 days
     }
   }, [router]);
 
-  const menuItems: MenuCard[] = [
-    {
-      id: "dashboard",
-      title: "Dashboard",
-      description: "Akses dashboard WhatsApp Admin untuk mekses setiap workflow yang terjadi pada setiap chat",
-      icon: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z",
-      href: "/dashboard",
-      color: "bg-blue-500 hover:bg-blue-600"
-    },
-    {
-      id: "mapping-cc-benefit",
-      title: "Mapping CC Benefit",
-      description: "Kelola data mapping Company Code untuk benefit",
-      icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
-      href: "/admin/mapping-cc-benefit",
-      color: "bg-green-500 hover:bg-green-600"
-    },
-    {
-      id: "mapping-cc-pp",
-      title: "Mapping CC PP",
-      description: "Kelola data mapping Company Code untuk Peraturan Perusahaan",
-      icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-      href: "/admin/mapping-cc-pp",
-      color: "bg-purple-500 hover:bg-purple-600"
-    },
-    {
-      id: "menu-master",
-      title: "Menu Master",
-      description: "Kelola data master menu dan konfigurasi sistem",
-      icon: "M4 6h16M4 10h16M4 14h16M4 18h16",
-      href: "/admin/menu-master",
-      color: "bg-orange-500 hover:bg-orange-600"
-    },
-    {
-      id: "knowledge-benefit-menu",
-      title: "Knowledge Benefit Menu",
-      description: "Kelola data pengetahuan benefit dan informasi terkait",
-      icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
-      href: "/admin/knowledge-benefit-menu",
-      color: "bg-indigo-500 hover:bg-indigo-600"
-    }
-  ];
 
-  const handleMenuClick = (href: string) => {
-    router.push(href);
-  };
+
+
 
   if (loading) {
     return (
@@ -91,53 +152,30 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
-      {/* Header */}
-      <div style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }} className="shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 gap-4 sm:gap-0">
-            <div className="flex items-center w-full sm:w-auto">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
-                <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold truncate" style={{ color: 'var(--text-primary)' }}>Admin Panel</h1>
-                <p className="text-xs sm:text-sm truncate" style={{ color: 'var(--text-muted)' }}>Kelola sistem dan database</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-end">
-              <ThemeToggle />
-              <button
-                onClick={() => {
-                  localStorage.removeItem("token");
-                  router.replace("/login");
-                }}
-                className="px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-colors duration-200 whitespace-nowrap"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
+    <AdminLayout title="Admin Panel" subtitle="Kelola sistem dan database">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         <div className="mb-6 sm:mb-8">
           <h2 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-            Pilih Menu Admin
+            Dashboard Monitoring
           </h2>
           <p className="text-sm sm:text-base" style={{ color: 'var(--text-muted)' }}>
-            Akses berbagai fitur admin untuk mengelola sistem dan database
+            Monitor aktivitas chat dan analisis data sistem. Gunakan menu navigasi di atas untuk mengakses fitur admin lainnya.
           </p>
         </div>
 
         {/* Chat Monitoring Dashboard */}
         <div className="mb-8">
-          <ChatMonitoringDashboard />
+          <ChatMonitoringDashboard 
+            chartData={chartData}
+            loading={dataLoading}
+            error={dataError}
+            onRefresh={fetchChatData}
+          />
+        </div>
+
+        {/* Unique Contacts Chart */}
+        <div className="mb-8">
+          <UniqueContactsChart />
         </div>
 
         {/* Filterable Chat History Table */}
@@ -145,42 +183,8 @@ export default function AdminPage() {
           <FilterableChatHistoryTable />
         </div>
 
-        {/* Menu Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
-          {menuItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => handleMenuClick(item.href)}
-              className="rounded-xl shadow-sm border p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] sm:hover:scale-105 group active:scale-95"
-              style={{ 
-                backgroundColor: 'var(--card-bg)', 
-                borderColor: 'var(--border-color)' 
-              }}
-            >
-              <div className="flex items-start space-x-3 sm:space-x-4">
-                <div className={`w-10 h-10 sm:w-12 sm:h-12 ${item.color} rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200`}>
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-                  </svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base sm:text-lg font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-2" style={{ color: 'var(--text-primary)' }}>
-                    {item.title}
-                  </h3>
-                  <p className="mt-1 text-xs sm:text-sm line-clamp-3" style={{ color: 'var(--text-muted)' }}>
-                    {item.description}
-                  </p>
-                </div>
-                <div className="flex-shrink-0 hidden sm:block">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+
       </div>
-    </div>
+    </AdminLayout>
   );
 }

@@ -92,7 +92,7 @@ export default function Home() {
       >
         {/* Theme Toggle positioned in top-right corner */}
         <motion.div 
-          className="absolute top-3 right-3 sm:top-4 sm:right-4"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50"
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5, type: "spring" }}

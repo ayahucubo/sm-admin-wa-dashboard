@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
+import AdminLayout from "@/components/AdminLayout";
 import { getApiPath } from '@/utils/api';
 import { authenticatedGet, authenticatedPost, authenticatedPut, authenticatedDelete } from '@/utils/authenticatedFetch';
 
@@ -552,33 +553,15 @@ export default function MappingCCPPPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 gap-4 sm:gap-0">
-            <div className="flex items-center w-full sm:w-auto">
-              <button
-                onClick={() => router.push("/admin")}
-                className="mr-3 sm:mr-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 flex-shrink-0"
-              >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <div className="w-8 h-8 sm:w-10 sm:hForm Status-10 bg-purple-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
-                <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">CC PP(Peraturan Perusahaan) Mapping</h1>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                  Database: n8n_mapping_bu_cc_pp ({filteredData.length} records)
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+    <AdminLayout 
+      title="CC PP (Peraturan Perusahaan) Mapping" 
+      subtitle={`Database: n8n_mapping_bu_cc_pp (${filteredData.length} records)`}
+    >
+      <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 min-h-screen">
+        {/* Page Actions */}
+        <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4">
+            <div className="flex justify-end">
               <button
                 onClick={handleAddClick}
                 className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center text-sm sm:text-base"
@@ -592,7 +575,6 @@ export default function MappingCCPPPage() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Error Alert */}
       {error && (
@@ -785,6 +767,7 @@ export default function MappingCCPPPage() {
         onClose={handleCloseModal}
         onDelete={deleteRecord}
       />
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

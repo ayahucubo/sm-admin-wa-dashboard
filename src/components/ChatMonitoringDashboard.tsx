@@ -11,7 +11,6 @@ import {
   TooltipItem,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import localApi from '@/utils/localApi';
 
 // Register Chart.js components
 ChartJS.register(
@@ -25,83 +24,119 @@ ChartJS.register(
 
 interface DailyChatStats {
   date: string;
-  menuCounts: {
-    'industrial relation': number;
-    'jenny': number;
-    'benefit': number;
-    'company regulations': number;
-    'promotion': number;
-    'leave': number;
-  };
+  menuCounts: Record<string, number>;
   total: number;
 }
 
-interface ChatStatsResponse {
-  success: boolean;
-  data: DailyChatStats[];
-  period: {
-    days: number;
-    startDate: string | null;
-    endDate: string | null;
-  };
-  menuTypes: string[];
+// Props interface for the component
+interface ChatMonitoringDashboardProps {
+  chartData: DailyChatStats[];
+  loading: boolean;
+  error: string | null;
+  onRefresh: (days?: number) => Promise<void>;
 }
 
-// Color palette for different menu categories
-const MENU_COLORS = {
-  'industrial relation': '#3B82F6', // Blue
-  'jenny': '#10B981', // Emerald
-  'benefit': '#F59E0B', // Amber
-  'company regulations': '#EF4444', // Red
-  'promotion': '#8B5CF6', // Violet
-  'leave': '#EC4899', // Pink
+// Color palette for different menu categories (updated to match real database values)
+const MENU_COLORS: Record<string, string> = {
+  'Industrial Relation': '#3B82F6', // Blue
+  'Jeanny': '#10B981', // Emerald
+  'Benefit': '#F59E0B', // Amber
+  'Peraturan Perusahaan': '#EF4444', // Red
+  'Promosi': '#8B5CF6', // Violet
+  'Cuti': '#EC4899', // Pink
+  'Data Cuti': '#06B6D4', // Cyan
+  'Unknown': '#6B7280', // Gray for unknown menus
 };
 
-export default function ChatMonitoringDashboard() {
-  const [data, setData] = useState<DailyChatStats[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [days, setDays] = useState(14); // Default to 14 days for better visibility
+// Time period options for flexible viewing
+interface TimePeriodOption {
+  label: string;
+  value: string;
+  days: number;
+  description: string;
+}
+
+const TIME_PERIOD_OPTIONS: TimePeriodOption[] = [
+  { label: 'Last 1 Day', value: 'daily-1', days: 1, description: 'Today only' },
+  { label: 'Last 3 Days', value: 'daily-3', days: 3, description: 'Last 3 days' },
+  { label: 'Last 7 Days', value: 'weekly-1', days: 7, description: 'This week' },
+  { label: 'Last 14 Days', value: 'weekly-2', days: 14, description: 'Last 2 weeks' },
+  { label: 'Last 30 Days', value: 'monthly-1', days: 30, description: 'This month' },
+  { label: 'Last 60 Days', value: 'monthly-2', days: 60, description: 'Last 2 months' },
+  { label: 'Last 90 Days', value: 'monthly-3', days: 90, description: 'Last 3 months' },
+  { label: 'Last 180 Days', value: 'monthly-6', days: 180, description: 'Last 6 months' },
+  { label: 'Last 365 Days', value: 'yearly-1', days: 365, description: 'This year' },
+];
+
+export default function ChatMonitoringDashboard({ 
+  chartData, 
+  loading, 
+  error, 
+  onRefresh 
+}: ChatMonitoringDashboardProps) {
+  const [selectedPeriod, setSelectedPeriod] = useState('monthly-1'); // Default to 30 days
   const chartRef = useRef<ChartJS<'bar'>>(null);
 
-  useEffect(() => {
-    fetchChatStats();
-  }, [days]);
-
-  const fetchChatStats = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      console.log(`Fetching chat statistics for ${days} days`);
-      const response = await localApi.get(`/api/monitoring/chat-stats?days=${days}`);
-      const result: ChatStatsResponse = response.data;
-      
-      if (result.success) {
-        setData(result.data);
-        console.log(`Successfully loaded ${result.data.length} days of statistics`);
-      } else {
-        throw new Error('Failed to fetch chat statistics');
-      }
-    } catch (err) {
-      console.error('Error fetching chat statistics:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load monitoring data');
-      setData([]);
-    } finally {
-      setLoading(false);
+  // Get current period details
+  const currentPeriod = TIME_PERIOD_OPTIONS.find(p => p.value === selectedPeriod) || TIME_PERIOD_OPTIONS[4];
+  
+  // Handle period change
+  const handlePeriodChange = (newPeriod: string) => {
+    const period = TIME_PERIOD_OPTIONS.find(p => p.value === newPeriod);
+    if (period) {
+      setSelectedPeriod(newPeriod);
+      onRefresh(period.days);
     }
   };
 
-  // Prepare chart data
-  const chartData = {
-    labels: data.map(d => new Date(d.date).toLocaleDateString('id-ID', { 
-      day: '2-digit', 
-      month: 'short' 
-    })),
-    datasets: Object.keys(MENU_COLORS).map((menu) => ({
-      label: menu.charAt(0).toUpperCase() + menu.slice(1), // Capitalize first letter
-      data: data.map(d => d.menuCounts[menu as keyof typeof MENU_COLORS] || 0),
-      backgroundColor: MENU_COLORS[menu as keyof typeof MENU_COLORS],
-      borderColor: MENU_COLORS[menu as keyof typeof MENU_COLORS],
+  // Get all unique menu types from the data
+  const allMenus = Array.from(
+    new Set(
+      chartData.flatMap(d => Object.keys(d.menuCounts))
+    )
+  ).sort();
+
+  // Format date labels based on time period
+  const formatDateLabel = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const days = currentPeriod.days;
+    
+    if (days <= 7) {
+      // For daily/weekly views: show day and date
+      return date.toLocaleDateString('id-ID', { 
+        weekday: 'short', 
+        day: '2-digit', 
+        month: 'short' 
+      });
+    } else if (days <= 60) {
+      // For monthly views: show date and month
+      return date.toLocaleDateString('id-ID', { 
+        day: '2-digit', 
+        month: 'short' 
+      });
+    } else if (days <= 180) {
+      // For 3-6 month views: show month and year
+      return date.toLocaleDateString('id-ID', { 
+        month: 'short', 
+        year: '2-digit' 
+      });
+    } else {
+      // For yearly views: show month and year with week info
+      return date.toLocaleDateString('id-ID', { 
+        month: 'short', 
+        year: '2-digit' 
+      });
+    }
+  };
+
+  // Prepare chart data using real database values
+  const preparedChartData = {
+    labels: chartData.map(d => formatDateLabel(d.date)),
+    datasets: allMenus.map((menu) => ({
+      label: menu,
+      data: chartData.map(d => d.menuCounts[menu] || 0),
+      backgroundColor: MENU_COLORS[menu] || MENU_COLORS['Unknown'],
+      borderColor: MENU_COLORS[menu] || MENU_COLORS['Unknown'],
       borderWidth: 1,
     }))
   };
@@ -117,7 +152,7 @@ export default function ChatMonitoringDashboard() {
     plugins: {
       title: {
         display: true,
-        text: `Daily Chat Volume by Menu Category (Last ${days} Days)`,
+        text: `Daily Chat Volume by Menu Category (${currentPeriod.label})`,
         font: {
           size: 16,
           weight: 'bold' as const,
@@ -138,7 +173,7 @@ export default function ChatMonitoringDashboard() {
         callbacks: {
           title: (context: TooltipItem<'bar'>[]) => {
             const index = context[0].dataIndex;
-            const date = data[index]?.date;
+            const date = chartData[index]?.date;
             return date ? new Date(date).toLocaleDateString('id-ID', {
               weekday: 'long',
               day: '2-digit',
@@ -153,7 +188,7 @@ export default function ChatMonitoringDashboard() {
           },
           footer: (context: TooltipItem<'bar'>[]) => {
             const index = context[0].dataIndex;
-            const total = data[index]?.total || 0;
+            const total = chartData[index]?.total || 0;
             return `Total: ${total} chat${total !== 1 ? 's' : ''}`;
           }
         },
@@ -174,11 +209,12 @@ export default function ChatMonitoringDashboard() {
           display: false,
         },
         ticks: {
-          maxRotation: 45,
+          maxRotation: currentPeriod.days > 30 ? 45 : 0, // Rotate labels for longer periods
           minRotation: 0,
           font: {
-            size: 11,
+            size: currentPeriod.days > 180 ? 10 : 11, // Smaller font for very long periods
           },
+          maxTicksLimit: currentPeriod.days > 90 ? 20 : undefined, // Limit ticks for long periods
         },
       },
       y: {
@@ -228,7 +264,7 @@ export default function ChatMonitoringDashboard() {
             <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">Failed to Load Data</h3>
             <p className="text-sm text-muted mb-4">{error}</p>
             <button
-              onClick={fetchChatStats}
+              onClick={() => onRefresh(currentPeriod.days)}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
             >
               Try Again
@@ -248,33 +284,78 @@ export default function ChatMonitoringDashboard() {
             <h3 className="text-lg font-semibold text-primary">Chat Volume Monitoring</h3>
             <p className="text-sm text-muted mt-1">Daily incoming chat analysis by menu category</p>
           </div>
-          <div className="flex items-center gap-3">
-            <label className="text-sm font-medium text-secondary">Time Period:</label>
-            <select
-              value={days}
-              onChange={(e) => setDays(parseInt(e.target.value))}
-              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value={7}>Last 7 days</option>
-              <option value={14}>Last 14 days</option>
-              <option value={30}>Last 30 days</option>
-            </select>
-            <button
-              onClick={fetchChatStats}
-              className="px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Refresh
-            </button>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-secondary whitespace-nowrap">Time Period:</label>
+              <select
+                value={selectedPeriod}
+                onChange={(e) => handlePeriodChange(e.target.value)}
+                className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[140px]"
+              >
+                <optgroup label="📅 Daily Views">
+                  <option value="daily-1">Today (1 day)</option>
+                  <option value="daily-3">Last 3 days</option>
+                </optgroup>
+                <optgroup label="📊 Weekly Views">
+                  <option value="weekly-1">Last 7 days</option>
+                  <option value="weekly-2">Last 14 days</option>
+                </optgroup>
+                <optgroup label="📈 Monthly Views">
+                  <option value="monthly-1">Last 30 days</option>
+                  <option value="monthly-2">Last 60 days</option>
+                  <option value="monthly-3">Last 90 days</option>
+                  <option value="monthly-6">Last 6 months</option>
+                </optgroup>
+                <optgroup label="📋 Yearly Views">
+                  <option value="yearly-1">Last 365 days</option>
+                </optgroup>
+              </select>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">
+                {currentPeriod.description}
+              </span>
+              <button
+                onClick={() => onRefresh(currentPeriod.days)}
+                disabled={loading}
+                className="px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                {loading ? 'Loading...' : 'Refresh'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Period Summary */}
+      {chartData.length > 0 && !loading && (
+        <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  Viewing: {currentPeriod.label}
+                </span>
+              </div>
+              <div className="text-gray-600 dark:text-gray-400">
+                📊 {chartData.length} data points • 📈 {allMenus.length} menu categories
+              </div>
+            </div>
+            <div className="text-gray-500 dark:text-gray-500 text-xs">
+              📅 {chartData.length > 0 ? `${new Date(chartData[0].date).toLocaleDateString('id-ID')} - ${new Date(chartData[chartData.length - 1].date).toLocaleDateString('id-ID')}` : ''}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Chart */}
       <div className="p-6">
-        {data.length === 0 ? (
+        {chartData.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -282,34 +363,34 @@ export default function ChatMonitoringDashboard() {
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-primary mb-2">No Data Available</h3>
-            <p className="text-muted">No chat statistics found for the selected period</p>
+            <p className="text-muted">No chat statistics found for the selected period: {currentPeriod.label}</p>
           </div>
         ) : (
           <div className="h-80">
-            <Bar ref={chartRef} data={chartData} options={chartOptions} />
+            <Bar ref={chartRef} data={preparedChartData} options={chartOptions} />
           </div>
         )}
       </div>
 
       {/* Summary Statistics */}
-      {data.length > 0 && (
+      {chartData.length > 0 && (
         <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {data.reduce((sum, d) => sum + d.total, 0).toLocaleString()}
+                {chartData.reduce((sum: number, d: DailyChatStats) => sum + d.total, 0).toLocaleString()}
               </div>
               <div className="text-xs text-muted font-medium">Total Chats</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {Math.round(data.reduce((sum, d) => sum + d.total, 0) / data.length).toLocaleString()}
+                {Math.round(chartData.reduce((sum: number, d: DailyChatStats) => sum + d.total, 0) / chartData.length).toLocaleString()}
               </div>
               <div className="text-xs text-muted font-medium">Average per Day</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {Math.max(...data.map(d => d.total)).toLocaleString()}
+                {Math.max(...chartData.map((d: DailyChatStats) => d.total)).toLocaleString()}
               </div>
               <div className="text-xs text-muted font-medium">Peak Day Volume</div>
             </div>

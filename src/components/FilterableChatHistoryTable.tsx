@@ -173,8 +173,8 @@ export default function FilterableChatHistoryTable() {
       </div>
 
       {/* Filters */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="px-3 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {/* Menu Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -183,7 +183,7 @@ export default function FilterableChatHistoryTable() {
             <select
               value={selectedMenu}
               onChange={(e) => setSelectedMenu(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="mobile-form-input w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             >
               <option value="">Semua Menu</option>
               {MENU_OPTIONS.map(menu => (
@@ -203,7 +203,7 @@ export default function FilterableChatHistoryTable() {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="mobile-form-input w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             />
           </div>
 
@@ -216,7 +216,7 @@ export default function FilterableChatHistoryTable() {
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               min={startDate}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="mobile-form-input w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             />
           </div>
         </div>
@@ -319,80 +319,161 @@ export default function FilterableChatHistoryTable() {
               </div>
             </div>
             
-            {/* Table Container with Compact Height */}
-            <div className="enhanced-table-scroll" style={{ maxHeight: '60vh' }}>
-              <div className="min-w-max">
-                <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-50 dark:bg-gray-700 sticky-header">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[120px]">
-                        Kontak
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[140px]">
-                        Tanggal
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[150px]">
-                        Current Menu
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[250px]">
-                        Pesan Masuk
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r-0 min-w-[300px]">
-                        Jawaban
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {chatHistory.map((item, index) => (
-                      <tr key={item.executionId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
-                            title={item.contact || '-'}>
-                          <div className="break-words font-medium">
-                            {item.contact || '-'}
+            {/* Desktop/Tablet Table Container */}
+            <div className="hidden sm:block">
+              <div className="enhanced-table-scroll" style={{ maxHeight: '60vh' }}>
+                <div className="min-w-max">
+                  <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-700 sticky-header">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[120px]">
+                          Kontak
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[140px]">
+                          Tanggal
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[150px]">
+                          Current Menu
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[250px]">
+                          Pesan Masuk
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r-0 min-w-[300px]">
+                          Jawaban
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                      {chatHistory.map((item, index) => (
+                        <tr key={item.executionId} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                          <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                              title={item.contact || '-'}>
+                            <div className="break-words font-medium">
+                              {item.contact || '-'}
+                            </div>
+                          </td>
+                          <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                              title={formatDate(item.startedAt)}>
+                            <div className="break-words">
+                              {formatDate(item.startedAt)}
+                            </div>
+                          </td>
+                          <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                              title={item.currentMenu || '-'}>
+                            <div className="break-words">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                {item.currentMenu || '-'}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                              title={item.chat || '-'}>
+                            <div className="break-words">
+                              {item.chat || '-'}
+                            </div>
+                          </td>
+                          <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r-0"
+                              title={item.chatResponse || '-'}>
+                            <div className="break-words">
+                              {item.chatResponse || '-'}
+                              {item.workflowId && (
+                                <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+                                  <a
+                                    href={`https://wecare.techconnect.co.id/workflow/${item.workflowId}/executions/${item.executionId}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                                  >
+                                    Lihat Eksekusi →
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Card Layout */}
+            <div className="sm:hidden">
+              <div className="enhanced-table-scroll" style={{ maxHeight: '60vh' }}>
+                <div className="space-y-3 p-3">
+                  {chatHistory.map((item, index) => (
+                    <div
+                      key={item.executionId}
+                      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm"
+                    >
+                      {/* Contact and Date */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center min-w-0 flex-1">
+                          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
                           </div>
-                        </td>
-                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
-                            title={formatDate(item.startedAt)}>
-                          <div className="break-words">
-                            {formatDate(item.startedAt)}
+                          <div className="min-w-0">
+                            <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                              {item.contact || 'Unknown Contact'}
+                            </h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {formatDate(item.startedAt)}
+                            </p>
                           </div>
-                        </td>
-                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
-                            title={item.currentMenu || '-'}>
-                          <div className="break-words">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                              {item.currentMenu || '-'}
-                            </span>
+                        </div>
+                      </div>
+
+                      {/* Current Menu */}
+                      <div className="mb-3">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          {item.currentMenu || 'No Menu'}
+                        </span>
+                      </div>
+
+                      {/* Messages */}
+                      <div className="space-y-3">
+                        {/* Incoming Message */}
+                        <div>
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                            Pesan Masuk
                           </div>
-                        </td>
-                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
-                            title={item.chat || '-'}>
-                          <div className="break-words">
-                            {item.chat || '-'}
+                          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                            <p className="text-sm text-gray-900 dark:text-gray-100 break-words">
+                              {item.chat || 'No message'}
+                            </p>
                           </div>
-                        </td>
-                        <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r-0"
-                            title={item.chatResponse || '-'}>
-                          <div className="break-words">
-                            {item.chatResponse || '-'}
+                        </div>
+
+                        {/* Response */}
+                        <div>
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                            Jawaban
+                          </div>
+                          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                            <p className="text-sm text-gray-900 dark:text-gray-100 break-words">
+                              {item.chatResponse || 'No response'}
+                            </p>
                             {item.workflowId && (
-                              <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+                              <div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
                                 <a
                                   href={`https://wecare.techconnect.co.id/workflow/${item.workflowId}/executions/${item.executionId}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors font-medium"
                                 >
                                   Lihat Eksekusi →
                                 </a>
                               </div>
                             )}
                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             
@@ -409,44 +490,52 @@ export default function FilterableChatHistoryTable() {
 
       {/* Pagination */}
       {totalPages > 1 && !loading && !error && (
-        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="px-3 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
               Menampilkan {((currentPage - 1) * itemsPerPage) + 1} hingga {Math.min(currentPage * itemsPerPage, totalItems)} dari {totalItems} hasil
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               {/* Previous button */}
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="mobile-button px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
-                Sebelumnya
+                <svg className="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="hidden sm:inline">Sebelumnya</span>
               </button>
               
-              {/* Page numbers */}
-              {paginationRange.map(page => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
-                    page === currentPage
-                      ? 'bg-blue-600 text-white border border-blue-600'
-                      : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              {/* Page numbers - simplified for mobile */}
+              <div className="flex items-center space-x-1">
+                {paginationRange.map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`mobile-button px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors duration-200 min-w-[32px] sm:min-w-[40px] ${
+                      page === currentPage
+                        ? 'bg-blue-600 text-white border border-blue-600'
+                        : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
               
               {/* Next button */}
               <button
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="mobile-button px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
-                Selanjutnya
+                <svg className="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                <span className="hidden sm:inline">Selanjutnya</span>              
               </button>
             </div>
           </div>

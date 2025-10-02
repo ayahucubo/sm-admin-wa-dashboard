@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import AdminLayout from "@/components/AdminLayout";
 import { getApiPath } from '@/utils/api';
 import { authenticatedGet } from '@/utils/authenticatedFetch';
 
@@ -168,80 +169,58 @@ export default function KnowledgeBenefitMenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center py-3 sm:py-4 lg:py-6 gap-3 lg:gap-4">
-            {/* Left side - Title and description */}
-            <div className="flex items-center flex-1 min-w-0">
-              <button
-                onClick={() => router.push("/admin")}
-                className="mr-2 sm:mr-3 p-1.5 sm:p-2 text-gray-700 hover:text-gray-900 dark:hover:text-gray-300 transition-colors duration-200 flex-shrink-0"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-indigo-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4 lg:w-6 lg:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate">Knowledge Benefit Menu</h1>
-                <p className="text-xs sm:text-sm text-gray-800 dark:text-gray-400 line-clamp-2 hidden sm:block">
-                  Complete Excel-like view • Data source: Google Sheets • Total records: {total}
-                </p>
-                <p className="text-xs text-gray-800 dark:text-gray-400 sm:hidden">
-                  {total} records
-                </p>
-              </div>
-            </div>
-            
-            {/* Right side - Workflow button and status */}
-            <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto lg:ml-4">
-              {/* Start Workflow Button */}
-              <button
-                onClick={handleStartWorkflow}
-                disabled={workflowLoading}
-                className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:bg-emerald-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center text-xs sm:text-sm font-medium shadow-sm hover:shadow-md"
-              >
-                {workflowLoading ? (
-                  <>
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+    <AdminLayout 
+      title="Knowledge Benefit Menu" 
+      subtitle={`Complete Excel-like view • Data source: Google Sheets • Total records: ${total}`}
+    >
+      <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 min-h-screen">
+        {/* Page Actions */}
+        <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              {/* Workflow button and status */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
+                {/* Start Workflow Button */}
+                <button
+                  onClick={handleStartWorkflow}
+                  disabled={workflowLoading}
+                  className="px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:bg-emerald-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center text-xs sm:text-sm font-medium shadow-sm hover:shadow-md"
+                >
+                  {workflowLoading ? (
+                    <>
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      <span>Starting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                      <span>Start Workflow</span>
+                    </>
+                  )}
+                </button>
+                
+                {/* Auto-refresh status indicator */}
+                <div className="flex flex-col sm:flex-row sm:items-center text-xs text-gray-600 dark:text-gray-400 bg-green-50 dark:bg-green-900/20 px-2 py-1.5 sm:py-1 rounded border border-green-200 dark:border-green-800">
+                  <div className="flex items-center justify-center sm:justify-start">
+                    <svg className="w-3 h-3 mr-1.5 text-green-600 animate-pulse flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="3"/>
                     </svg>
-                    <span>Starting...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <span>Start Workflow</span>
-                  </>
-                )}
-              </button>
-              
-              {/* Auto-refresh status indicator */}
-              <div className="flex flex-col sm:flex-row sm:items-center text-xs text-gray-600 dark:text-gray-400 bg-green-50 dark:bg-green-900/20 px-2 py-1.5 sm:py-1 rounded border border-green-200 dark:border-green-800 w-full sm:w-auto">
-                <div className="flex items-center justify-center sm:justify-start">
-                  <svg className="w-3 h-3 mr-1.5 text-green-600 animate-pulse flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                  <span className="whitespace-nowrap text-center sm:text-left">
-                    Auto-refresh every 1 second
+                    <span className="whitespace-nowrap text-center sm:text-left">
+                      Auto-refresh every 1 second
+                    </span>
+                  </div>
+                  <span className="text-center sm:text-left mt-1 sm:mt-0 sm:ml-2 font-medium">
+                    Last update: {lastUpdate.toLocaleTimeString()}
                   </span>
                 </div>
-                <span className="text-center sm:text-left mt-1 sm:mt-0 sm:ml-2 font-medium">
-                  Last update: {lastUpdate.toLocaleTimeString()}
-                </span>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
       {/* Error Alert */}
       {error && (
@@ -495,7 +474,8 @@ export default function KnowledgeBenefitMenuPage() {
             </button>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

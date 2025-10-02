@@ -22,28 +22,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="h-screen flex flex-col md:flex-row overflow-hidden" style={{ backgroundColor: 'var(--background)' }}>
       {/* Mobile Header */}
       <div className="md:hidden flex-shrink-0 border-b" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}>
-        <div className="flex items-center justify-between p-3">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center justify-between p-3 sm:p-4">
+          <div className="flex items-center min-w-0 flex-1">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-primary">WhatsApp Admin</h1>
-              <p className="text-muted text-xs">Dashboard</p>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-primary truncate">WhatsApp Admin</h1>
+              <p className="text-muted text-xs sm:text-sm truncate">Dashboard</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <ThemeToggle />
             <button
               onClick={() => router.push("/admin")}
-              className="btn-secondary flex items-center px-3 py-1.5 text-sm"
+              className="mobile-button btn-secondary flex items-center px-3 py-2 text-sm"
             >
               <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Menu
+              <span className="hidden xs:inline">Menu</span>
             </button>
           </div>
         </div>
