@@ -32,53 +32,6 @@ interface FormattedChatHistoryItem {
 export async function GET(request: NextRequest) {
   try {
     console.log('💬 Chat history API called');
-    console.log('Environment:', process.env.NODE_ENV);
-    console.log('Request URL:', request.url);
-    
-    // For local development, return mock data
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Returning mock chat history data (development mode)');
-      
-      const mockData: FormattedChatHistoryItem[] = [
-        {
-          executionId: 'mock-exec-1',
-          startedAt: new Date().toISOString(),
-          contact: 'John Doe',
-          chat: 'Saya ingin tahu tentang benefit kesehatan',
-          chatResponse: 'Berikut adalah informasi tentang benefit kesehatan...',
-          currentMenu: 'Benefit',
-          workflowId: 'mock-workflow-1',
-          workflowName: 'Mock Workflow',
-          date: new Date().toISOString()
-        },
-        {
-          executionId: 'mock-exec-2',
-          startedAt: new Date(Date.now() - 3600000).toISOString(),
-          contact: 'Jane Smith',
-          chat: 'Bagaimana cara mengajukan klaim?',
-          chatResponse: 'Untuk mengajukan klaim, silakan ikuti langkah berikut...',
-          currentMenu: 'Klaim',
-          workflowId: 'mock-workflow-2',
-          workflowName: 'Mock Workflow 2',
-          date: new Date(Date.now() - 3600000).toISOString()
-        }
-      ];
-
-      return NextResponse.json({
-        success: true,
-        data: mockData,
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: mockData.length,
-          totalPages: 1
-        },
-        debug: {
-          totalRecords: mockData.length,
-          environment: 'development'
-        }
-      });
-    }
     
     // Check authentication
     const authResult = await authenticateAdmin(request);

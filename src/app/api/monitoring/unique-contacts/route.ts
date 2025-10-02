@@ -29,24 +29,6 @@ interface UniqueContactsResponse {
 // Function to get unique contacts statistics aggregated by date
 async function getUniqueContactsStats(days: number = 30): Promise<DailyUniqueContactsStats[]> {
   try {
-    // For local development, return mock data
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Returning mock unique contacts data for ${days} days (development mode)`);
-      const mockData: DailyUniqueContactsStats[] = [];
-      const endDate = new Date();
-      
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date(endDate);
-        date.setDate(date.getDate() - i);
-        mockData.push({
-          date: date.toISOString().split('T')[0],
-          uniqueContacts: Math.floor(Math.random() * 50) + 10 // Random number between 10-60
-        });
-      }
-      
-      return mockData;
-    }
-    
     // Calculate date range
     const endDate = new Date();
     const startDate = new Date();
@@ -108,19 +90,6 @@ async function getUniqueContactsStats(days: number = 30): Promise<DailyUniqueCon
 // Function to get contact details for a specific date
 async function getContactsForDate(date: string): Promise<ContactDetail[]> {
   try {
-    // For local development, return mock data
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Returning mock contact details for date: ${date} (development mode)`);
-      const mockContacts: ContactDetail[] = [
-        { contactId: '081234567890', contactName: 'John Doe', chatCount: 5 },
-        { contactId: '081234567891', contactName: 'Jane Smith', chatCount: 3 },
-        { contactId: '081234567892', contactName: 'Bob Johnson', chatCount: 7 },
-        { contactId: '081234567893', contactName: 'Alice Brown', chatCount: 2 },
-        { contactId: '081234567894', contactName: 'Charlie Wilson', chatCount: 4 }
-      ];
-      return mockContacts;
-    }
-    
     console.log(`Fetching contacts for date: ${date}`);
 
     const queryText = `
@@ -160,10 +129,6 @@ async function getContactsForDate(date: string): Promise<ContactDetail[]> {
 export async function GET(request: NextRequest) {
   try {
     console.log('💻 Unique contacts statistics API called');
-    console.log('Environment:', process.env.NODE_ENV);
-    console.log('Request URL:', request.url);
-    console.log('Request method:', request.method);
-    console.log('Request URL:', request.url);
     
     // Check authentication first
     const authPayload = await authenticateAdmin(request);
