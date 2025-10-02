@@ -17,6 +17,7 @@ export default function Home() {
     
     const token = localStorage.getItem("token");
     if (token) {
+      // In production with basePath, Next.js handles the routing automatically
       router.replace("/admin");
     } else {
       router.replace("/login");

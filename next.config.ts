@@ -7,29 +7,11 @@ const nextConfig: NextConfig = {
     assetPrefix: '/sm-admin',
     basePath: '/sm-admin'
   }),
-  // Ensure API routes work correctly with basePath
+  // Remove problematic rewrites and redirects that cause 308 loops
   async rewrites() {
-    if (process.env.NODE_ENV === 'production') {
-      return [
-        {
-          source: '/api/:path*',
-          destination: '/api/:path*'
-        }
-      ]
-    }
     return []
   },
-  // Handle redirects for proper subpath navigation
   async redirects() {
-    if (process.env.NODE_ENV === 'production') {
-      return [
-        {
-          source: '/sm-admin',
-          destination: '/sm-admin/',
-          permanent: true,
-        }
-      ]
-    }
     return []
   }
 }
