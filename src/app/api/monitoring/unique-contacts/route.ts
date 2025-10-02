@@ -162,6 +162,8 @@ export async function GET(request: NextRequest) {
     console.log('💻 Unique contacts statistics API called');
     console.log('Environment:', process.env.NODE_ENV);
     console.log('Request URL:', request.url);
+    console.log('Request method:', request.method);
+    console.log('Request URL:', request.url);
     
     // Check authentication first
     const authPayload = await authenticateAdmin(request);
