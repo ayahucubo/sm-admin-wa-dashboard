@@ -13,7 +13,7 @@ pm2 stop sm-admin-wa-dashboard 2>/dev/null || echo "No existing process found"
 
 # 3. Install/update dependencies
 echo "📦 Installing dependencies..."
-npm ci --only=production
+npm ci
 
 # 4. Build the application
 echo "🔨 Building application..."
