@@ -84,7 +84,9 @@ const UniqueContactsChart: React.FC = () => {
       
       console.log(`Fetching unique contacts data for ${days} days`);
       
-      const response = await authenticatedFetch(`/sm-admin/api/monitoring/unique-contacts?days=${days}`);
+      // Use correct API path based on environment
+      const apiPath = process.env.NODE_ENV === 'production' ? '/sm-admin/api/monitoring/unique-contacts' : '/api/monitoring/unique-contacts';
+      const response = await authenticatedFetch(`${apiPath}?days=${days}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -115,7 +117,9 @@ const UniqueContactsChart: React.FC = () => {
       
       console.log(`Fetching contact details for date: ${date}`);
       
-      const response = await authenticatedFetch(`/sm-admin/api/monitoring/unique-contacts?date=${date}`);
+      // Use correct API path based on environment
+      const apiPath = process.env.NODE_ENV === 'production' ? '/sm-admin/api/monitoring/unique-contacts' : '/api/monitoring/unique-contacts';
+      const response = await authenticatedFetch(`${apiPath}?date=${date}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

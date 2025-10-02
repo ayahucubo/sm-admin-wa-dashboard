@@ -1,8 +1,9 @@
 import type { NextConfig } from 'next'
 
-// Minimal configuration to fix API redirects
+// Configuration that works for both local dev and production
 const nextConfig: NextConfig = {
-  basePath: '/sm-admin',
+  // Only use basePath in production
+  basePath: process.env.NODE_ENV === 'production' ? '/sm-admin' : '',
   trailingSlash: false
 }
 
