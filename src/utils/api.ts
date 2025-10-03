@@ -5,9 +5,16 @@ export const getApiPath = (path: string): string => {
   // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   
-  // In production, prepend the base path and ensure trailing slash
-  if (process.env.NODE_ENV === 'production') {
-    return `/sm-admin/${cleanPath}/`;
+  // Detect environment by hostname, not NODE_ENV
+  if (typeof window !== 'undefined') {
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' ||
+                       window.location.hostname.startsWith('192.168.');
+    
+    // If not localhost, assume production and prepend base path
+    if (!isLocalhost) {
+      return `/sm-admin/${cleanPath}/`;
+    }
   }
   
   // In development, use the path as-is with trailing slash

@@ -5,8 +5,13 @@ const getBaseURL = (): string => {
   if (typeof window !== 'undefined') {
     // In browser, use current origin
     const origin = window.location.origin;
-    // In production, add the basePath
-    if (process.env.NODE_ENV === 'production') {
+    // Detect production by hostname, not NODE_ENV (which isn't reliable in browser)
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' ||
+                       window.location.hostname.startsWith('192.168.');
+    
+    // If not localhost, assume production and add basePath
+    if (!isLocalhost) {
       return `${origin}/sm-admin`;
     }
     return origin;
