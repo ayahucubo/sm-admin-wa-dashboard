@@ -20,6 +20,7 @@ interface FormattedChatHistoryItem {
   executionId: string;
   startedAt: string;
   contact: string;
+  phoneNumber: string;
   chat: string;
   chatResponse: string;
   currentMenu: string;
@@ -83,6 +84,7 @@ export async function GET(request: NextRequest) {
       executionId: item.execution_id,
       startedAt: item.started_at,
       contact: item.chat_name || item.nohp || 'Unknown',
+      phoneNumber: item.nohp || '',
       chat: item.chat,
       chatResponse: item.chat_response,
       currentMenu: item.current_menu,

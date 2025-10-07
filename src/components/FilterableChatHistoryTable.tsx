@@ -1,12 +1,14 @@
 "use client";
 import React, { useState, useEffect, useMemo } from 'react';
 import localApi from '@/utils/localApi';
+import { exportToExcel, formatChatHistoryForExcel } from '@/utils/excelExport';
 
 // Interface for chat history item
 interface ChatHistoryItem {
   executionId: string;
   startedAt: string;
   contact: string;
+  phoneNumber: string;
   chat: string;
   chatResponse: string;
   currentMenu: string;
@@ -127,6 +129,54 @@ export default function FilterableChatHistoryTable() {
     setCurrentPage(1);
   };
 
+  // Handle Excel export
+  const handleExportExcel = async () => {
+    if (chatHistory.length === 0) {
+      alert('No data available to export');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Fetch all data without pagination for export
+      const params = new URLSearchParams();
+      if (selectedMenu) params.append('currentMenu', selectedMenu);
+      if (startDate) params.append('startDate', startDate);
+      if (endDate) params.append('endDate', endDate);
+      params.append('limit', '10000'); // Large limit to get all data
+      params.append('page', '1');
+
+      const response = await localApi.get(`/api/chat/history-filtered?${params.toString()}`);
+      
+      if (response.data.success) {
+        const allData = response.data.data;
+        const excelData = formatChatHistoryForExcel(allData);
+        
+        const filterInfo = [];
+        if (selectedMenu) filterInfo.push(`Menu: ${selectedMenu}`);
+        if (startDate) filterInfo.push(`From: ${startDate}`);
+        if (endDate) filterInfo.push(`To: ${endDate}`);
+        
+        const filename = `Detailed_Chat_History${filterInfo.length > 0 ? '_' + filterInfo.join('_').replace(/[^a-zA-Z0-9]/g, '_') : ''}_${new Date().toISOString().split('T')[0]}`;
+        
+        const success = exportToExcel(excelData, filename, 'Chat History');
+        if (success) {
+          console.log('Chat history data exported to Excel successfully');
+        } else {
+          alert('Failed to export data to Excel');
+        }
+      } else {
+        alert('Failed to fetch data for export');
+      }
+    } catch (error) {
+      console.error('Error exporting chat history:', error);
+      alert('Failed to export data to Excel');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Format date for display
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('id-ID', {
@@ -235,13 +285,26 @@ export default function FilterableChatHistoryTable() {
               </span>
             )}
           </div>
-          <button
-            onClick={clearFilters}
-            disabled={!selectedMenu && !startDate && !endDate}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-          >
-            Hapus Filter
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportExcel}
+              disabled={loading || chatHistory.length === 0}
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-2"
+              title="Export ke Excel"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export Excel
+            </button>
+            <button
+              onClick={clearFilters}
+              disabled={!selectedMenu && !startDate && !endDate}
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            >
+              Hapus Filter
+            </button>
+          </div>
         </div>
       </div>
 
@@ -330,6 +393,9 @@ export default function FilterableChatHistoryTable() {
                           Kontak
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[140px]">
+                          No. HP
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[140px]">
                           Tanggal
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[150px]">
@@ -350,6 +416,12 @@ export default function FilterableChatHistoryTable() {
                               title={item.contact || '-'}>
                             <div className="break-words font-medium">
                               {item.contact || '-'}
+                            </div>
+                          </td>
+                          <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                              title={item.phoneNumber || '-'}>
+                            <div className="break-words font-mono text-blue-600 dark:text-blue-400">
+                              {item.phoneNumber || '-'}
                             </div>
                           </td>
                           <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
@@ -419,6 +491,9 @@ export default function FilterableChatHistoryTable() {
                             <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                               {item.contact || 'Unknown Contact'}
                             </h4>
+                            <p className="text-xs text-blue-600 dark:text-blue-400 font-mono">
+                              {item.phoneNumber || '-'}
+                            </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                               {formatDate(item.startedAt)}
                             </p>

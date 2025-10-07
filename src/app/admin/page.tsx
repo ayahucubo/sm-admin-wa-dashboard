@@ -120,6 +120,67 @@ export default function AdminPage() {
     return result.sort((a, b) => a.date.localeCompare(b.date));
   };
 
+  // Handle comprehensive export with authentication
+  const handleComprehensiveExport = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login to export data');
+        return;
+      }
+
+      // Detect environment for correct API path
+      const isLocalhost = window.location.hostname === 'localhost' || 
+                         window.location.hostname === '127.0.0.1' ||
+                         window.location.hostname.startsWith('192.168.');
+      
+      const apiPath = isLocalhost 
+        ? '/api/export/comprehensive?days=30'
+        : '/sm-admin/api/export/comprehensive?days=30';
+
+      console.log('Exporting comprehensive data from:', apiPath);
+
+      const response = await fetch(apiPath, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Export failed: ${response.status} ${response.statusText}`);
+      }
+
+      // Get the filename from response headers or create default
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'WA_Admin_Dashboard_Export.xlsx';
+      
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+
+      // Convert response to blob and trigger download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      console.log('Comprehensive export completed successfully');
+    } catch (error) {
+      console.error('Error exporting comprehensive data:', error);
+      alert('Failed to export data. Please try again.');
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -155,12 +216,29 @@ export default function AdminPage() {
     <AdminLayout title="Admin Panel" subtitle="Kelola sistem dan database">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         <div className="mb-6 sm:mb-8">
-          <h2 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-            Dashboard Monitoring
-          </h2>
-          <p className="text-sm sm:text-base" style={{ color: 'var(--text-muted)' }}>
-            Monitor aktivitas chat dan analisis data sistem. Gunakan menu navigasi di atas untuk mengakses fitur admin lainnya.
-          </p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 className="text-lg sm:text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                Dashboard Monitoring
+              </h2>
+              <p className="text-sm sm:text-base" style={{ color: 'var(--text-muted)' }}>
+                Monitor aktivitas chat dan analisis data sistem. Gunakan menu navigasi di atas untuk mengakses fitur admin lainnya.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleComprehensiveExport}
+                disabled={dataLoading}
+                className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
+                title="Export semua data monitoring ke Excel"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="font-medium">Export All Data</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Chat Monitoring Dashboard */}
