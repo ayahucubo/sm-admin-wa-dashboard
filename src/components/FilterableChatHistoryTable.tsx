@@ -34,11 +34,13 @@ interface ChatHistoryResponse {
     startDate?: string;
     endDate?: string;
     companyCode?: string;
+    companyName?: string;
   };
   companyData?: {
     hasCompanyData: boolean;
     totalPhoneNumbers: number;
     uniqueCompanyCodes: string[];
+    uniqueCompanyNames: string[];
   };
 }
 
@@ -64,9 +66,11 @@ export default function FilterableChatHistoryTable() {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [selectedCompanyCode, setSelectedCompanyCode] = useState<string>('');
+  const [selectedCompanyName, setSelectedCompanyName] = useState<string>('');
   
-  // Company code data
+  // Company data
   const [availableCompanyCodes, setAvailableCompanyCodes] = useState<string[]>([]);
+  const [availableCompanyNames, setAvailableCompanyNames] = useState<string[]>([]);
   const [loadingCompanyCodes, setLoadingCompanyCodes] = useState(false);
   
   // Pagination states
@@ -96,6 +100,9 @@ export default function FilterableChatHistoryTable() {
       if (selectedCompanyCode) {
         params.append('companyCode', selectedCompanyCode);
       }
+      if (selectedCompanyName) {
+        params.append('companyName', selectedCompanyName);
+      }
       
       // Always include company data for filtering options
       params.append('includeCompanyData', 'true');
@@ -114,9 +121,12 @@ export default function FilterableChatHistoryTable() {
         setTotalPages(data.pagination.totalPages);
         setTotalItems(data.pagination.total);
         
-        // Update available company codes
+        // Update available company codes and names
         if (data.companyData?.uniqueCompanyCodes) {
           setAvailableCompanyCodes(data.companyData.uniqueCompanyCodes);
+        }
+        if (data.companyData?.uniqueCompanyNames) {
+          setAvailableCompanyNames(data.companyData.uniqueCompanyNames);
         }
         
         if (resetPage) {
@@ -137,7 +147,7 @@ export default function FilterableChatHistoryTable() {
   // Initial load and when filters change
   useEffect(() => {
     fetchChatHistory(true);
-  }, [selectedMenu, startDate, endDate, selectedCompanyCode]);
+  }, [selectedMenu, startDate, endDate, selectedCompanyCode, selectedCompanyName]);
 
   // When page changes
   useEffect(() => {
@@ -152,6 +162,7 @@ export default function FilterableChatHistoryTable() {
     setStartDate('');
     setEndDate('');
     setSelectedCompanyCode('');
+    setSelectedCompanyName('');
     setCurrentPage(1);
   };
 
@@ -171,6 +182,7 @@ export default function FilterableChatHistoryTable() {
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
       if (selectedCompanyCode) params.append('companyCode', selectedCompanyCode);
+      if (selectedCompanyName) params.append('companyName', selectedCompanyName);
       params.append('includeCompanyData', 'true'); // Include company data in export
       params.append('limit', '10000'); // Large limit to get all data
       params.append('page', '1');
@@ -186,6 +198,7 @@ export default function FilterableChatHistoryTable() {
         if (startDate) filterInfo.push(`From: ${startDate}`);
         if (endDate) filterInfo.push(`To: ${endDate}`);
         if (selectedCompanyCode) filterInfo.push(`Company: ${selectedCompanyCode}`);
+        if (selectedCompanyName) filterInfo.push(`CompanyName: ${selectedCompanyName}`);
         
         const filename = `Detailed_Chat_History${filterInfo.length > 0 ? '_' + filterInfo.join('_').replace(/[^a-zA-Z0-9]/g, '_') : ''}_${new Date().toISOString().split('T')[0]}`;
         
@@ -253,7 +266,7 @@ export default function FilterableChatHistoryTable() {
 
       {/* Filters */}
       <div className="px-3 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           {/* Menu Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -298,6 +311,31 @@ export default function FilterableChatHistoryTable() {
             )}
           </div>
 
+          {/* Company Name Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Company Name
+            </label>
+            <select
+              value={selectedCompanyName}
+              onChange={(e) => setSelectedCompanyName(e.target.value)}
+              disabled={availableCompanyNames.length === 0}
+              className="mobile-form-input w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="">Semua Nama Company</option>
+              {availableCompanyNames.map(name => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            {availableCompanyNames.length === 0 && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Loading company names...
+              </p>
+            )}
+          </div>
+
           {/* Date Range Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -335,7 +373,12 @@ export default function FilterableChatHistoryTable() {
             )}
             {selectedCompanyCode && (
               <span className="mr-4">
-                Company: {selectedCompanyCode}
+                Company Code: {selectedCompanyCode}
+              </span>
+            )}
+            {selectedCompanyName && (
+              <span className="mr-4">
+                Company Name: {selectedCompanyName}
               </span>
             )}
             {(startDate || endDate) && (
@@ -358,7 +401,7 @@ export default function FilterableChatHistoryTable() {
             </button>
             <button
               onClick={clearFilters}
-              disabled={!selectedMenu && !startDate && !endDate && !selectedCompanyCode}
+              disabled={!selectedMenu && !startDate && !endDate && !selectedCompanyCode && !selectedCompanyName}
               className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               Hapus Filter
@@ -432,7 +475,7 @@ export default function FilterableChatHistoryTable() {
                     Total Records: {totalItems} | Showing: {chatHistory.length}
                   </h3>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    (Columns: 6)
+                    (Columns: 8)
                   </span>
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -456,6 +499,9 @@ export default function FilterableChatHistoryTable() {
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[120px]">
                           Company Code
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[180px]">
+                          Company Name
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap border-r border-gray-200 dark:border-gray-600 min-w-[140px]">
                           Tanggal
@@ -492,6 +538,20 @@ export default function FilterableChatHistoryTable() {
                               {item.companyCode ? (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                                   {item.companyCode}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                                  Loading...
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="table-cell-enhanced px-4 py-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-600"
+                              title={item.companyName || 'Loading...'}>
+                            <div className="break-words">
+                              {item.companyName ? (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                  {item.companyName}
                                 </span>
                               ) : (
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
@@ -586,6 +646,15 @@ export default function FilterableChatHistoryTable() {
                         ) : (
                           <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                             🏢 Loading...
+                          </span>
+                        )}
+                        {item.companyName ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            🏛️ {item.companyName}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                            🏛️ Loading...
                           </span>
                         )}
                         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">

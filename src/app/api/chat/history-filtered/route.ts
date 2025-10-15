@@ -49,7 +49,8 @@ export async function GET(request: NextRequest) {
     const currentMenu = searchParams.get('currentMenu') || undefined;
     const startDate = searchParams.get('startDate') || undefined;
     const endDate = searchParams.get('endDate') || undefined;
-    const companyCode = searchParams.get('companyCode') || undefined; // New company code filter
+    const companyCode = searchParams.get('companyCode') || undefined; // Company code filter
+    const companyName = searchParams.get('companyName') || undefined; // Company name filter
     const includeCompanyData = searchParams.get('includeCompanyData') === 'true'; // Option to include company data
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
@@ -62,6 +63,7 @@ export async function GET(request: NextRequest) {
       startDate,
       endDate,
       companyCode,
+      companyName,
       includeCompanyData,
       page,
       limit,
@@ -90,7 +92,7 @@ export async function GET(request: NextRequest) {
     let phoneToCompanyMapping = new Map<string, string>();
     let companyDataMap = new Map<string, CompanyCodeData>();
     
-    if (includeCompanyData || companyCode) {
+    if (includeCompanyData || companyCode || companyName) {
       // Get unique phone numbers from the current data
       const phoneNumbers = [...new Set(
         chatHistoryData
@@ -149,6 +151,14 @@ export async function GET(request: NextRequest) {
       console.log(`Filtered by company code '${companyCode}': ${formattedHistory.length} items remaining`);
     }
 
+    // Apply company name filter if specified
+    if (companyName) {
+      formattedHistory = formattedHistory.filter(item => 
+        item.companyName === companyName
+      );
+      console.log(`Filtered by company name '${companyName}': ${formattedHistory.length} items remaining`);
+    }
+
     // Calculate pagination info
     const totalPages = Math.ceil(totalCount / limit);
 
@@ -165,7 +175,8 @@ export async function GET(request: NextRequest) {
         currentMenu,
         startDate,
         endDate,
-        companyCode
+        companyCode,
+        companyName
       },
       companyData: includeCompanyData ? {
         hasCompanyData: companyDataMap.size > 0,
@@ -177,6 +188,14 @@ export async function GET(request: NextRequest) {
                       d.companyCode !== 'NOT_FOUND' &&
                       d.companyCode !== 'NO_DATA')
           .map(d => d.companyCode)
+        )].sort(),
+        uniqueCompanyNames: [...new Set(Array.from(companyDataMap.values())
+          .filter(d => d.success && 
+                      d.companyCode !== 'ERROR' && 
+                      d.companyCode !== 'UNKNOWN' &&
+                      d.companyCode !== 'NOT_FOUND' &&
+                      d.companyCode !== 'NO_DATA')
+          .map(d => d.companyName)
         )].sort()
       } : undefined
     };
