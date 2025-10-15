@@ -76,6 +76,8 @@ export const formatChatHistoryForExcel = (chatHistory: any[]) => {
     }),
     'Kontak': item.contact || 'Unknown',
     'No. HP': item.phoneNumber || '-',
+    'Company Code': item.companyCode || 'Not Available',
+    'Company Name': item.companyName || 'Not Available',
     'Current Menu': item.currentMenu || '-',
     'Pesan Masuk': item.chat || '-',
     'Jawaban': item.chatResponse || '-',
