@@ -5,6 +5,7 @@ import AdminLayout from "@/components/AdminLayout";
 import ChatMonitoringDashboard from "@/components/ChatMonitoringDashboard";
 import FilterableChatHistoryTable from "@/components/FilterableChatHistoryTable";
 import UniqueContactsChart from "@/components/UniqueContactsChart";
+import CompanyContactChart from "@/components/CompanyContactChart";
 import localApi from "@/utils/localApi";
 
 // Interface for chat history item
@@ -254,6 +255,11 @@ export default function AdminPage() {
         {/* Unique Contacts Chart */}
         <div className="mb-8">
           <UniqueContactsChart />
+        </div>
+
+        {/* Company Contact Chart */}
+        <div className="mb-8">
+          <CompanyContactChart />
         </div>
 
         {/* Filterable Chat History Table */}
