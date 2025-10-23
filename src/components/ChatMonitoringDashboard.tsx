@@ -38,9 +38,9 @@ interface ChatMonitoringDashboardProps {
 }
 
 // Color palette for different menu categories (updated to match real database values)
+// Note: Jeanny/Jenny menu is excluded from display as requested
 const MENU_COLORS: Record<string, string> = {
   'Industrial Relation': '#3B82F6', // Blue
-  'Jeanny': '#10B981', // Emerald
   'Benefit': '#F59E0B', // Amber
   'Peraturan Perusahaan': '#EF4444', // Red
   'Promosi': '#8B5CF6', // Violet
@@ -108,12 +108,12 @@ export default function ChatMonitoringDashboard({
     }
   };
 
-  // Get all unique menu types from the data
+  // Get all unique menu types from the data (excluding Jenny/Jeanny)
   const allMenus = Array.from(
     new Set(
       chartData.flatMap(d => Object.keys(d.menuCounts))
     )
-  ).sort();
+  ).filter(menu => menu.toLowerCase() !== 'jenny' && menu !== 'Jeanny').sort();
 
   // Format date labels based on time period
   const formatDateLabel = (dateStr: string): string => {
@@ -203,12 +203,25 @@ export default function ChatMonitoringDashboard({
           label: (context: TooltipItem<'bar'>) => {
             const menuName = context.dataset.label;
             const count = context.parsed.y;
-            return `${menuName}: ${count} chat${count !== 1 ? 's' : ''}`;
+            const index = context.dataIndex;
+            
+            // Calculate total excluding Jenny/Jeanny
+            const dayData = chartData[index];
+            const totalExcludingJenny = dayData ? Object.entries(dayData.menuCounts)
+              .filter(([menu]) => menu.toLowerCase() !== 'jenny' && menu !== 'Jeanny')
+              .reduce((sum, [, count]) => sum + count, 0) : 0;
+            
+            const percentage = totalExcludingJenny > 0 ? ((count / totalExcludingJenny) * 100).toFixed(1) : '0.0';
+            
+            return `${menuName}: ${count} chat${count !== 1 ? 's' : ''} (${percentage}%)`;
           },
           footer: (context: TooltipItem<'bar'>[]) => {
             const index = context[0].dataIndex;
-            const total = chartData[index]?.total || 0;
-            return `Total: ${total} chat${total !== 1 ? 's' : ''}`;
+            const dayData = chartData[index];
+            const totalExcludingJenny = dayData ? Object.entries(dayData.menuCounts)
+              .filter(([menu]) => menu.toLowerCase() !== 'jenny' && menu !== 'Jeanny')
+              .reduce((sum, [, count]) => sum + count, 0) : 0;
+            return `Total: ${totalExcludingJenny} chat${totalExcludingJenny !== 1 ? 's' : ''}`;
           }
         },
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -407,24 +420,97 @@ export default function ChatMonitoringDashboard({
       {/* Summary Statistics */}
       {chartData.length > 0 && (
         <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mb-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {chartData.reduce((sum: number, d: DailyChatStats) => sum + d.total, 0).toLocaleString()}
+                {(() => {
+                  const totalExcludingJenny = chartData.reduce((sum: number, d: DailyChatStats) => {
+                    const dayTotal = Object.entries(d.menuCounts)
+                      .filter(([menu]) => menu.toLowerCase() !== 'jenny' && menu !== 'Jeanny')
+                      .reduce((daySum, [, count]) => daySum + count, 0);
+                    return sum + dayTotal;
+                  }, 0);
+                  return totalExcludingJenny.toLocaleString();
+                })()}
               </div>
               <div className="text-xs text-muted font-medium">Total Chats</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {Math.round(chartData.reduce((sum: number, d: DailyChatStats) => sum + d.total, 0) / chartData.length).toLocaleString()}
+                {(() => {
+                  const totalExcludingJenny = chartData.reduce((sum: number, d: DailyChatStats) => {
+                    const dayTotal = Object.entries(d.menuCounts)
+                      .filter(([menu]) => menu.toLowerCase() !== 'jenny' && menu !== 'Jeanny')
+                      .reduce((daySum, [, count]) => daySum + count, 0);
+                    return sum + dayTotal;
+                  }, 0);
+                  return Math.round(totalExcludingJenny / chartData.length).toLocaleString();
+                })()}
               </div>
               <div className="text-xs text-muted font-medium">Average per Day</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {Math.max(...chartData.map((d: DailyChatStats) => d.total)).toLocaleString()}
+                {(() => {
+                  const peakDayExcludingJenny = Math.max(...chartData.map((d: DailyChatStats) => {
+                    return Object.entries(d.menuCounts)
+                      .filter(([menu]) => menu.toLowerCase() !== 'jenny' && menu !== 'Jeanny')
+                      .reduce((daySum, [, count]) => daySum + count, 0);
+                  }));
+                  return peakDayExcludingJenny.toLocaleString();
+                })()}
               </div>
               <div className="text-xs text-muted font-medium">Peak Day Volume</div>
+            </div>
+          </div>
+
+          {/* Menu Category Percentage Breakdown */}
+          <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
+            <h4 className="text-sm font-semibold text-primary mb-3">Menu Category Distribution</h4>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {(() => {
+                // Calculate total counts for each menu across all days
+                const menuTotals: Record<string, number> = {};
+                let grandTotal = 0;
+
+                chartData.forEach(day => {
+                  Object.entries(day.menuCounts).forEach(([menu, count]) => {
+                    // Exclude Jenny/Jeanny from calculations
+                    if (menu.toLowerCase() !== 'jenny' && menu !== 'Jeanny') {
+                      menuTotals[menu] = (menuTotals[menu] || 0) + count;
+                      grandTotal += count;
+                    }
+                  });
+                });
+
+                // Sort menus by total count (descending)
+                const sortedMenus = Object.entries(menuTotals)
+                  .sort(([,a], [,b]) => b - a);
+
+                return sortedMenus.map(([menu, total]) => {
+                  const percentage = grandTotal > 0 ? ((total / grandTotal) * 100).toFixed(1) : '0.0';
+
+                  return (
+                    <div key={menu} className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div 
+                          className="w-3 h-3 rounded-full flex-shrink-0" 
+                          style={{ backgroundColor: MENU_COLORS[menu] || MENU_COLORS['Unknown'] }}
+                        ></div>
+                        <div className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
+                          {menu}
+                        </div>
+                      </div>
+                      <div className="text-lg font-bold text-primary">
+                        {total.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-muted">
+                        {percentage}% of total
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
         </div>

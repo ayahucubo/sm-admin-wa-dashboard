@@ -45,9 +45,9 @@ interface ChatHistoryResponse {
 }
 
 // Available menu options - using actual values from database
+// Note: Jeanny menu excluded from display as requested
 const MENU_OPTIONS = [
   'Industrial Relation',
-  'Jeanny', 
   'Benefit',
   'Peraturan Perusahaan',
   'Promosi',

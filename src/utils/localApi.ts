@@ -23,7 +23,7 @@ const getBaseURL = (): string => {
 // Local API client for Next.js API routes
 const localApi = axios.create({
   baseURL: getBaseURL(),
-  timeout: 30000,
+  timeout: 120000, // Increased to 2 minutes default timeout
   headers: {
     'Content-Type': 'application/json'
   }

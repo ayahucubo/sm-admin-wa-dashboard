@@ -125,7 +125,7 @@ export default function KnowledgeBenefitMenuPage() {
         }
       };
 
-      const response = await fetch('https://wecare.techconnect.co.id/webhook/update-cc-knowledge-benefit', {
+      const response = await fetch('https://wecare.techconnect.co.id/webhook-test/update-cc-knowledge-benefit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

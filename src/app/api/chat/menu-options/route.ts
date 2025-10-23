@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateAdmin, createUnauthorizedResponse } from '@/utils/auth';
 
 // Available menu options based on actual database values
+// Note: Jeanny menu excluded from display as requested
 const MENU_OPTIONS = [
   'Industrial Relation',
-  'Jeanny', 
   'Benefit',
   'Peraturan Perusahaan',
   'Promosi',

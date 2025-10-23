@@ -104,6 +104,323 @@ export async function checkDatabaseConnection() {
   }
 }
 
+// Interface for database storage information
+interface DatabaseSizeInfo {
+  databaseName: string;
+  totalSize: string;
+  totalSizeBytes: number;
+}
+
+interface TableSizeInfo {
+  tableName: string;
+  schemaName: string;
+  tableSize: string;
+  tableSizeBytes: number;
+  indexSize: string;
+  indexSizeBytes: number;
+  totalSize: string;
+  totalSizeBytes: number;
+  rowCount: number;
+}
+
+interface DatabaseStorageStats {
+  databaseInfo: DatabaseSizeInfo;
+  tables: TableSizeInfo[];
+  totalTables: number;
+  connectionInfo: {
+    host: string;
+    port: number;
+    database: string;
+  };
+}
+
+// Function to get database size information for primary database (postgres)
+export async function getPrimaryDatabaseStorageInfo(): Promise<DatabaseStorageStats> {
+  try {
+    console.log('🔍 Getting primary database storage info...');
+    
+    // Start with basic database size query
+    const dbSizeResult = await query(`
+      SELECT 
+        current_database() as database_name,
+        pg_size_pretty(pg_database_size(current_database())) as total_size,
+        pg_database_size(current_database()) as total_size_bytes
+    `);
+
+    console.log('✅ Primary DB size query successful:', dbSizeResult.rows[0]);
+
+    // Get table information with simplified query
+    let tables: TableSizeInfo[] = [];
+    try {
+      const tableSizeResult = await query(`
+        SELECT 
+          schemaname as schema_name,
+          tablename as table_name,
+          pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as total_size,
+          pg_total_relation_size(schemaname||'.'||tablename) as total_size_bytes,
+          pg_size_pretty(pg_relation_size(schemaname||'.'||tablename)) as table_size,
+          pg_relation_size(schemaname||'.'||tablename) as table_size_bytes
+        FROM pg_tables 
+        WHERE schemaname NOT IN ('information_schema', 'pg_catalog')
+        ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
+        LIMIT 20
+      `);
+
+      console.log(`✅ Primary DB table sizes retrieved: ${tableSizeResult.rows.length} tables`);
+
+      // Get row counts separately (this might fail in some PostgreSQL configurations)
+      let rowCountMap = new Map<string, number>();
+      try {
+        const rowCountsResult = await query(`
+          SELECT 
+            schemaname as schema_name,
+            tablename as table_name,
+            n_tup_ins + n_tup_upd + n_tup_del as row_count
+          FROM pg_stat_user_tables
+          WHERE schemaname NOT IN ('information_schema', 'pg_catalog')
+        `);
+        
+        rowCountsResult.rows.forEach(row => {
+          rowCountMap.set(`${row.schema_name}.${row.table_name}`, parseInt(row.row_count) || 0);
+        });
+        
+        console.log(`✅ Primary DB row counts retrieved: ${rowCountsResult.rows.length} tables`);
+      } catch (rowCountError) {
+        console.warn('⚠️ Could not get row counts for primary database:', rowCountError);
+        // Continue without row counts
+      }
+
+      // Combine table size and row count data
+      tables = tableSizeResult.rows.map(row => ({
+        tableName: row.table_name,
+        schemaName: row.schema_name,
+        tableSize: row.table_size || '0 B',
+        tableSizeBytes: parseInt(row.table_size_bytes) || 0,
+        indexSize: '0 B', // Simplified - calculate later if needed
+        indexSizeBytes: 0,
+        totalSize: row.total_size || '0 B',
+        totalSizeBytes: parseInt(row.total_size_bytes) || 0,
+        rowCount: rowCountMap.get(`${row.schema_name}.${row.table_name}`) || 0
+      }));
+
+    } catch (tableError) {
+      console.warn('⚠️ Could not get table information for primary database:', tableError);
+      // Continue with empty tables array
+    }
+
+    return {
+      databaseInfo: {
+        databaseName: dbSizeResult.rows[0].database_name,
+        totalSize: dbSizeResult.rows[0].total_size,
+        totalSizeBytes: parseInt(dbSizeResult.rows[0].total_size_bytes) || 0
+      },
+      tables,
+      totalTables: tables.length,
+      connectionInfo: {
+        host: primaryDbConfig.host,
+        port: primaryDbConfig.port,
+        database: primaryDbConfig.database
+      }
+    };
+
+  } catch (error) {
+    console.error('❌ Error getting primary database storage info:', error);
+    throw new Error(`Primary database connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+// Function to get database size information for N8N database
+export async function getN8nDatabaseStorageInfo(): Promise<DatabaseStorageStats> {
+  try {
+    console.log('🔍 Getting N8N database storage info...');
+    
+    // Start with basic database size query
+    const dbSizeResult = await queryN8n(`
+      SELECT 
+        current_database() as database_name,
+        pg_size_pretty(pg_database_size(current_database())) as total_size,
+        pg_database_size(current_database()) as total_size_bytes
+    `);
+
+    console.log('✅ N8N DB size query successful:', dbSizeResult.rows[0]);
+
+    // Get table information with simplified query
+    let tables: TableSizeInfo[] = [];
+    try {
+      const tableSizeResult = await queryN8n(`
+        SELECT 
+          schemaname as schema_name,
+          tablename as table_name,
+          pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as total_size,
+          pg_total_relation_size(schemaname||'.'||tablename) as total_size_bytes,
+          pg_size_pretty(pg_relation_size(schemaname||'.'||tablename)) as table_size,
+          pg_relation_size(schemaname||'.'||tablename) as table_size_bytes
+        FROM pg_tables 
+        WHERE schemaname NOT IN ('information_schema', 'pg_catalog')
+        ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
+        LIMIT 20
+      `);
+
+      console.log(`✅ N8N DB table sizes retrieved: ${tableSizeResult.rows.length} tables`);
+
+      // Get row counts separately (this might fail in some PostgreSQL configurations)
+      let rowCountMap = new Map<string, number>();
+      try {
+        const rowCountsResult = await queryN8n(`
+          SELECT 
+            schemaname as schema_name,
+            tablename as table_name,
+            n_tup_ins + n_tup_upd + n_tup_del as row_count
+          FROM pg_stat_user_tables
+          WHERE schemaname NOT IN ('information_schema', 'pg_catalog')
+        `);
+        
+        rowCountsResult.rows.forEach(row => {
+          rowCountMap.set(`${row.schema_name}.${row.table_name}`, parseInt(row.row_count) || 0);
+        });
+        
+        console.log(`✅ N8N DB row counts retrieved: ${rowCountsResult.rows.length} tables`);
+      } catch (rowCountError) {
+        console.warn('⚠️ Could not get row counts for N8N database:', rowCountError);
+        // Continue without row counts
+      }
+
+      // Combine table size and row count data
+      tables = tableSizeResult.rows.map(row => ({
+        tableName: row.table_name,
+        schemaName: row.schema_name,
+        tableSize: row.table_size || '0 B',
+        tableSizeBytes: parseInt(row.table_size_bytes) || 0,
+        indexSize: '0 B', // Simplified - calculate later if needed
+        indexSizeBytes: 0,
+        totalSize: row.total_size || '0 B',
+        totalSizeBytes: parseInt(row.total_size_bytes) || 0,
+        rowCount: rowCountMap.get(`${row.schema_name}.${row.table_name}`) || 0
+      }));
+
+    } catch (tableError) {
+      console.warn('⚠️ Could not get table information for N8N database:', tableError);
+      // Continue with empty tables array
+    }
+
+    return {
+      databaseInfo: {
+        databaseName: dbSizeResult.rows[0].database_name,
+        totalSize: dbSizeResult.rows[0].total_size,
+        totalSizeBytes: parseInt(dbSizeResult.rows[0].total_size_bytes) || 0
+      },
+      tables,
+      totalTables: tables.length,
+      connectionInfo: {
+        host: n8nDbConfig.host,
+        port: n8nDbConfig.port,
+        database: n8nDbConfig.database
+      }
+    };
+
+  } catch (error) {
+    console.error('❌ Error getting N8N database storage info:', error);
+    throw new Error(`N8N database connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+// Function to get combined storage information for both databases
+export async function getAllDatabaseStorageInfo() {
+  try {
+    console.log('📊 Getting storage info for both databases...');
+    
+    // Try to get both databases, but don't fail if one fails
+    let primaryStorage: DatabaseStorageStats | null = null;
+    let n8nStorage: DatabaseStorageStats | null = null;
+    let errors: string[] = [];
+
+    try {
+      primaryStorage = await getPrimaryDatabaseStorageInfo();
+      console.log('✅ Primary database storage info retrieved successfully');
+    } catch (error) {
+      const errorMsg = `Primary database error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      console.error('❌ ' + errorMsg);
+      errors.push(errorMsg);
+    }
+
+    try {
+      n8nStorage = await getN8nDatabaseStorageInfo();
+      console.log('✅ N8N database storage info retrieved successfully');
+    } catch (error) {
+      const errorMsg = `N8N database error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      console.error('❌ ' + errorMsg);
+      errors.push(errorMsg);
+    }
+
+    // If both failed, return error
+    if (!primaryStorage && !n8nStorage) {
+      return {
+        success: false,
+        error: `Both database connections failed: ${errors.join(', ')}`,
+        primaryDatabase: null,
+        n8nDatabase: null,
+        summary: {
+          totalDatabases: 0,
+          combinedSize: 0,
+          combinedSizePretty: '0 B',
+          totalTables: 0,
+          retrievedAt: new Date().toISOString()
+        }
+      };
+    }
+
+    // Calculate combined stats from available databases
+    const primarySize = primaryStorage?.databaseInfo.totalSizeBytes || 0;
+    const n8nSize = n8nStorage?.databaseInfo.totalSizeBytes || 0;
+    const primaryTables = primaryStorage?.totalTables || 0;
+    const n8nTables = n8nStorage?.totalTables || 0;
+    
+    const result = {
+      success: true,
+      primaryDatabase: primaryStorage,
+      n8nDatabase: n8nStorage,
+      summary: {
+        totalDatabases: (primaryStorage ? 1 : 0) + (n8nStorage ? 1 : 0),
+        combinedSize: primarySize + n8nSize,
+        combinedSizePretty: formatBytes(primarySize + n8nSize),
+        totalTables: primaryTables + n8nTables,
+        retrievedAt: new Date().toISOString()
+      }
+    };
+
+    // Add warnings if some databases failed
+    if (errors.length > 0) {
+      (result as any).warnings = errors;
+    }
+
+    return result;
+  } catch (error) {
+    console.error('❌ Error getting all database storage info:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to retrieve database storage information',
+      primaryDatabase: null,
+      n8nDatabase: null,
+      summary: {
+        totalDatabases: 0,
+        combinedSize: 0,
+        combinedSizePretty: '0 B',
+        totalTables: 0,
+        retrievedAt: new Date().toISOString()
+      }
+    };
+  }
+}
+
+// Utility function to format bytes
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 // Function to get CC benefit mapping data
 export async function getCCBenefitMappingData() {
   try {
@@ -653,4 +970,5 @@ export async function closePool() {
   ]);
 }
 
+export { primaryPool, n8nPool };
 export default primaryPool;

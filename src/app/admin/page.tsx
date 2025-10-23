@@ -6,6 +6,7 @@ import ChatMonitoringDashboard from "@/components/ChatMonitoringDashboard";
 import FilterableChatHistoryTable from "@/components/FilterableChatHistoryTable";
 import UniqueContactsChart from "@/components/UniqueContactsChart";
 import CompanyContactChart from "@/components/CompanyContactChart";
+import DatabaseStorageMonitor from "@/components/DatabaseStorageMonitor";
 import localApi from "@/utils/localApi";
 
 // Interface for chat history item
@@ -260,6 +261,11 @@ export default function AdminPage() {
         {/* Company Contact Chart */}
         <div className="mb-8">
           <CompanyContactChart />
+        </div>
+
+        {/* Database Storage Monitor */}
+        <div className="mb-8">
+          <DatabaseStorageMonitor />
         </div>
 
         {/* Filterable Chat History Table */}

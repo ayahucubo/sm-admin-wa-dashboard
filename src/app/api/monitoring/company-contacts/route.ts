@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
         console.log('Fetching company data from SAP API...');
         
         // Limit the number of phone numbers to process to prevent timeout
-        const maxPhoneNumbers = 1000; // Limit to 1000 phone numbers to prevent timeout
+        const maxPhoneNumbers = 500; // Further reduced from 1000 to 500 phone numbers
         const phoneNumbersToProcess = uniquePhoneNumbers.slice(0, maxPhoneNumbers);
         
         console.log(`Processing ${phoneNumbersToProcess.length} phone numbers (limited from ${uniquePhoneNumbers.length} total)`);
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
         }
         
         // Use smaller batch size for better performance
-        const companyDataArray = await batchFetchCompanyCodes(phoneNumbersToProcess, 2); // Reduce concurrency from 3 to 2
+        const companyDataArray = await batchFetchCompanyCodes(phoneNumbersToProcess, 1); // Further reduced concurrency from 2 to 1
         
         // Create detailed company data map
         companyDataArray.forEach(data => {
