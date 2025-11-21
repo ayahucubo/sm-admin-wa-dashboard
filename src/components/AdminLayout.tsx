@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import ThemeToggle from '@/components/ThemeToggle';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ interface NavMenuItem {
   href: string;
   icon: string;
   color: string;
+  requiredRole?: string; // Optional role requirement
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ 
@@ -26,53 +28,73 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   const router = useRouter();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const { user, logout } = useAuth();
 
-  // Navigation menu items (moved from main admin page)
-  const navMenuItems: NavMenuItem[] = [
-    {
-      id: "dashboard",
-      title: "Dashboard Chat",
-      href: "/dashboard",
-      icon: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z",
-      color: "bg-blue-500 hover:bg-blue-600"
-    },
-    {
-      id: "mapping-cc-benefit",
-      title: "Mapping CC Benefit",
-      href: "/admin/mapping-cc-benefit",
-      icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
-      color: "bg-green-500 hover:bg-green-600"
-    },
-    {
-      id: "mapping-cc-pp",
-      title: "Mapping CC PP",
-      href: "/admin/mapping-cc-pp",
-      icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-      color: "bg-purple-500 hover:bg-purple-600"
-    },
-    {
-      id: "menu-master",
-      title: "Menu Master",
-      href: "/admin/menu-master",
-      icon: "M4 6h16M4 10h16M4 14h16M4 18h16",
-      color: "bg-orange-500 hover:bg-orange-600"
-    },
-    {
-      id: "knowledge-benefit-menu",
-      title: "Knowledge Benefit Menu",
-      href: "/admin/knowledge-benefit-menu",
-      icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
-      color: "bg-indigo-500 hover:bg-indigo-600"
-    }
-  ];
+  // Get user role from auth context
+  const userRole = user?.role || null;
+
+  // Filter menu items based on user role
+  const getFilteredMenuItems = (role: string | null): NavMenuItem[] => {
+    const allMenuItems: NavMenuItem[] = [
+      {
+        id: "dashboard",
+        title: "Dashboard Chat",
+        href: "/dashboard",
+        icon: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z",
+        color: "bg-blue-500 hover:bg-blue-600"
+      },
+      {
+        id: "mapping-cc-benefit",
+        title: "Mapping CC Benefit",
+        href: "/admin/mapping-cc-benefit",
+        icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
+        color: "bg-green-500 hover:bg-green-600",
+        requiredRole: 'admin' // Only admin can see this
+      },
+      {
+        id: "mapping-cc-pp",
+        title: "Mapping CC PP",
+        href: "/admin/mapping-cc-pp",
+        icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+        color: "bg-purple-500 hover:bg-purple-600",
+        requiredRole: 'admin' // Only admin can see this
+      },
+      {
+        id: "menu-master",
+        title: "Menu Master",
+        href: "/admin/menu-master",
+        icon: "M4 6h16M4 10h16M4 14h16M4 18h16",
+        color: "bg-orange-500 hover:bg-orange-600",
+        requiredRole: 'admin' // Only admin can see this
+      },
+      {
+        id: "knowledge-benefit-menu",
+        title: "Knowledge Benefit Menu",
+        href: "/admin/knowledge-benefit-menu",
+        icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
+        color: "bg-indigo-500 hover:bg-indigo-600",
+        requiredRole: 'admin' // Only admin can see this
+      }
+    ];
+
+    // Filter items based on user role
+    return allMenuItems.filter(item => {
+      // If item doesn't have requiredRole, show to everyone
+      if (!item.requiredRole) return true;
+      // If user role matches required role, show the item
+      return role === item.requiredRole;
+    });
+  };
+
+  // Get filtered menu items based on current user role
+  const navMenuItems: NavMenuItem[] = getFilteredMenuItems(userRole);
 
   const handleNavigation = (href: string) => {
     router.push(href);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.replace("/login");
+    logout();
   };
 
   const isActiveRoute = (href: string) => {

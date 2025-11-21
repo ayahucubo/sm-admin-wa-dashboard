@@ -16,7 +16,8 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify credentials
-    if (!verifyAdminCredentials(email, password)) {
+    const authResult = verifyAdminCredentials(email, password);
+    if (!authResult.isValid) {
       console.log(`Failed login attempt: ${email}`);
       return NextResponse.json({
         success: false,
@@ -25,10 +26,10 @@ export async function POST(request: NextRequest) {
       }, { status: 401 });
     }
     
-    // Generate token
-    const token = generateToken(email);
+    // Generate token with role
+    const token = generateToken(email, authResult.role!);
     
-    console.log(`Successful login: ${email}`);
+    console.log(`Successful login: ${email} with role: ${authResult.role}`);
     
     return NextResponse.json({
       success: true,
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
       message: 'Login berhasil',
       user: {
         email,
-        role: 'admin'
+        role: authResult.role
       }
     });
     

@@ -1,11 +1,18 @@
 import { NextRequest } from 'next/server';
 
 // Admin credentials (in production, store password as hash)
-const ADMIN_CREDENTIALS = {
-  email: 'hris@sinarmasmining.com',
-  password: 'Hr152019!', // In production, this should be hashed
-  role: 'admin'
-};
+const ADMIN_CREDENTIALS = [
+  {
+    email: 'hris@sinarmasmining.com',
+    password: 'Hr152019!', // In production, this should be hashed
+    role: 'admin'
+  },
+  {
+    email: 'benefitadmin@sinarmasmining.com',
+    password: 'bnft_1209', // In production, this should be hashed
+    role: 'benefit_admin'
+  }
+];
 
 export interface AuthPayload {
   email: string;
@@ -17,17 +24,18 @@ export interface AuthPayload {
 /**
  * Verify admin credentials
  */
-export function verifyAdminCredentials(email: string, password: string): boolean {
-  return email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password;
+export function verifyAdminCredentials(email: string, password: string): { isValid: boolean; role?: string } {
+  const user = ADMIN_CREDENTIALS.find(cred => cred.email === email && cred.password === password);
+  return user ? { isValid: true, role: user.role } : { isValid: false };
 }
 
 /**
  * Generate simple JWT-like token
  */
-export function generateToken(email: string): string {
+export function generateToken(email: string, role: string): string {
   const payload: AuthPayload = {
     email,
-    role: 'admin',
+    role,
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours expiry
   };
@@ -149,12 +157,12 @@ export async function authenticateAdmin(request: NextRequest): Promise<AuthPaylo
     return null;
   }
   
-  if (payload.role !== 'admin') {
-    console.log('User role is not admin:', payload.role);
+  if (payload.role !== 'admin' && payload.role !== 'benefit_admin') {
+    console.log('User role is not authorized:', payload.role);
     return null;
   }
   
-  console.log('Admin authenticated successfully:', payload.email);
+  console.log('User authenticated successfully:', payload.email, 'Role:', payload.role);
   return payload;
 }
 
@@ -172,4 +180,63 @@ export function createUnauthorizedResponse(message: string = 'Unauthorized. Plea
       'Content-Type': 'application/json',
     },
   });
+}
+
+/**
+ * Decode token on client side (for React components)
+ */
+export function decodeClientToken(token: string): AuthPayload | null {
+  try {
+    // Check if this is a JWT token (3 parts separated by dots)
+    if (token.includes('.')) {
+      // Split JWT token and decode the payload (second part)
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return null;
+      }
+      
+      // Decode the payload (second part of JWT)
+      const payload = parts[1];
+      
+      // Add padding if needed for base64 decoding
+      const paddedPayload = payload + '='.repeat((4 - payload.length % 4) % 4);
+      
+      const decodedBytes = atob(paddedPayload); // Use atob for client-side
+      const decoded = JSON.parse(decodedBytes) as AuthPayload;
+      
+      // Validate required fields
+      if (!decoded.email || !decoded.role || !decoded.iat) {
+        return null;
+      }
+      
+      // Check if token is expired (if exp field exists)
+      if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
+        return null;
+      }
+      
+      return decoded;
+    } else {
+      // Simple base64 token format
+      if (!/^[A-Za-z0-9+/]*={0,2}$/.test(token)) {
+        return null;
+      }
+      
+      const decodedBytes = atob(token); // Use atob for client-side
+      const decoded = JSON.parse(decodedBytes) as AuthPayload;
+      
+      // Validate required fields
+      if (!decoded.email || !decoded.role || !decoded.iat) {
+        return null;
+      }
+      
+      // Check if token is expired
+      if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
+        return null;
+      }
+      
+      return decoded;
+    }
+  } catch (error) {
+    return null;
+  }
 }
