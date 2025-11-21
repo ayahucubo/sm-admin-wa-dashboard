@@ -28,13 +28,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   const router = useRouter();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
 
   // Get user role from auth context
   const userRole = user?.role || null;
+  
+  // Debug logging
+  React.useEffect(() => {
+    console.log('AdminLayout render - isLoading:', isLoading, 'user:', user?.email, 'role:', userRole);
+  }, [isLoading, user, userRole]);
 
   // Filter menu items based on user role
   const getFilteredMenuItems = (role: string | null): NavMenuItem[] => {
+    console.log('Filtering menu items for role:', role);
+    
     const allMenuItems: NavMenuItem[] = [
       {
         id: "dashboard",
@@ -78,16 +85,26 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
     ];
 
     // Filter items based on user role
-    return allMenuItems.filter(item => {
+    const filteredItems = allMenuItems.filter(item => {
       // If item doesn't have requiredRole, show to everyone
-      if (!item.requiredRole) return true;
+      if (!item.requiredRole) {
+        console.log(`Item "${item.title}" has no role requirement - showing`);
+        return true;
+      }
+      
       // If user role matches required role, show the item
-      return role === item.requiredRole;
+      const shouldShow = role === item.requiredRole;
+      console.log(`Item "${item.title}" requires role "${item.requiredRole}", user has role "${role}", showing: ${shouldShow}`);
+      return shouldShow;
     });
+    
+    console.log('Filtered menu items:', filteredItems.map(item => item.title));
+    return filteredItems;
   };
 
   // Get filtered menu items based on current user role
-  const navMenuItems: NavMenuItem[] = getFilteredMenuItems(userRole);
+  // Don't render menu items until auth state is loaded to prevent flickering
+  const navMenuItems: NavMenuItem[] = isLoading ? [] : getFilteredMenuItems(userRole);
 
   const handleNavigation = (href: string) => {
     router.push(href);
@@ -170,7 +187,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
           {/* Navigation Menu Bar - Desktop and Tablet */}
           <div className="border-t hidden sm:block" style={{ borderColor: 'var(--border-color)' }}>
             <div className="flex flex-wrap gap-1 sm:gap-2 py-3 sm:py-4">
-              {navMenuItems.map((item) => {
+              {isLoading ? (
+                <div className="flex items-center justify-center py-2">
+                  <div className="text-sm text-gray-500">Loading menu...</div>
+                </div>
+              ) : (
+                navMenuItems.map((item) => {
                 const isActive = isActiveRoute(item.href);
                 return (
                   <button
@@ -193,7 +215,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
                     {item.title}
                   </button>
                 );
-              })}
+                })
+              )}
             </div>
           </div>
 
@@ -228,7 +251,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
                 <div className="mt-2 pb-2 border-t" style={{ borderColor: 'var(--border-color)' }}>
                   <div className="mobile-nav-menu flex flex-col gap-1 pt-2">
                     {/* Navigation Items */}
-                    {navMenuItems.map((item) => {
+                    {isLoading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <div className="text-sm text-gray-500">Loading menu...</div>
+                      </div>
+                    ) : (
+                      navMenuItems.map((item) => {
                       const isActive = isActiveRoute(item.href);
                       return (
                         <button
@@ -254,7 +282,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
                           {item.title}
                         </button>
                       );
-                    })}
+                    })
+                  )}
                     
                     {/* Mobile Theme Toggle and Logout - Only visible on mobile */}
                     <div className="border-t pt-2 mt-2 mx-2" style={{ borderColor: 'var(--border-color)' }}>

@@ -3,8 +3,8 @@ import { NextRequest } from 'next/server';
 // Admin credentials (in production, store password as hash)
 const ADMIN_CREDENTIALS = [
   {
-    email: 'hris@sinarmasmining.com',
-    password: 'Hr152019!', // In production, this should be hashed
+    email: 'admin@sinarmasmining.com',
+    password: 'admin123', // In production, this should be hashed
     role: 'admin'
   },
   {
@@ -46,7 +46,7 @@ export function generateToken(email: string, role: string): string {
 }
 
 /**
- * Verify and decode token
+ * Verify and decode token (server-side)
  */
 export function verifyToken(token: string): AuthPayload | null {
   try {
@@ -72,22 +72,39 @@ export function verifyToken(token: string): AuthPayload | null {
       const decodedBytes = Buffer.from(paddedPayload, 'base64').toString('utf-8');
       console.log('Decoded JWT payload:', decodedBytes);
       
-      const decoded = JSON.parse(decodedBytes) as AuthPayload;
+      const decoded = JSON.parse(decodedBytes) as any;
+      
+      // Convert JWT claims to AuthPayload format
+      const authPayload: AuthPayload = {
+        email: decoded.email,
+        role: decoded.role,
+        iat: decoded.iat || Math.floor(Date.now() / 1000),
+        exp: decoded.exp
+      };
+      
+      // Role differentiation: Since N8N gives everyone "admin" role,
+      // differentiate based on email address
+      if (authPayload.email === 'benefitadmin@sinarmasmining.com') {
+        authPayload.role = 'benefit_admin';
+      } else if (authPayload.email === 'hris@sinarmasmining.com' || 
+                authPayload.email === 'admin@sinarmasmining.com') {
+        authPayload.role = 'admin';
+      }
       
       // Validate required fields
-      if (!decoded.email || !decoded.role || !decoded.iat) {
+      if (!authPayload.email || !authPayload.role || !authPayload.iat) {
         console.log('JWT token missing required fields');
         return null;
       }
       
       // Check if token is expired (if exp field exists)
-      if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
+      if (authPayload.exp && authPayload.exp < Math.floor(Date.now() / 1000)) {
         console.log('JWT token expired');
         return null;
       }
       
-      console.log('JWT token verified successfully for:', decoded.email);
-      return decoded;
+      console.log('JWT token verified successfully for:', authPayload.email, 'role:', authPayload.role);
+      return authPayload;
     } else {
       console.log('Detected simple base64 token format');
       
@@ -184,6 +201,7 @@ export function createUnauthorizedResponse(message: string = 'Unauthorized. Plea
 
 /**
  * Decode token on client side (for React components)
+ * Handles both JWT tokens from N8N and simple base64 tokens
  */
 export function decodeClientToken(token: string): AuthPayload | null {
   try {
@@ -202,21 +220,40 @@ export function decodeClientToken(token: string): AuthPayload | null {
       const paddedPayload = payload + '='.repeat((4 - payload.length % 4) % 4);
       
       const decodedBytes = atob(paddedPayload); // Use atob for client-side
-      const decoded = JSON.parse(decodedBytes) as AuthPayload;
+      const decoded = JSON.parse(decodedBytes) as any;
+      
+      // Convert JWT claims to AuthPayload format
+      const authPayload: AuthPayload = {
+        email: decoded.email,
+        role: decoded.role,
+        iat: decoded.iat || Math.floor(Date.now() / 1000),
+        exp: decoded.exp
+      };
+      
+      // Role differentiation: Since N8N gives everyone "admin" role,
+      // differentiate based on email address
+      if (authPayload.email === 'benefitadmin@sinarmasmining.com') {
+        authPayload.role = 'benefit_admin';
+      } else if (authPayload.email === 'hris@sinarmasmining.com' || 
+                authPayload.email === 'admin@sinarmasmining.com') {
+        authPayload.role = 'admin';
+      }
+      
+      console.log('JWT token decoded:', authPayload);
       
       // Validate required fields
-      if (!decoded.email || !decoded.role || !decoded.iat) {
+      if (!authPayload.email || !authPayload.role || !authPayload.iat) {
         return null;
       }
       
       // Check if token is expired (if exp field exists)
-      if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
+      if (authPayload.exp && authPayload.exp < Math.floor(Date.now() / 1000)) {
         return null;
       }
       
-      return decoded;
+      return authPayload;
     } else {
-      // Simple base64 token format
+      // Simple base64 token format (fallback)
       if (!/^[A-Za-z0-9+/]*={0,2}$/.test(token)) {
         return null;
       }
@@ -237,6 +274,7 @@ export function decodeClientToken(token: string): AuthPayload | null {
       return decoded;
     }
   } catch (error) {
+    console.error('Token decode error:', error);
     return null;
   }
 }

@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import api from "@/utils/api";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LoginPage() {
@@ -30,16 +29,28 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await api.post("/api/login", { email, password });
-      if (res.data && res.data.success && res.data.token) {
-        localStorage.setItem("token", res.data.token);
+      // Use the external N8N webhook for authentication
+      const webhookUrl = "https://wecare.techconnect.co.id/webhook/100/app/api/login";
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      const res = await response.json();
+      
+      if (res && res.success && res.token) {
+        localStorage.setItem("token", res.token);
         const basePath = getBasePath();
         router.push("/admin");
       } else {
-        setError(res.data?.message || "Login gagal: token tidak ditemukan.");
+        setError(res?.message || "Login gagal: token tidak ditemukan.");
       }
     } catch (err: any) {
-      const msg = err?.response?.data?.error || err?.response?.data?.message || "Login gagal";
+      console.error('Login error:', err);
+      const msg = err?.message || "Login gagal";
       setError(msg);
     } finally {
       setLoading(false);
