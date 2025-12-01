@@ -97,6 +97,25 @@ export const formatContactDetailsForExcel = (contactDetails: any[], selectedDate
   }));
 };
 
+// Format feedback details for Excel export
+export const formatFeedbackDetailsForExcel = (feedbackDetails: any[]) => {
+  return feedbackDetails.map((item, index) => ({
+    'No': index + 1,
+    'Nama': item.chatName || 'Unknown',
+    'Phone Number': item.userId || '-',
+    'Rating': item.feedbackRating || '-',
+    'Alasan': item.feedbackReason || '-',
+    'Tanggal': item.feedbackDate 
+      ? new Date(item.feedbackDate).toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }) 
+      : '-',
+    'Company Code': item.companyCode || '-'
+  }));
+};
+
 // Export multiple sheets to one Excel file
 export const exportMultiSheetExcel = (
   sheets: Array<{

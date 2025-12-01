@@ -7,6 +7,7 @@ import FilterableChatHistoryTable from "@/components/FilterableChatHistoryTable"
 import UniqueContactsChart from "@/components/UniqueContactsChart";
 import CompanyContactChart from "@/components/CompanyContactChart";
 import DatabaseStorageMonitor from "@/components/DatabaseStorageMonitor";
+import FeedbackRatingChart from "@/components/FeedbackRatingChart";
 import localApi from "@/utils/localApi";
 
 // Interface for chat history item
@@ -241,6 +242,11 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Feedback Rating Monitoring */}
+        <div className="mb-8">
+          <FeedbackRatingChart />
         </div>
 
         {/* Chat Monitoring Dashboard */}
