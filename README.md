@@ -523,23 +523,6 @@ const sheetConfig = {
   ccBenefitTabId: process.env.GOOGLE_SHEETS_CC_BENEFIT_TAB_ID || '333075918',
   publishedUrl: 'https://docs.google.com/spreadsheets/d/e/{SHEET_ID}/pub?output=csv&gid={TAB_ID}'
 };
-```
-
----
-
-## 🔐 Authentication & Security
-
-### Admin Authentication System
-
-#### Credential Management
-```typescript
-// Current admin credentials (production should use hashed passwords)
-const ADMIN_CREDENTIALS = {
-  email: 'hris@sinarmasmining.com',
-  password: 'Hr152019!', // Should be hashed in production
-  role: 'admin'
-};
-```
 
 #### JWT Token System
 ```typescript
