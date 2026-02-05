@@ -60,7 +60,7 @@ This dashboard addresses the complex needs of enterprise WhatsApp customer servi
 ## ✨ Core Features
 
 ### 🔐 Enterprise Authentication System
-- **Admin-Level Security**: Role-based access with hris@sinarmasmining.com admin credentials
+- **Admin-Level Security**: Role-based access with admin@admin.com admin credentials
 - **JWT Token Management**: Secure token-based authentication with 24-hour expiry
 - **Session Management**: Automatic logout and session validation
 - **Multi-Environment Support**: Development and production authentication flows
@@ -523,23 +523,6 @@ const sheetConfig = {
   ccBenefitTabId: process.env.GOOGLE_SHEETS_CC_BENEFIT_TAB_ID || '333075918',
   publishedUrl: 'https://docs.google.com/spreadsheets/d/e/{SHEET_ID}/pub?output=csv&gid={TAB_ID}'
 };
-```
-
----
-
-## 🔐 Authentication & Security
-
-### Admin Authentication System
-
-#### Credential Management
-```typescript
-// Current admin credentials (production should use hashed passwords)
-const ADMIN_CREDENTIALS = {
-  email: 'hris@sinarmasmining.com',
-  password: 'Hr152019!', // Should be hashed in production
-  role: 'admin'
-};
-```
 
 #### JWT Token System
 ```typescript
@@ -1396,7 +1379,7 @@ curl -s https://your-domain.com/sm-admin/api/health | jq .
 # 2. Admin login functionality
 curl -X POST https://your-domain.com/sm-admin/api/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"hris@sinarmasmining.com","password":"Hr152019!"}' | jq .
+  -d '{"email":"admin@admin.com","password":"admin_password "}' | jq .
 
 # 3. Monitor application logs
 pm2 logs sm-admin-wa-dashboard --lines 50
@@ -1437,7 +1420,7 @@ EOF
 After successful deployment, access the dashboard:
 
 1. **Main Dashboard**: `https://your-domain.com/sm-admin/`
-2. **Admin Login**: Use credentials `hris@sinarmasmining.com` / `Hr152019!`
+2. **Admin Login**: Use credentials `admin@admin.com` / `admin_password `
 3. **Health Check**: `https://your-domain.com/sm-admin/api/health`
 4. **Monitoring**: PM2 monitoring with `pm2 monit`
 
@@ -1482,8 +1465,8 @@ NEXTAUTH_URL=https://your-domain.com/sm-admin  # Full production URL
 NEXTAUTH_SECRET=your_32_char_random_string      # Generate strong secret
 
 # Admin Credentials (consider moving to database in production)
-ADMIN_EMAIL=hris@sinarmasmining.com            # Admin email
-ADMIN_PASSWORD=Hr152019!                       # Admin password (hash in production)
+ADMIN_EMAIL=admin@admin.com            # Admin email
+ADMIN_PASSWORD=admin_password                        # Admin password (hash in production)
 ```
 
 #### **External Service Integration**
@@ -2153,8 +2136,8 @@ echo "Data archival completed. Archived data saved to: ${ARCHIVE_DIR}/archived_d
 **Request Body**:
 ```json
 {
-  "email": "hris@sinarmasmining.com",
-  "password": "Hr152019!"
+  "email": "admin@admin.com",
+  "password": "admin_password "
 }
 ```
 
@@ -2165,7 +2148,7 @@ echo "Data archival completed. Archived data saved to: ${ARCHIVE_DIR}/archived_d
   "token": "base64_encoded_jwt_token",
   "message": "Login berhasil",
   "user": {
-    "email": "hris@sinarmasmining.com",
+    "email": "admin@admin.com",
     "role": "admin"
   }
 }
@@ -2660,8 +2643,8 @@ http://localhost:3000
 
 # The app will automatically redirect to /admin
 # Login with default credentials:
-# Email: hris@sinarmasmining.com
-# Password: Hr152019!
+# Email: admin@admin.com
+# Password: admin_password 
 ```
 
 ### Development Workflow
@@ -2700,7 +2683,7 @@ curl http://localhost:3000/api/health
 # 2. Login Test
 curl -X POST http://localhost:3000/api/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"hris@sinarmasmining.com","password":"Hr152019!"}'
+  -d '{"email":"admin@admin.com","password":"admin_password "}'
 
 # Expected response: {"success":true,"token":"..."}
 
@@ -2784,8 +2767,8 @@ After successful installation:
    grep -A 5 "ADMIN_CREDENTIALS" src/utils/auth.ts
    
    # Expected credentials:
-   # Email: hris@sinarmasmining.com
-   # Password: Hr152019!
+   # Email: admin@admin.com
+   # Password: admin_password 
    ```
 
 2. **Test Authentication API**:
@@ -2793,7 +2776,7 @@ After successful installation:
    # Test login endpoint
    curl -X POST http://localhost:3000/api/login \
      -H "Content-Type: application/json" \
-     -d '{"email":"hris@sinarmasmining.com","password":"Hr152019!"}'
+     -d '{"email":"admin@admin.com","password":"admin_password "}'
    
    # Expected response: {"success":true,"token":"..."}
    ```
@@ -3306,8 +3289,8 @@ LOG_LEVEL=debug
 ENABLE_REQUEST_LOGGING=true
 
 # Development Admin Credentials (from auth.ts)
-ADMIN_EMAIL=hris@sinarmasmining.com
-ADMIN_PASSWORD=Hr152019!
+ADMIN_EMAIL=admin@admin.com
+ADMIN_PASSWORD=admin_password 
 ```
 
 ### Production Environment
@@ -3346,8 +3329,8 @@ ENABLE_REQUEST_LOGGING=false
 ENABLE_PERFORMANCE_MONITORING=true
 
 # Production Admin (should move to database)
-ADMIN_EMAIL=hris@sinarmasmining.com
-ADMIN_PASSWORD=Hr152019!
+ADMIN_EMAIL=admin@admin.com
+ADMIN_PASSWORD=admin_password 
 
 # API Configuration
 API_RATE_LIMIT_REQUESTS=100
@@ -3530,8 +3513,8 @@ export function validateConfiguration(): RequiredConfig {
     },
     auth: {
       secret: process.env.NEXTAUTH_SECRET || '',
-      adminEmail: process.env.ADMIN_EMAIL || 'hris@sinarmasmining.com',
-      adminPassword: process.env.ADMIN_PASSWORD || 'Hr152019!'
+      adminEmail: process.env.ADMIN_EMAIL || 'admin@admin.com',
+      adminPassword: process.env.ADMIN_PASSWORD || 'admin_password '
     },
     sheets: {
       defaultSheetId: process.env.GOOGLE_SHEETS_DEFAULT_SHEET_ID || '',
@@ -3789,7 +3772,7 @@ npm run type-check
 # API endpoint testing
 curl -X POST http://localhost:3000/api/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"hris@sinarmasmining.com","password":"Hr152019!"}'
+  -d '{"email":"admin@admin.com","password":"admin_password "}'
 
 # Get token and test protected endpoints
 TOKEN="your_jwt_token_here"
@@ -3982,7 +3965,7 @@ Security: JWT Authentication + SSL/TLS + Rate limiting
 For technical support, feature requests, or bug reports:
 
 1. **GitHub Issues**: [Repository Issues](https://github.com/ayahucubo/sm-admin-wa-dashboard/issues)
-2. **Admin Access**: Use `hris@sinarmasmining.com` for system access
+2. **Admin Access**: Use `admin@admin.com` for system access
 3. **Health Monitoring**: Monitor system status via `/api/health` endpoint
 4. **Production Access**: `https://your-domain.com/sm-admin/`
 
