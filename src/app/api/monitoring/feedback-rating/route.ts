@@ -245,11 +245,13 @@ async function getFeedbackDetails(
 
 export async function GET(request: NextRequest) {
   try {
-    // Authenticate the request
+    // Authenticate the request - supports both admin tokens and API keys
     const authPayload = await authenticateAdmin(request);
     if (!authPayload) {
       return createUnauthorizedResponse();
     }
+
+    console.log(`Feedback Rating API accessed by: ${authPayload.email}`);
 
     // Get query parameters
     const { searchParams } = new URL(request.url);

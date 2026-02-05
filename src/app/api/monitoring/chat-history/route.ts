@@ -121,17 +121,19 @@ async function fetchAllChatHistory(
   }
 }
 
-// GET - Fetch filtered chat history for admin
+// GET - Fetch filtered chat history for admin (Updated with API key support)
 export async function GET(request: NextRequest) {
   try {
     console.log('Chat history API called');
     
-    // Check authentication
+    // Check authentication - now supports both admin tokens and API keys
     const authResult = await authenticateAdmin(request);
     if (!authResult) {
       console.log('Authentication failed');
       return createUnauthorizedResponse('Access denied. Please login to view chat history.');
     }
+
+    console.log(`Chat History API accessed by: ${authResult.email}`);
 
     // Extract query parameters
     const searchParams = request.nextUrl.searchParams;
@@ -189,4 +191,16 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Handle CORS for compatibility
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key',
+    },
+  });
 }

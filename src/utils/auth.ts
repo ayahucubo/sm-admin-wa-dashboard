@@ -14,11 +14,111 @@ const ADMIN_CREDENTIALS = [
   }
 ];
 
+// API Keys for external access (in production, store in database with metadata)
+const VALID_API_KEYS = [
+  {
+    key: 'smm-api-key-admin-2024',
+    name: 'Admin API Key',
+    role: 'api_admin',
+    permissions: ['read', 'write', 'delete'],
+    createdAt: '2024-01-01',
+    lastUsed: null,
+    isActive: true
+  },
+  {
+    key: 'smm-api-key-readonly-2024',
+    name: 'Read Only API Key', 
+    role: 'api_readonly',
+    permissions: ['read'],
+    createdAt: '2024-01-01',
+    lastUsed: null,
+    isActive: true
+  }
+];
+
+// Load API keys from environment variables (both development and production)
+let ENVIRONMENT_LOADED = false;
+
+function loadEnvironmentKeys() {
+  if (ENVIRONMENT_LOADED) return;
+  
+  try {
+    const isApiKeyAuthEnabled = process.env.ENABLE_API_KEY_AUTH === 'true';
+
+    if (isApiKeyAuthEnabled) {
+      const envApiKeys = process.env.VALID_API_KEYS?.split(',') || [];
+      
+      envApiKeys.forEach((key, index) => {
+        if (key && key.trim()) {
+          const isProduction = process.env.NODE_ENV === 'production';
+          VALID_API_KEYS.push({
+            key: key.trim(),
+            name: isProduction ? `Production API Key ${index + 1}` : `Development API Key ${index + 1}`,
+            role: 'api_admin',
+            permissions: ['read', 'write', 'delete'],
+            createdAt: new Date().toISOString(),
+            lastUsed: null,
+            isActive: true
+          });
+        }
+      });
+    }
+    
+    ENVIRONMENT_LOADED = true;
+  } catch (error) {
+    console.error('Error loading environment keys:', error);
+    ENVIRONMENT_LOADED = true; // Don't retry
+  }
+}
+
+// Load environment keys when module is imported
+loadEnvironmentKeys();
+
 export interface AuthPayload {
   email: string;
   role: string;
   iat: number;
   exp?: number; // Optional - some JWT tokens might not include expiration
+}
+
+export interface ApiKeyPayload {
+  key: string;
+  name: string;
+  role: string;
+  permissions: string[];
+  iat: number;
+  exp?: number;
+  keyId: string;
+}
+
+/**
+ * Verify API key credentials
+ */
+export function verifyApiKey(apiKey: string): ApiKeyPayload | null {
+  try {
+    // Ensure environment keys are loaded
+    loadEnvironmentKeys();
+    
+    const validKey = VALID_API_KEYS.find(k => k.key === apiKey && k.isActive);
+    
+    if (!validKey) {
+      return null;
+    }
+    
+    const payload: ApiKeyPayload = {
+      key: validKey.key,
+      name: validKey.name,
+      role: validKey.role,
+      permissions: validKey.permissions,
+      iat: Math.floor(Date.now() / 1000),
+      keyId: validKey.key.substring(0, 8) // Use first 8 chars as ID
+    };
+    
+    return payload;
+  } catch (error) {
+    console.error('API key verification failed:', error);
+    return null;
+  }
 }
 
 /**
@@ -49,17 +149,12 @@ export function generateToken(email: string, role: string): string {
  * Verify and decode token (server-side)
  */
 export function verifyToken(token: string): AuthPayload | null {
-  try {
-    console.log('Verifying token:', token.substring(0, 50) + '...');
-    
+  try {    
     // Check if this is a JWT token (3 parts separated by dots)
-    if (token.includes('.')) {
-      console.log('Detected JWT format token');
-      
+    if (token.includes('.')) {      
       // Split JWT token and decode the payload (second part)
       const parts = token.split('.');
       if (parts.length !== 3) {
-        console.log('Invalid JWT format - must have 3 parts');
         return null;
       }
       
@@ -70,14 +165,12 @@ export function verifyToken(token: string): AuthPayload | null {
       const paddedPayload = payload + '='.repeat((4 - payload.length % 4) % 4);
       
       const decodedBytes = Buffer.from(paddedPayload, 'base64').toString('utf-8');
-      console.log('Decoded JWT payload:', decodedBytes);
-      
       const decoded = JSON.parse(decodedBytes) as any;
       
       // Convert JWT claims to AuthPayload format
       const authPayload: AuthPayload = {
-        email: decoded.email,
-        role: decoded.role,
+        email: decoded.email || '',
+        role: decoded.role || 'user',
         iat: decoded.iat || Math.floor(Date.now() / 1000),
         exp: decoded.exp
       };
@@ -92,60 +185,130 @@ export function verifyToken(token: string): AuthPayload | null {
       }
       
       // Validate required fields
-      if (!authPayload.email || !authPayload.role || !authPayload.iat) {
-        console.log('JWT token missing required fields');
+      if (!authPayload.email || !authPayload.iat) {
         return null;
       }
       
       // Check if token is expired (if exp field exists)
       if (authPayload.exp && authPayload.exp < Math.floor(Date.now() / 1000)) {
-        console.log('JWT token expired');
         return null;
       }
       
-      console.log('JWT token verified successfully for:', authPayload.email, 'role:', authPayload.role);
       return authPayload;
-    } else {
-      console.log('Detected simple base64 token format');
-      
+    } else {      
       // Check if token looks like base64
       if (!/^[A-Za-z0-9+/]*={0,2}$/.test(token)) {
-        console.log('Token is not valid base64');
         return null;
       }
       
       const decodedBytes = Buffer.from(token, 'base64').toString('utf-8');
-      console.log('Decoded token string:', decodedBytes);
-      
-      // Try to parse as JSON
       const decoded = JSON.parse(decodedBytes) as AuthPayload;
       
       // Validate required fields
-      if (!decoded.email || !decoded.role || !decoded.iat || !decoded.exp) {
-        console.log('Token missing required fields');
+      if (!decoded.email || !decoded.role || !decoded.iat) {
         return null;
       }
       
       // Check if token is expired
       if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
-        console.log('Token expired');
         return null;
       }
       
-      console.log('Simple token verified successfully for:', decoded.email);
       return decoded;
     }
   } catch (error) {
     console.error('Token verification failed:', error);
-    console.log('Token that failed:', token);
     return null;
   }
 }
 
 /**
- * Extract token from Authorization header
+ * Extract token from Authorization header (supports both Bearer token and API key)
  */
-export function getTokenFromRequest(request: NextRequest): string | null {
+export function getTokenFromRequest(request: NextRequest): { token: string; type: 'bearer' | 'apikey' } | null {
+  const authHeader = request.headers.get('Authorization');
+  const apiKeyHeader = request.headers.get('X-API-Key');
+  
+  // Check for API key in X-API-Key header first
+  if (apiKeyHeader) {
+    return { token: apiKeyHeader, type: 'apikey' };
+  }
+  
+  // Check for Bearer token in Authorization header
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    
+    // Determine if this is an API key (not JWT format) or admin token
+    if (!token.includes('.') && (token.startsWith('smm-api-key-') || token.startsWith('smm-prod-') || token.startsWith('smm-dev-'))) {
+      return { token, type: 'apikey' };
+    }
+    
+    return { token, type: 'bearer' };
+  }
+  
+  return null;
+}
+
+/**
+ * Authenticate request with support for both admin tokens and API keys
+ */
+export async function authenticateRequest(
+  request: NextRequest,
+  requiredPermissions?: string[]
+): Promise<{ payload: AuthPayload | ApiKeyPayload; type: 'admin' | 'apikey' } | null> {
+  const authData = getTokenFromRequest(request);
+  
+  if (!authData) {
+    console.log('No authentication token found in request');
+    return null;
+  }
+  
+  if (authData.type === 'apikey') {
+    console.log('Attempting API key authentication...');
+    const apiPayload = verifyApiKey(authData.token);
+    
+    if (!apiPayload) {
+      console.log('API key verification failed');
+      return null;
+    }
+    
+    // Check permissions if required
+    if (requiredPermissions && requiredPermissions.length > 0) {
+      const hasPermission = requiredPermissions.some(permission => 
+        apiPayload.permissions.includes(permission)
+      );
+      
+      if (!hasPermission) {
+        console.log('API key lacks required permissions:', requiredPermissions);
+        return null;
+      }
+    }
+    
+    console.log('API key authenticated successfully:', apiPayload.name);
+    return { payload: apiPayload, type: 'apikey' };
+  } else {
+    console.log('Attempting admin token authentication...');
+    const adminPayload = verifyToken(authData.token);
+    
+    if (!adminPayload) {
+      console.log('Admin token verification failed');
+      return null;
+    }
+    
+    if (adminPayload.role !== 'admin' && adminPayload.role !== 'benefit_admin') {
+      console.log('User role is not authorized:', adminPayload.role);
+      return null;
+    }
+    
+    console.log('Admin authenticated successfully:', adminPayload.email, 'Role:', adminPayload.role);
+    return { payload: adminPayload, type: 'admin' };
+  }
+}
+
+/**
+ * Extract token from Authorization header (legacy function - kept for backward compatibility)
+ */
+export function getTokenFromRequest_Legacy(request: NextRequest): string | null {
   const authHeader = request.headers.get('Authorization');
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -156,10 +319,29 @@ export function getTokenFromRequest(request: NextRequest): string | null {
 }
 
 /**
- * Authenticate admin user
+ * Authenticate admin user (legacy function - maintained for backward compatibility)
  */
 export async function authenticateAdmin(request: NextRequest): Promise<AuthPayload | null> {
-  const token = getTokenFromRequest(request);
+  // First try the new authentication system
+  const authResult = await authenticateRequest(request);
+  
+  if (authResult) {
+    if (authResult.type === 'admin') {
+      return authResult.payload as AuthPayload;
+    } else {
+      // For API keys, create a compatible AuthPayload
+      const apiPayload = authResult.payload as ApiKeyPayload;
+      return {
+        email: `api-user-${apiPayload.keyId}@system.local`,
+        role: apiPayload.role,
+        iat: apiPayload.iat,
+        exp: apiPayload.exp
+      };
+    }
+  }
+  
+  // Fallback to legacy method
+  const token = getTokenFromRequest_Legacy(request);
   
   if (!token) {
     console.log('No token found in request');
@@ -190,9 +372,30 @@ export function createUnauthorizedResponse(message: string = 'Unauthorized. Plea
   return new Response(JSON.stringify({
     success: false,
     error: message,
-    code: 'UNAUTHORIZED'
+    code: 'UNAUTHORIZED',
+    authMethods: {
+      adminToken: 'Use Authorization: Bearer <admin-token> header',
+      apiKey: 'Use X-API-Key: <api-key> header or Authorization: Bearer <api-key>'
+    }
   }), {
     status: 401,
+    headers: {
+      'Content-Type': 'application/json',
+      'WWW-Authenticate': 'Bearer, API-Key'
+    },
+  });
+}
+
+/**
+ * Create forbidden response for insufficient permissions
+ */
+export function createForbiddenResponse(message: string = 'Insufficient permissions to access this resource.') {
+  return new Response(JSON.stringify({
+    success: false,
+    error: message,
+    code: 'FORBIDDEN'
+  }), {
+    status: 403,
     headers: {
       'Content-Type': 'application/json',
     },

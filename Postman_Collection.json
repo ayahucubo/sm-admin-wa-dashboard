@@ -1,0 +1,291 @@
+{
+  "info": {
+    "name": "Sinar Mas Mining Admin API",
+    "description": "REST API for feedback, chat history, and admin dashboard functions",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "health"]
+            }
+          }
+        },
+        {
+          "name": "API Information",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat History APIs",
+      "item": [
+        {
+          "name": "Get Comprehensive Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chat?limit=10&includeStatistics=true&menu=menu_cuti",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chat"],
+              "query": [
+                {"key": "limit", "value": "10"},
+                {"key": "includeStatistics", "value": "true"},
+                {"key": "menu", "value": "menu_cuti"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Active Chats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chat/active?limit=20&includeSummary=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chat", "active"],
+              "query": [
+                {"key": "limit", "value": "20"},
+                {"key": "includeSummary", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Individual Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chat/628123456789?includeStatistics=true&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chat", "628123456789"],
+              "query": [
+                {"key": "includeStatistics", "value": "true"},
+                {"key": "limit", "value": "50"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feedback Tracker APIs",
+      "item": [
+        {
+          "name": "Get Feedback Trackers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/feedback/tracker?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "feedback", "tracker"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Feedback Tracker",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"user123\",\n  \"chatOrigin\": \"whatsapp\",\n  \"lastChatTimestamp\": \"2024-02-05T10:30:00Z\",\n  \"feedbackSent\": true,\n  \"feedbackRating\": 5,\n  \"feedbackReason\": \"Very helpful\",\n  \"xid\": \"xa-123\",\n  \"channelId\": \"channel-456\",\n  \"accountId\": \"acc-789\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/feedback/tracker",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "feedback", "tracker"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feedback History APIs",
+      "item": [
+        {
+          "name": "Get Feedback History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/feedback/history?page=1&limit=20&includeSummary=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "feedback", "history"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"},
+                {"key": "includeSummary", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Feedback History",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"user123\",\n  \"feedbackRating\": 5,\n  \"feedbackReason\": \"Excellent service\",\n  \"chatOrigin\": \"whatsapp\",\n  \"chatName\": \"HR Assistant Chat\",\n  \"companyCode\": \"SMM001\",\n  \"employeeNumber\": \"EMP123\",\n  \"feedbackDate\": \"2024-02-05\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/feedback/history",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "feedback", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Legacy APIs",
+      "item": [
+        {
+          "name": "Legacy Feedback Rating",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/monitoring/feedback-rating?days=30&type=chart",
+              "host": ["{{base_url}}"],
+              "path": ["api", "monitoring", "feedback-rating"],
+              "query": [
+                {"key": "days", "value": "30"},
+                {"key": "type", "value": "chart"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Legacy Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/monitoring/chat-history?menu=menu_cuti&page=1&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "monitoring", "chat-history"],
+              "query": [
+                {"key": "menu", "value": "menu_cuti"},
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "50"}
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "api_key",
+      "value": "smm-prod-55b612d24a000915f3500ea652b75c14"
+    }
+  ]
+}
