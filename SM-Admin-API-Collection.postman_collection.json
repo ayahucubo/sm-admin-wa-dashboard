@@ -29,9 +29,9 @@
 							"raw": "{\n  \"email\": \"benefitadmin@sinarmasmining.com\",\n  \"password\": \"benefit2024\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/login",
+							"raw": "{{baseUrl}}/login/",
 							"host": ["{{baseUrl}}"],
-							"path": ["login"]
+							"path": ["login", ""]
 						}
 					}
 				}
@@ -51,9 +51,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/health",
+							"raw": "{{baseUrl}}/health/",
 							"host": ["{{baseUrl}}"],
-							"path": ["health"]
+							"path": ["health", ""]
 						}
 					}
 				},
@@ -68,9 +68,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/debug",
+							"raw": "{{baseUrl}}/debug/",
 							"host": ["{{baseUrl}}"],
-							"path": ["debug"]
+							"path": ["debug", ""]
 						}
 					}
 				},
@@ -734,12 +734,12 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "https://wecare.techconnect.co.id/sm-admin/app/api",
+			"value": "https://wecare.techconnect.co.id/sm-admin/api",
 			"type": "string"
 		},
 		{
 			"key": "apiKey",
-			"value": "your-api-key-here",
+			"value": "sm2024_admin_api_key_secure_access",
 			"type": "string"
 		}
 	]
