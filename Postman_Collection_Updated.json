@@ -1,16 +1,16 @@
 {
   "info": {
-    "name": "Sinar Mas Mining Admin API - Production Ready",
-    "description": "REST API for feedback, chat history, and admin dashboard functions with security hardening",
-    "version": "1.1.0",
+    "name": "Sinar Mas Mining Admin API - Fixed Routing",
+    "description": "REST API for feedback, chat history, and admin dashboard functions with fixed routing for both development and production",
+    "version": "1.2.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Health & Info",
+      "name": "Health & Info - Testing Both Routes",
       "item": [
         {
-          "name": "Health Check (Direct API)",
+          "name": "Health Check (Basic - Direct Route)",
           "request": {
             "method": "GET",
             "header": [
@@ -26,15 +26,41 @@
               }
             ],
             "url": {
-              "raw": "{{direct_api_url}}/api/v1/health",
-              "host": ["{{direct_api_url}}"],
+              "raw": "{{base_url}}/api/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Basic health check endpoint - works in both dev and production"
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check (V1 - Direct Route)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/health",
+              "host": ["{{base_url}}"],
               "path": ["api", "v1", "health"]
             },
-            "description": "Test API health with direct path (no basePath)"
-          }
+            "description": "Advanced health check with authentication info - direct API route"
+          },
+          "response": []
         },
         {
-          "name": "Health Check (BasePath API)",
+          "name": "Health Check (V1 - BasePath Route)",
           "request": {
             "method": "GET",
             "header": [
@@ -50,15 +76,16 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/health/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "health", ""]
+              "raw": "{{prod_url}}/sm-admin/api/v1/health",
+              "host": ["{{prod_url}}"],
+              "path": ["sm-admin", "api", "v1", "health"]
             },
-            "description": "Test API health with basePath routing"
-          }
+            "description": "Health check via basePath routing (production only)"
+          },
+          "response": []
         },
         {
-          "name": "API Information (Direct)",
+          "name": "API Information (V1)",
           "request": {
             "method": "GET",
             "header": [
@@ -74,12 +101,13 @@
               }
             ],
             "url": {
-              "raw": "{{direct_api_url}}/api/v1",
-              "host": ["{{direct_api_url}}"],
+              "raw": "{{base_url}}/api/v1",
+              "host": ["{{base_url}}"],
               "path": ["api", "v1"]
             },
-            "description": "Get API information via direct path"
-          }
+            "description": "Get complete API information and available endpoints"
+          },
+          "response": []
         }
       ]
     },

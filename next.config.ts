@@ -4,18 +4,12 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   // Only use basePath in production for frontend routes
   basePath: process.env.NODE_ENV === 'production' ? '/sm-admin' : '',
-  trailingSlash: true,
+  trailingSlash: false, // Disable automatic trailing slash for cleaner API routing
   // Ensure API routes work both with and without basePath in all environments
   async rewrites() {
     const rewrites = [];
     
-    // Always allow API access without basePath for direct API calls
-    rewrites.push({
-      source: '/api/:path*',
-      destination: '/api/:path*',
-    });
-
-    // In production, also allow API access through basePath
+    // In production, allow API access through basePath but rewrite internally
     if (process.env.NODE_ENV === 'production') {
       rewrites.push({
         source: '/sm-admin/api/:path*',
@@ -23,11 +17,17 @@ const nextConfig: NextConfig = {
       });
     }
 
+    // Always allow direct API access (for both dev and production)
+    rewrites.push({
+      source: '/api/:path*',
+      destination: '/api/:path*',
+    });
+
     return {
       beforeFiles: rewrites,
     };
   },
-  // Ensure API routes are not affected by basePath
+  // Ensure API routes have proper CORS headers
   async headers() {
     return [
       {
@@ -44,6 +44,10 @@ const nextConfig: NextConfig = {
           {
             key: 'Access-Control-Allow-Headers',
             value: 'Content-Type, Authorization, X-API-Key',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
           },
         ],
       },
