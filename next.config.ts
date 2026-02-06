@@ -1,10 +1,9 @@
 import type { NextConfig } from 'next'
 
-// Configuration for nginx deployment without basePath
-// Nginx strips /sm-admin prefix before proxying to Next.js
+// Dynamic configuration based on environment and nginx setup
 const nextConfig: NextConfig = {
-  // No basePath - nginx handles path rewriting  
-  // Nginx: /sm-admin/api/health -> strips /sm-admin -> proxy /api/health to Next.js
+  // Use basePath only if explicitly set (for testing different strategies)
+  basePath: process.env.NEXT_CONFIG_BASEPATH || (process.env.NODE_ENV === 'production' ? '' : ''),
   
   // Enable trailing slash to match nginx behavior
   trailingSlash: true,
