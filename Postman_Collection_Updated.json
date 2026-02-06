@@ -76,9 +76,9 @@
               }
             ],
             "url": {
-              "raw": "{{prod_url}}/sm-admin/api/v1/health",
-              "host": ["{{prod_url}}"],
-              "path": ["sm-admin", "api", "v1", "health"]
+              "raw": "{{basepath_url}}/api/v1/health",
+              "host": ["{{basepath_url}}"],
+              "path": ["api", "v1", "health"]
             },
             "description": "Health check via basePath routing (production only)"
           },
@@ -131,9 +131,9 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/chat/?limit=10&includeStatistics=true&menu=menu_cuti&page=1",
+              "raw": "{{base_url}}/api/v1/chat?limit=10&includeStatistics=true&menu=menu_cuti&page=1",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "chat", ""],
+              "path": ["api", "v1", "chat"],
               "query": [
                 {"key": "limit", "value": "10", "description": "Number of records to return"},
                 {"key": "includeStatistics", "value": "true", "description": "Include statistics in response"},
@@ -161,9 +161,9 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/chat/active/?limit=20&includeSummary=true&page=1",
+              "raw": "{{base_url}}/api/v1/chat/active?limit=20&includeSummary=true&page=1",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "chat", "active", ""],
+              "path": ["api", "v1", "chat", "active"],
               "query": [
                 {"key": "limit", "value": "20", "description": "Number of active chats to return"},
                 {"key": "includeSummary", "value": "true", "description": "Include summary statistics"},
@@ -513,33 +513,21 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "https://wecare.techconnect.co.id/sm-admin",
+      "value": "{{production_direct_url}}",
       "type": "string",
-      "description": "Production API with basePath"
+      "description": "Current base URL (use environment variables)"
     },
     {
-      "key": "direct_api_url",
-      "value": "https://wecare.techconnect.co.id",
+      "key": "basepath_url",
+      "value": "{{production_basepath_url}}",
       "type": "string",
-      "description": "Production API without basePath"
+      "description": "URL with basePath for testing"
     },
     {
       "key": "api_key",
-      "value": "smm-prod-55b612d24a000915f3500ea652b75c14",
+      "value": "{{api_key}}",
       "type": "string",
-      "description": "Production API Key"
-    },
-    {
-      "key": "admin_token",
-      "value": "your-admin-jwt-token-here",
-      "type": "string",
-      "description": "Admin JWT token for monitoring endpoints"
-    },
-    {
-      "key": "dev_base_url",
-      "value": "http://localhost:3000",
-      "type": "string",
-      "description": "Local development base URL"
+      "description": "API Key from environment"
     }
   ],
   "auth": {
