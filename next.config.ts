@@ -1,11 +1,12 @@
 import type { NextConfig } from 'next'
 
-// Configuration for production nginx routing with /sm-admin/ path
+// Configuration for production nginx routing
+// Nginx already handles /sm-admin/ rewrite, so no basePath needed
 const nextConfig: NextConfig = {
-  // Add basePath for production deployment behind nginx
-  basePath: process.env.NODE_ENV === 'production' ? '/sm-admin' : '',
+  // Remove basePath - nginx handles path rewriting
+  // basePath is removed because nginx rewrite ^/sm-admin(/.*)$ $1 removes /sm-admin prefix
   
-  // Enable trailing slash to match nginx proxy_pass behavior
+  // Enable trailing slash to match nginx behavior
   trailingSlash: true,
   
   // No rewrites needed - let nginx and middleware handle routing
