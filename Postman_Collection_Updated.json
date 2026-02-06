@@ -1,0 +1,507 @@
+{
+  "info": {
+    "name": "Sinar Mas Mining Admin API - Production Ready",
+    "description": "REST API for feedback, chat history, and admin dashboard functions with security hardening",
+    "version": "1.1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/health/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "health", ""]
+            },
+            "description": "Check API health and test authentication"
+          }
+        },
+        {
+          "name": "API Information",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", ""]
+            },
+            "description": "Get API information and available endpoints"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat History APIs (N8N Integration)",
+      "item": [
+        {
+          "name": "Get Comprehensive Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chat/?limit=10&includeStatistics=true&menu=menu_cuti&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chat", ""],
+              "query": [
+                {"key": "limit", "value": "10", "description": "Number of records to return"},
+                {"key": "includeStatistics", "value": "true", "description": "Include statistics in response"},
+                {"key": "menu", "value": "menu_cuti", "description": "Filter by menu type"},
+                {"key": "page", "value": "1", "description": "Page number"}
+              ]
+            },
+            "description": "Get comprehensive chat history with N8N integration"
+          }
+        },
+        {
+          "name": "Get Active Chats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chat/active/?limit=20&includeSummary=true&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chat", "active", ""],
+              "query": [
+                {"key": "limit", "value": "20", "description": "Number of active chats to return"},
+                {"key": "includeSummary", "value": "true", "description": "Include summary statistics"},
+                {"key": "page", "value": "1", "description": "Page number"}
+              ]
+            },
+            "description": "Get active chats using N8N database integration"
+          }
+        },
+        {
+          "name": "Get Individual Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chat/628123456789/?includeStatistics=true&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chat", "628123456789", ""],
+              "query": [
+                {"key": "includeStatistics", "value": "true", "description": "Include chat statistics"},
+                {"key": "limit", "value": "50", "description": "Maximum number of chat messages"}
+              ]
+            },
+            "description": "Get individual chat history by phone number using N8N integration"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feedback Tracker APIs",
+      "item": [
+        {
+          "name": "Get Feedback Trackers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/feedback/tracker/?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "feedback", "tracker", ""],
+              "query": [
+                {"key": "page", "value": "1", "description": "Page number"},
+                {"key": "limit", "value": "20", "description": "Records per page"}
+              ]
+            },
+            "description": "Get paginated list of feedback tracker records"
+          }
+        },
+        {
+          "name": "Get Feedback Trackers by User ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/feedback/tracker/?userId=user123&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "feedback", "tracker", ""],
+              "query": [
+                {"key": "userId", "value": "user123", "description": "Filter by specific user ID"},
+                {"key": "page", "value": "1", "description": "Page number"},
+                {"key": "limit", "value": "10", "description": "Records per page"}
+              ]
+            },
+            "description": "Get feedback tracker records for a specific user"
+          }
+        },
+        {
+          "name": "Create Feedback Tracker",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"user123\",\n  \"chatOrigin\": \"whatsapp\",\n  \"lastChatTimestamp\": \"2026-02-06T10:30:00Z\",\n  \"feedbackSent\": true,\n  \"feedbackRating\": 5,\n  \"feedbackReason\": \"Very helpful service\",\n  \"xid\": \"xa-123\",\n  \"channelId\": \"channel-456\",\n  \"accountId\": \"acc-789\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/feedback/tracker/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "feedback", "tracker", ""]
+            },
+            "description": "Create or update a feedback tracker record"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feedback History APIs",
+      "item": [
+        {
+          "name": "Get Feedback History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/feedback/history/?page=1&limit=20&includeSummary=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "feedback", "history", ""],
+              "query": [
+                {"key": "page", "value": "1", "description": "Page number"},
+                {"key": "limit", "value": "20", "description": "Records per page"},
+                {"key": "includeSummary", "value": "true", "description": "Include summary statistics"}
+              ]
+            },
+            "description": "Get feedback history with summary statistics"
+          }
+        },
+        {
+          "name": "Create Feedback History",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"user123\",\n  \"feedbackRating\": 5,\n  \"feedbackReason\": \"Excellent service and quick response\",\n  \"chatOrigin\": \"whatsapp\",\n  \"chatName\": \"HR Assistant Chat\",\n  \"companyCode\": \"SMM001\",\n  \"employeeNumber\": \"EMP123\",\n  \"feedbackDate\": \"2026-02-06\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/feedback/history/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "feedback", "history", ""]
+            },
+            "description": "Create a new feedback history record"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Legacy & Monitoring APIs",
+      "item": [
+        {
+          "name": "Legacy Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/monitoring/chat-history/?menu=menu_cuti&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "monitoring", "chat-history", ""],
+              "query": [
+                {"key": "menu", "value": "menu_cuti", "description": "Filter by menu type"},
+                {"key": "page", "value": "1", "description": "Page number"},
+                {"key": "limit", "value": "20", "description": "Records per page"}
+              ]
+            },
+            "description": "Legacy chat history API (backward compatibility)"
+          }
+        },
+        {
+          "name": "Monitoring Feedback Rating (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization", 
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/monitoring/feedback-rating/?days=30&type=chart",
+              "host": ["{{base_url}}"],
+              "path": ["api", "monitoring", "feedback-rating", ""],
+              "query": [
+                {"key": "days", "value": "30", "description": "Number of days to analyze"},
+                {"key": "type", "value": "chart", "description": "Response format type"}
+              ]
+            },
+            "description": "Get feedback rating analytics (Requires Admin Token)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Development & Testing",
+      "item": [
+        {
+          "name": "Test Connection (No Auth)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/health/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", ""]
+            },
+            "description": "Test basic connection without authentication"
+          }
+        },
+        {
+          "name": "Debug API Info (Development)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Debug-Mode",
+                "value": "true",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/?debug=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", ""],
+              "query": [
+                {"key": "debug", "value": "true", "description": "Enable debug mode (development only)", "disabled": false}
+              ]
+            },
+            "description": "Get detailed API information with debug info"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set timestamp for requests",
+          "pm.globals.set('timestamp', new Date().toISOString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test scripts",
+          "pm.test('Response time is less than 2000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "pm.test('Response has proper Content-Type', function () {",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});",
+          "",
+          "if (pm.response.code === 200) {",
+          "    pm.test('Response contains success field', function () {",
+          "        const jsonData = pm.response.json();",
+          "        pm.expect(jsonData).to.have.property('success');",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://wecare.techconnect.co.id/sm-admin",
+      "type": "string",
+      "description": "Production API base URL"
+    },
+    {
+      "key": "api_key",
+      "value": "smm-prod-55b612d24a000915f3500ea652b75c14",
+      "type": "string",
+      "description": "Production API Key"
+    },
+    {
+      "key": "admin_token",
+      "value": "your-admin-jwt-token-here",
+      "type": "string",
+      "description": "Admin JWT token for monitoring endpoints"
+    },
+    {
+      "key": "dev_base_url",
+      "value": "http://localhost:3000",
+      "type": "string",
+      "description": "Local development base URL"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  }
+}
