@@ -1,7 +1,10 @@
 import type { NextConfig } from 'next'
 
-// Configuration to match nginx proxy_pass behavior (which adds trailing slash)
+// Configuration for production nginx routing with /sm-admin/ path
 const nextConfig: NextConfig = {
+  // Add basePath for production deployment behind nginx
+  basePath: process.env.NODE_ENV === 'production' ? '/sm-admin' : '',
+  
   // Enable trailing slash to match nginx proxy_pass behavior
   trailingSlash: true,
   
