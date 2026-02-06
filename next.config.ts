@@ -2,14 +2,18 @@ import type { NextConfig } from 'next'
 
 // Configuration compatible with existing nginx rewrite rules
 const nextConfig: NextConfig = {
-  // Remove basePath - let nginx handle the routing
-  // basePath: process.env.NODE_ENV === 'production' ? '/sm-admin' : '',
-  trailingSlash: false,
+  // Enable trailing slash to match nginx proxy_pass behavior
+  trailingSlash: true,
   
-  // Simple rewrites for API routes
+  // Simple rewrites for API routes - handle both with and without trailing slash
   async rewrites() {
     return {
       beforeFiles: [
+        // Handle trailing slash API requests from nginx
+        {
+          source: '/api/:path*/',
+          destination: '/api/:path*',
+        },
         // Direct API access
         {
           source: '/api/:path*',

@@ -26,14 +26,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
   
-  // Handle direct API calls (development and production)
+  // Handle direct API calls (development and production) including nginx proxy calls
   if (pathname.startsWith('/api/')) {
-    // Remove trailing slash if present (except for root API)
+    // Remove trailing slash if present (except for root API) - USE REWRITE for nginx compatibility
     if (pathname.endsWith('/') && pathname !== '/api/') {
       const newPath = pathname.slice(0, -1)
       const url = request.nextUrl.clone()
       url.pathname = newPath
-      return NextResponse.redirect(url)
+      
+      console.log(`[MIDDLEWARE] Removing trailing slash: ${pathname} → ${newPath}`)
+      return NextResponse.rewrite(url)
     }
     
     // Allow the request to proceed

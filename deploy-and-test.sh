@@ -46,6 +46,13 @@ if echo "$HEALTH_RESPONSE" | grep -q '"status":"healthy"'; then
     echo "✅ Health endpoint working via nginx"
 else
     echo "❌ Health endpoint failed: $HEALTH_RESPONSE"
+    # Try with trailing slash (nginx behavior)
+    HEALTH_RESPONSE_SLASH=$(curl -s "$BASE_URL/sm-admin/api/health/" -H "X-API-Key: $API_KEY")
+    if echo "$HEALTH_RESPONSE_SLASH" | grep -q '"status":"healthy"'; then
+        echo "✅ Health endpoint working with trailing slash"
+    else
+        echo "❌ Health endpoint with slash also failed: $HEALTH_RESPONSE_SLASH"
+    fi
 fi
 
 echo ""
@@ -55,6 +62,11 @@ if echo "$V1_HEALTH_RESPONSE" | grep -q '"status":"healthy"'; then
     echo "✅ V1 Health endpoint working via nginx"
 else
     echo "❌ V1 Health endpoint failed: $V1_HEALTH_RESPONSE"
+    # Try with trailing slash
+    V1_HEALTH_RESPONSE_SLASH=$(curl -s "$BASE_URL/sm-admin/api/v1/health/" -H "X-API-Key: $API_KEY")
+    if echo "$V1_HEALTH_RESPONSE_SLASH" | grep -q '"status":"healthy"'; then
+        echo "✅ V1 Health endpoint working with trailing slash"
+    fi
 fi
 
 echo ""
@@ -65,6 +77,12 @@ if echo "$V1_INFO_RESPONSE" | grep -q '"success":true'; then
     echo "   Response preview: $(echo "$V1_INFO_RESPONSE" | cut -c1-100)..."
 else
     echo "❌ V1 Info endpoint failed: $V1_INFO_RESPONSE"
+    # Try with trailing slash
+    V1_INFO_RESPONSE_SLASH=$(curl -s -m 10 "$BASE_URL/sm-admin/api/v1/" -H "X-API-Key: $API_KEY")
+    if echo "$V1_INFO_RESPONSE_SLASH" | grep -q '"success":true'; then
+        echo "✅ V1 Info endpoint working with trailing slash"
+        echo "   Response preview: $(echo "$V1_INFO_RESPONSE_SLASH" | cut -c1-100)..."
+    fi
 fi
 
 echo ""
@@ -74,6 +92,11 @@ if echo "$DIAG_RESPONSE" | grep -q '"success":true'; then
     echo "✅ Diagnostic endpoint working via nginx"
 else
     echo "❌ Diagnostic endpoint failed: $DIAG_RESPONSE"
+    # Try with trailing slash
+    DIAG_RESPONSE_SLASH=$(curl -s "$BASE_URL/sm-admin/api/diagnostic/")
+    if echo "$DIAG_RESPONSE_SLASH" | grep -q '"success":true'; then
+        echo "✅ Diagnostic endpoint working with trailing slash"
+    fi
 fi
 
 echo ""
