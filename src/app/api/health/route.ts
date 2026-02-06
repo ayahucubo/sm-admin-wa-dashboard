@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     console.log('Request URL:', request.url);
     
     // Simple health check without database dependency first
-    const basicResponse = {
+    const basicResponse: any = {
       success: true,
       status: 'healthy',
       timestamp: new Date().toISOString(),
@@ -24,15 +24,15 @@ export async function GET(request: NextRequest) {
       
       if (healthCheck.success) {
         basicResponse.database = 'connected';
-        (basicResponse as any).dbDetails = healthCheck;
+        basicResponse.dbDetails = healthCheck;
       } else {
         basicResponse.database = 'disconnected';
-        (basicResponse as any).dbError = healthCheck.message;
+        basicResponse.dbError = healthCheck.error;
       }
     } catch (dbError) {
       console.warn('Database check failed:', dbError);
       basicResponse.database = 'unavailable';
-      (basicResponse as any).dbError = dbError instanceof Error ? dbError.message : 'Database check failed';
+      basicResponse.dbError = dbError instanceof Error ? dbError.message : 'Database check failed';
     }
 
     return NextResponse.json(basicResponse, { 
