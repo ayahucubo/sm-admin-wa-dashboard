@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build --no-lint",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:api": "node test-api.js",
+    "test:api:prod": "node test-api.js https://wecare.techconnect.co.id"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4",

@@ -10,7 +10,31 @@
       "name": "Health & Info",
       "item": [
         {
-          "name": "Health Check",
+          "name": "Health Check (Direct API)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{direct_api_url}}/api/v1/health",
+              "host": ["{{direct_api_url}}"],
+              "path": ["api", "v1", "health"]
+            },
+            "description": "Test API health with direct path (no basePath)"
+          }
+        },
+        {
+          "name": "Health Check (BasePath API)",
           "request": {
             "method": "GET",
             "header": [
@@ -30,11 +54,11 @@
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "health", ""]
             },
-            "description": "Check API health and test authentication"
+            "description": "Test API health with basePath routing"
           }
         },
         {
-          "name": "API Information",
+          "name": "API Information (Direct)",
           "request": {
             "method": "GET",
             "header": [
@@ -50,11 +74,11 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", ""]
+              "raw": "{{direct_api_url}}/api/v1",
+              "host": ["{{direct_api_url}}"],
+              "path": ["api", "v1"]
             },
-            "description": "Get API information and available endpoints"
+            "description": "Get API information via direct path"
           }
         }
       ]
@@ -463,7 +487,13 @@
       "key": "base_url",
       "value": "https://wecare.techconnect.co.id/sm-admin",
       "type": "string",
-      "description": "Production API base URL"
+      "description": "Production API with basePath"
+    },
+    {
+      "key": "direct_api_url",
+      "value": "https://wecare.techconnect.co.id",
+      "type": "string",
+      "description": "Production API without basePath"
     },
     {
       "key": "api_key",
