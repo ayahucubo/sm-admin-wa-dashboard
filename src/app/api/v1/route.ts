@@ -4,19 +4,22 @@ import { authenticateRequest } from '@/utils/auth';
 // GET /api/v1 - API Information and Available Endpoints
 export async function GET(request: NextRequest) {
   try {
-    console.log('=== API INFO ENDPOINT DEBUG ===');
-    console.log('Request URL:', request.url);
-    console.log('Request Headers:', Object.fromEntries(request.headers.entries()));
-    console.log('ENV VALID_API_KEYS:', process.env.VALID_API_KEYS);
-    console.log('ENV ENABLE_API_KEY_AUTH:', process.env.ENABLE_API_KEY_AUTH);
-    console.log('NODE_ENV:', process.env.NODE_ENV);
+    // Only log in development mode
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('=== API INFO ENDPOINT DEBUG ===');
+      console.log('Request URL:', request.url);
+      console.log('NODE_ENV:', process.env.NODE_ENV);
+    }
     
     // Check if user is authenticated (optional for this endpoint)
     const authResult = await authenticateRequest(request, ['read']);
     const isAuthenticated = !!authResult;
     
-    console.log('Auth Result:', authResult);
-    console.log('Is Authenticated:', isAuthenticated);
+    // Only log auth result in development
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Auth Result:', authResult);
+      console.log('Is Authenticated:', isAuthenticated);
+    }
 
     const apiInfo: any = {
       success: true,
@@ -139,11 +142,20 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const allowedOrigins = process.env.NODE_ENV === 'production' 
+      ? ['https://wecare.techconnect.co.id'] 
+      : ['*'];
+    
     return NextResponse.json(apiInfo, {
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production' 
+          ? 'https://wecare.techconnect.co.id' 
+          : '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
       }
     });
 
@@ -162,9 +174,14 @@ export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production' 
+        ? 'https://wecare.techconnect.co.id' 
+        : '*',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block'
     },
   });
 }
