@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Handle API routes with basePath configuration
-  if (request.nextUrl.pathname.startsWith('/api/')) {
+  const pathname = request.nextUrl.pathname
+  
+  // Handle API routes specifically - prevent trailing slash redirects
+  if (pathname.startsWith('/api/')) {
+    // For API routes, we need to handle both with and without trailing slash
     const response = NextResponse.next()
     
     // Add CORS headers for API routes
@@ -11,7 +14,7 @@ export function middleware(request: NextRequest) {
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key')
     
-    // Prevent trailing slash redirects for API routes (avoid 308)
+    // Important: Return next() to prevent any redirects for API routes
     return response
   }
   
@@ -20,6 +23,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // Match API routes to prevent trailing slash redirects
     '/api/:path*'
   ]
 }

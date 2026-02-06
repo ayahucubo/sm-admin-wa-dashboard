@@ -1,12 +1,12 @@
 import type { NextConfig } from 'next'
 
-// Dynamic configuration based on environment and nginx setup
+// Configuration for nginx deployment with API fixes
 const nextConfig: NextConfig = {
   // Use basePath only if explicitly set (for testing different strategies)
-  basePath: process.env.NEXT_CONFIG_BASEPATH || (process.env.NODE_ENV === 'production' ? '' : ''),
+  basePath: process.env.NEXT_CONFIG_BASEPATH || (process.env.NODE_ENV === 'production' ? '/sm-admin' : ''),
   
-  // Enable trailing slash to match nginx behavior
-  trailingSlash: true,
+  // Disable trailing slash to prevent API redirects
+  trailingSlash: false,
   
   // No rewrites needed - let nginx and middleware handle routing
   async rewrites() {
