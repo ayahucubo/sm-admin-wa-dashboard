@@ -4,7 +4,20 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   // Only use basePath in production
   basePath: process.env.NODE_ENV === 'production' ? '/sm-admin' : '',
-  trailingSlash: false
+  // Enable trailing slash to avoid 308 redirects in production
+  trailingSlash: true,
+  // Skip trailing slash for API routes to avoid double slashes
+  async rewrites() {
+    if (process.env.NODE_ENV === 'production') {
+      return [
+        {
+          source: '/api/:path*',
+          destination: '/api/:path*',
+        },
+      ];
+    }
+    return [];
+  },
 }
 
 export default nextConfig
