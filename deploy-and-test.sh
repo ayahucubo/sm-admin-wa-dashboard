@@ -45,8 +45,8 @@ echo "Request: $BASE_URL/sm-admin/api/health"
 echo "Expected nginx flow: /sm-admin/api/health → rewrite to /api/health → proxy to localhost:3001/api/health"
 echo ""
 
-echo "Testing basic health..."
-HEALTH_RESPONSE=$(curl -s -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/health" -H "X-API-Key: $API_KEY")
+echo "Testing basic health (follow redirects)..."
+HEALTH_RESPONSE=$(curl -s -L -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/health" -H "X-API-Key: $API_KEY")
 HTTP_CODE=$(echo "$HEALTH_RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
 RESPONSE_BODY=$(echo "$HEALTH_RESPONSE" | sed 's/HTTP_CODE:[0-9]*$//')
 
@@ -54,13 +54,26 @@ if [ "$HTTP_CODE" = "200" ] && echo "$RESPONSE_BODY" | grep -q '"status":"health
     echo "✅ Health endpoint working (HTTP $HTTP_CODE)"
     echo "   Response: $(echo "$RESPONSE_BODY" | cut -c1-150)..."
 else
-    echo "❌ Health endpoint failed (HTTP $HTTP_CODE)"
+    echo "❌ Health endpoint failed (HTTP $HTTP_CODE)" 
     echo "   Response: $(echo "$RESPONSE_BODY" | cut -c1-300)..."
+    
+    # Try with trailing slash directly
+    echo "   🔄 Trying with trailing slash..."
+    HEALTH_SLASH_RESPONSE=$(curl -s -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/health/" -H "X-API-Key: $API_KEY")
+    SLASH_HTTP_CODE=$(echo "$HEALTH_SLASH_RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
+    SLASH_RESPONSE_BODY=$(echo "$HEALTH_SLASH_RESPONSE" | sed 's/HTTP_CODE:[0-9]*$//')
+    
+    if [ "$SLASH_HTTP_CODE" = "200" ] && echo "$SLASH_RESPONSE_BODY" | grep -q '"status":"healthy"'; then
+        echo "   ✅ Health endpoint working with trailing slash (HTTP $SLASH_HTTP_CODE)"
+    else
+        echo "   ❌ Health endpoint with trailing slash also failed (HTTP $SLASH_HTTP_CODE)"
+        echo "      Response: $(echo "$SLASH_RESPONSE_BODY" | cut -c1-200)..."
+    fi
 fi
 
 echo ""
-echo "Testing V1 health..."
-V1_HEALTH_RESPONSE=$(curl -s -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/v1/health" -H "X-API-Key: $API_KEY")
+echo "Testing V1 health (follow redirects)..."
+V1_HEALTH_RESPONSE=$(curl -s -L -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/v1/health" -H "X-API-Key: $API_KEY")
 V1_HTTP_CODE=$(echo "$V1_HEALTH_RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
 V1_RESPONSE_BODY=$(echo "$V1_HEALTH_RESPONSE" | sed 's/HTTP_CODE:[0-9]*$//')
 
@@ -72,8 +85,8 @@ else
 fi
 
 echo ""
-echo "Testing V1 info..."
-V1_INFO_RESPONSE=$(curl -s -w "HTTP_CODE:%{http_code}" -m 10 "$BASE_URL/sm-admin/api/v1" -H "X-API-Key: $API_KEY")
+echo "Testing V1 info (follow redirects)..."
+V1_INFO_RESPONSE=$(curl -s -L -w "HTTP_CODE:%{http_code}" -m 10 "$BASE_URL/sm-admin/api/v1" -H "X-API-Key: $API_KEY")
 INFO_HTTP_CODE=$(echo "$V1_INFO_RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
 INFO_RESPONSE_BODY=$(echo "$V1_INFO_RESPONSE" | sed 's/HTTP_CODE:[0-9]*$//')
 
@@ -86,8 +99,8 @@ else
 fi
 
 echo ""
-echo "Testing diagnostic endpoint..."
-DIAG_RESPONSE=$(curl -s -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/diagnostic")
+echo "Testing diagnostic endpoint (follow redirects)..."
+DIAG_RESPONSE=$(curl -s -L -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/diagnostic")
 DIAG_HTTP_CODE=$(echo "$DIAG_RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
 DIAG_RESPONSE_BODY=$(echo "$DIAG_RESPONSE" | sed 's/HTTP_CODE:[0-9]*$//')
 

@@ -1,11 +1,11 @@
 import type { NextConfig } from 'next'
 
-// Simple configuration for nginx proxy_pass compatibility
+// Configuration to match nginx proxy_pass behavior (which adds trailing slash)
 const nextConfig: NextConfig = {
-  // No basePath - nginx handles routing
-  trailingSlash: false,
+  // Enable trailing slash to match nginx proxy_pass behavior
+  trailingSlash: true,
   
-  // No complex rewrites - let nginx and middleware handle routing
+  // No rewrites needed - let nginx and middleware handle routing
   async rewrites() {
     return [];
   },

@@ -4,15 +4,22 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   
-  // Only handle API routes - remove trailing slash
+  // Handle API routes - both with and without trailing slash
   if (pathname.startsWith('/api/')) {
-    // Remove trailing slash if present (nginx adds this)
-    if (pathname.endsWith('/') && pathname !== '/api/') {
-      const newPath = pathname.slice(0, -1)
+    // If path doesn't end with /, redirect to trailing slash version (to match nginx)
+    if (!pathname.endsWith('/') && pathname !== '/api') {
       const url = request.nextUrl.clone()
-      url.pathname = newPath
-      
-      console.log(`[MIDDLEWARE] Removing trailing slash: ${pathname} → ${newPath}`)
+      url.pathname = pathname + '/'
+      console.log(`[MIDDLEWARE] Adding trailing slash: ${pathname} → ${url.pathname}`)
+      return NextResponse.redirect(url, 308) // Permanent redirect like nginx
+    }
+    
+    // If path ends with /, rewrite to version without trailing slash for API processing
+    if (pathname.endsWith('/') && pathname !== '/api/') {
+      const cleanPath = pathname.slice(0, -1)
+      const url = request.nextUrl.clone()
+      url.pathname = cleanPath
+      console.log(`[MIDDLEWARE] Processing API: ${pathname} → ${cleanPath}`)
       return NextResponse.rewrite(url)
     }
   }
