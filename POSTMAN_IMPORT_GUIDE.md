@@ -87,7 +87,14 @@
 - **N8N Webhook** - Webhook testing
 
 ### 📁 V1 API Legacy
-- **V1 Main Endpoint** - Legacy API endpoint
+- **V1 Main Endpoint** - Legacy API main entry point
+- **V1 Health Check** - Legacy health monitoring  
+- **V1 Chat Main** - Legacy chat system main endpoint
+- **V1 Chat Active** - Active chat sessions
+- **V1 Chat by Phone Number** - Chat history by phone number (dynamic parameter)
+- **V1 Feedback History** - Historical feedback data
+- **V1 Feedback Tracker GET** - Get feedback tracking data
+- **V1 Feedback Tracker POST** - Submit new feedback
 
 ## Environment Variables
 
