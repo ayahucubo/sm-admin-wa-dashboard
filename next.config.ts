@@ -1,10 +1,10 @@
 import type { NextConfig } from 'next'
 
-// Configuration for production nginx routing
-// Nginx already handles /sm-admin/ rewrite, so no basePath needed
+// Configuration for nginx deployment without basePath
+// Nginx strips /sm-admin prefix before proxying to Next.js
 const nextConfig: NextConfig = {
-  // Remove basePath - nginx handles path rewriting
-  // basePath is removed because nginx rewrite ^/sm-admin(/.*)$ $1 removes /sm-admin prefix
+  // No basePath - nginx handles path rewriting  
+  // Nginx: /sm-admin/api/health -> strips /sm-admin -> proxy /api/health to Next.js
   
   // Enable trailing slash to match nginx behavior
   trailingSlash: true,
