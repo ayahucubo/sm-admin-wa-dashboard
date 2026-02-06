@@ -41,7 +41,7 @@ BASE_URL="https://wecare.techconnect.co.id"
 
 echo ""
 echo "🔐 Testing N8N integrated login..."
-echo "Using N8N webhook: https://wecare.techconnect.co.id/webhook-test/100/app/api/login"
+echo "Using N8N webhook: https://wecare.techconnect.co.id/webhook/100/app/api/login"
 echo "Testing with benefitadmin credentials..."
 
 # Test login with N8N integration

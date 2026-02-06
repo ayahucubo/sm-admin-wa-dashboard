@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Call N8N webhook for authentication
-    const n8nWebhookUrl = 'https://wecare.techconnect.co.id/webhook-test/100/app/api/login';
+    const n8nWebhookUrl = 'https://wecare.techconnect.co.id/webhook/100/app/api/login';
     
     try {
       const n8nResponse = await fetch(n8nWebhookUrl, {
