@@ -11,33 +11,45 @@ export async function GET(request: NextRequest) {
       console.log('NODE_ENV:', process.env.NODE_ENV);
     }
     
-    // Check if user is authenticated (optional for this endpoint)
-    const authResult = await authenticateRequest(request, ['read']);
-    const isAuthenticated = !!authResult;
-    
-    // Only log auth result in development
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Auth Result:', authResult);
-      console.log('Is Authenticated:', isAuthenticated);
-    }
-
+    // Basic response first
     const apiInfo: any = {
       success: true,
       name: 'Sinar Mas Mining Admin Dashboard API',
       version: 'v1.0.0',
       description: 'RESTful API for managing feedback data, chat history, and admin dashboard functions',
       timestamp: new Date().toISOString(),
-      authenticated: isAuthenticated,
-      authType: authResult?.type || null,
-      authentication: {
-        methods: ['API Key', 'Admin Token'],
-        headers: {
-          apiKey: 'X-API-Key: <your-api-key>',
-          adminToken: 'Authorization: Bearer <admin-token>'
-        },
-        permissions: ['read', 'write', 'delete']
+      authenticated: false,
+      authType: null,
+    };
+
+    // Try authentication check but don't fail if it doesn't work
+    try {
+      const authResult = await authenticateRequest(request, ['read']);
+      if (authResult) {
+        apiInfo.authenticated = true;
+        apiInfo.authType = authResult.type;
+        
+        // Only log auth result in development
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('Auth Result:', authResult);
+        }
+      }
+    } catch (authError) {
+      console.warn('Auth check failed in /api/v1:', authError);
+      apiInfo.authWarning = 'Authentication check failed but continuing with basic response';
+    }
+
+    // Add endpoint information
+    apiInfo.authentication = {
+      methods: ['API Key', 'Admin Token'],
+      headers: {
+        apiKey: 'X-API-Key: <your-api-key>',
+        adminToken: 'Authorization: Bearer <admin-token>'
       },
-      endpoints: {
+      permissions: ['read', 'write', 'delete']
+    };
+    
+    apiInfo.endpoints = {
         health: {
           path: '/api/v1/health',
           methods: ['GET'],
