@@ -2,9 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Simple middleware for nginx-proxied deployment
-  // Nginx handles routing: /sm-admin/* -> rewrite -> proxy to :3001/*
-  
+  // Handle API routes with basePath configuration
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const response = NextResponse.next()
     
@@ -13,6 +11,7 @@ export function middleware(request: NextRequest) {
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key')
     
+    // Prevent trailing slash redirects for API routes (avoid 308)
     return response
   }
   
