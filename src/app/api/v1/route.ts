@@ -23,8 +23,9 @@ export async function GET(request: NextRequest) {
     };
 
     // Try authentication check but don't fail if it doesn't work
+    let authResult = null;
     try {
-      const authResult = await authenticateRequest(request, ['read']);
+      authResult = await authenticateRequest(request, ['read']);
       if (authResult) {
         apiInfo.authenticated = true;
         apiInfo.authType = authResult.type;
@@ -133,7 +134,7 @@ export async function GET(request: NextRequest) {
     };
 
     // Add user-specific information if authenticated
-    if (isAuthenticated && authResult) {
+    if (apiInfo.authenticated && authResult) {
       if (authResult.type === 'admin') {
         const adminPayload = authResult.payload as any;
         apiInfo.user = {

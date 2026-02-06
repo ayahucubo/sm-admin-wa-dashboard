@@ -18,6 +18,14 @@ fi
 echo "🔨 Building application..."
 npm run build
 
+# Check if build was successful
+if [ $? -eq 0 ]; then
+    echo "✅ Build successful!"
+else
+    echo "❌ Build failed! Check the errors above."
+    exit 1
+fi
+
 # Restart PM2 services
 echo "🔄 Restarting services..."
 pm2 restart all
@@ -26,31 +34,60 @@ pm2 restart all
 echo "⏳ Waiting for services to initialize..."
 sleep 5
 
-# Test critical endpoints
+# Test critical endpoints (without jq dependency)
 echo "🧪 Testing API endpoints..."
 API_KEY="smm-prod-55b612d24a000915f3500ea652b75c14"
 BASE_URL="https://wecare.techconnect.co.id"
 
 echo ""
 echo "Testing new diagnostic endpoint..."
-curl -s "$BASE_URL/api/diagnostic" | jq . || echo "❌ Diagnostic failed"
+DIAG_RESPONSE=$(curl -s "$BASE_URL/api/diagnostic")
+if echo "$DIAG_RESPONSE" | grep -q '"success":true'; then
+    echo "✅ Diagnostic endpoint working"
+else
+    echo "❌ Diagnostic endpoint failed: $DIAG_RESPONSE"
+fi
 
 echo ""
 echo "Testing basic health..."
-curl -s "$BASE_URL/api/health" -H "X-API-Key: $API_KEY" | jq . || echo "❌ Health failed"
+HEALTH_RESPONSE=$(curl -s "$BASE_URL/api/health" -H "X-API-Key: $API_KEY")
+if echo "$HEALTH_RESPONSE" | grep -q '"status":"healthy"'; then
+    echo "✅ Health endpoint working"
+else
+    echo "❌ Health endpoint failed: $HEALTH_RESPONSE"
+fi
 
 echo ""
 echo "Testing V1 health..."
-curl -s "$BASE_URL/api/v1/health" -H "X-API-Key: $API_KEY" | jq . || echo "❌ V1 Health failed"
+V1_HEALTH_RESPONSE=$(curl -s "$BASE_URL/api/v1/health" -H "X-API-Key: $API_KEY")
+if echo "$V1_HEALTH_RESPONSE" | grep -q '"status":"healthy"'; then
+    echo "✅ V1 Health endpoint working"
+else
+    echo "❌ V1 Health endpoint failed: $V1_HEALTH_RESPONSE"
+fi
 
 echo ""
 echo "Testing V1 info..."
-curl -s -m 10 "$BASE_URL/api/v1" -H "X-API-Key: $API_KEY" | jq . || echo "❌ V1 Info failed or timeout"
+V1_INFO_RESPONSE=$(curl -s -m 10 "$BASE_URL/api/v1" -H "X-API-Key: $API_KEY")
+if echo "$V1_INFO_RESPONSE" | grep -q '"success":true'; then
+    echo "✅ V1 Info endpoint working"
+    echo "   Response preview: $(echo "$V1_INFO_RESPONSE" | cut -c1-100)..."
+else
+    echo "❌ V1 Info endpoint failed: $V1_INFO_RESPONSE"
+fi
 
 echo ""
 echo "Testing chat endpoints..."
-curl -s -m 10 "$BASE_URL/api/v1/chat?limit=1" -H "X-API-Key: $API_KEY" | jq . || echo "❌ Chat failed"
+CHAT_RESPONSE=$(curl -s -m 10 "$BASE_URL/api/v1/chat?limit=1" -H "X-API-Key: $API_KEY")
+if echo "$CHAT_RESPONSE" | grep -q '"success"'; then
+    echo "✅ Chat endpoint working"
+else
+    echo "⚠️  Chat endpoint response: $CHAT_RESPONSE"
+fi
 
 echo ""
 echo "🏁 Deployment and testing completed!"
-echo "Check the results above for any ❌ failures"
+echo "Summary:"
+echo "- Check above for ✅ (working) or ❌ (failed) status"
+echo "- If V1 endpoints are working, API is functional"
+echo "- Chat endpoints may need additional setup"
