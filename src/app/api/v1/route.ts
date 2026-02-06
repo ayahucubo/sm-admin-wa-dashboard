@@ -4,9 +4,19 @@ import { authenticateRequest } from '@/utils/auth';
 // GET /api/v1 - API Information and Available Endpoints
 export async function GET(request: NextRequest) {
   try {
+    console.log('=== API INFO ENDPOINT DEBUG ===');
+    console.log('Request URL:', request.url);
+    console.log('Request Headers:', Object.fromEntries(request.headers.entries()));
+    console.log('ENV VALID_API_KEYS:', process.env.VALID_API_KEYS);
+    console.log('ENV ENABLE_API_KEY_AUTH:', process.env.ENABLE_API_KEY_AUTH);
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    
     // Check if user is authenticated (optional for this endpoint)
     const authResult = await authenticateRequest(request, ['read']);
     const isAuthenticated = !!authResult;
+    
+    console.log('Auth Result:', authResult);
+    console.log('Is Authenticated:', isAuthenticated);
 
     const apiInfo: any = {
       success: true,
