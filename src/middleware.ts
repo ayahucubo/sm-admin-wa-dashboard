@@ -4,17 +4,24 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   
-  // Handle API routes specifically - prevent trailing slash redirects
-  if (pathname.startsWith('/api/')) {
-    // For API routes, we need to handle both with and without trailing slash
+  // Handle API routes - both with and without basePath
+  const isApiRoute = pathname.startsWith('/api/') || 
+                     pathname.startsWith('/sm-admin/app/api/') ||
+                     pathname.includes('/app/api/')
+  
+  if (isApiRoute) {
     const response = NextResponse.next()
     
     // Add CORS headers for API routes
     response.headers.set('Access-Control-Allow-Origin', '*')
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key, x-api-key')
     
-    // Important: Return next() to prevent any redirects for API routes
+    // Handle preflight OPTIONS requests
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 200, headers: response.headers })
+    }
+    
     return response
   }
   
@@ -23,7 +30,9 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match API routes to prevent trailing slash redirects
-    '/api/:path*'
+    // Match all API routes variations
+    '/api/:path*',
+    '/sm-admin/app/api/:path*',
+    '/((?!_next|_static|favicon.ico).*)',
   ]
 }

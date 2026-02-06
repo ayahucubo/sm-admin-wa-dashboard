@@ -1,0 +1,746 @@
+{
+	"info": {
+		"_postman_id": "sm-admin-api-collection-2026",
+		"name": "SM Admin Dashboard API Collection",
+		"description": "Comprehensive API collection for SM Admin WA Dashboard testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "sm-admin-dashboard"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"benefitadmin@sinarmasmining.com\",\n  \"password\": \"benefit2024\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Health & Debug",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					}
+				},
+				{
+					"name": "Debug Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/debug",
+							"host": ["{{baseUrl}}"],
+							"path": ["debug"]
+						}
+					}
+				},
+				{
+					"name": "SAP Test",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/debug/sap-test",
+							"host": ["{{baseUrl}}"],
+							"path": ["debug", "sap-test"]
+						}
+					}
+				},
+				{
+					"name": "Test Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/test",
+							"host": ["{{baseUrl}}"],
+							"path": ["test"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Chat Management",
+			"item": [
+				{
+					"name": "Get Company Codes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/chat/company-codes",
+							"host": ["{{baseUrl}}"],
+							"path": ["chat", "company-codes"]
+						}
+					}
+				},
+				{
+					"name": "Get Chat History Filtered",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-12-31\",\n  \"companyCode\": \"\",\n  \"limit\": 100\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chat/history-filtered",
+							"host": ["{{baseUrl}}"],
+							"path": ["chat", "history-filtered"]
+						}
+					}
+				},
+				{
+					"name": "Get Menu Options",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/chat/menu-options",
+							"host": ["{{baseUrl}}"],
+							"path": ["chat", "menu-options"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin Management",
+			"item": [
+				{
+					"name": "Knowledge Benefit",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/knowledge-benefit",
+							"host": ["{{baseUrl}}"],
+							"path": ["knowledge-benefit"]
+						}
+					}
+				},
+				{
+					"name": "Menu Master - GET",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/menu-master",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-master"]
+						}
+					}
+				},
+				{
+					"name": "Menu Master - POST",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"menuName\": \"New Menu Item\",\n  \"menuDescription\": \"Description of new menu item\",\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menu-master",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-master"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "CC Benefit Mapping",
+			"item": [
+				{
+					"name": "Get CC Benefit Mapping",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cc-benefit-mapping",
+							"host": ["{{baseUrl}}"],
+							"path": ["cc-benefit-mapping"]
+						}
+					}
+				},
+				{
+					"name": "Post CC Benefit Mapping",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"companyCode\": \"SM001\",\n  \"benefitType\": \"Medical\",\n  \"mapping\": \"Active\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cc-benefit-mapping",
+							"host": ["{{baseUrl}}"],
+							"path": ["cc-benefit-mapping"]
+						}
+					}
+				},
+				{
+					"name": "Get CC Benefit Mapping Mock",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cc-benefit-mapping-mock",
+							"host": ["{{baseUrl}}"],
+							"path": ["cc-benefit-mapping-mock"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "CC PP Mapping",
+			"item": [
+				{
+					"name": "Get CC PP Mapping",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cc-pp-mapping",
+							"host": ["{{baseUrl}}"],
+							"path": ["cc-pp-mapping"]
+						}
+					}
+				},
+				{
+					"name": "Post CC PP Mapping",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"companyCode\": \"SM001\",\n  \"ppType\": \"Employee\",\n  \"mapping\": \"Active\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cc-pp-mapping",
+							"host": ["{{baseUrl}}"],
+							"path": ["cc-pp-mapping"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Monitoring",
+			"item": [
+				{
+					"name": "Backup Schedule - GET",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/monitoring/backup-schedule",
+							"host": ["{{baseUrl}}"],
+							"path": ["monitoring", "backup-schedule"]
+						}
+					}
+				},
+				{
+					"name": "Backup Schedule - POST",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"schedule\": \"0 2 * * *\",\n  \"type\": \"full\",\n  \"enabled\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/monitoring/backup-schedule",
+							"host": ["{{baseUrl}}"],
+							"path": ["monitoring", "backup-schedule"]
+						}
+					}
+				},
+				{
+					"name": "Backup Scheduler",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/monitoring/backup-scheduler",
+							"host": ["{{baseUrl}}"],
+							"path": ["monitoring", "backup-scheduler"]
+						}
+					}
+				},
+				{
+					"name": "Chat History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/monitoring/chat-history",
+							"host": ["{{baseUrl}}"],
+							"path": ["monitoring", "chat-history"]
+						}
+					}
+				},
+				{
+					"name": "Chat Stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/monitoring/chat-stats",
+							"host": ["{{baseUrl}}"],
+							"path": ["monitoring", "chat-stats"]
+						}
+					}
+				},
+				{
+					"name": "Company Contacts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/monitoring/company-contacts",
+							"host": ["{{baseUrl}}"],
+							"path": ["monitoring", "company-contacts"]
+						}
+					}
+				},
+				{
+					"name": "Unique Contacts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/monitoring/unique-contacts",
+							"host": ["{{baseUrl}}"],
+							"path": ["monitoring", "unique-contacts"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Data Processing",
+			"item": [
+				{
+					"name": "MD to Vector Pipeline - GET",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/md-to-vector-pipeline",
+							"host": ["{{baseUrl}}"],
+							"path": ["md-to-vector-pipeline"]
+						}
+					}
+				},
+				{
+					"name": "MD to Vector Pipeline - POST",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"markdownContent\": \"# Sample Markdown\\nThis is sample content for processing.\",\n  \"processType\": \"full\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/md-to-vector-pipeline",
+							"host": ["{{baseUrl}}"],
+							"path": ["md-to-vector-pipeline"]
+						}
+					}
+				},
+				{
+					"name": "PDF to MD Pipeline - GET",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/pdf-to-md-pipeline",
+							"host": ["{{baseUrl}}"],
+							"path": ["pdf-to-md-pipeline"]
+						}
+					}
+				},
+				{
+					"name": "PDF to MD Pipeline - POST",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "pdfFile",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "processType",
+									"value": "standard",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/pdf-to-md-pipeline",
+							"host": ["{{baseUrl}}"],
+							"path": ["pdf-to-md-pipeline"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Export Functions",
+			"item": [
+				{
+					"name": "Export Comprehensive",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-12-31\",\n  \"exportType\": \"excel\",\n  \"includeChats\": true,\n  \"includeContacts\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/export/comprehensive",
+							"host": ["{{baseUrl}}"],
+							"path": ["export", "comprehensive"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Sheets Integration",
+			"item": [
+				{
+					"name": "Get Sheets Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/sheets",
+							"host": ["{{baseUrl}}"],
+							"path": ["sheets"]
+						}
+					}
+				},
+				{
+					"name": "Update Sheets Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sheetId\": \"your-sheet-id\",\n  \"range\": \"A1:Z100\",\n  \"data\": [[\"Header1\", \"Header2\"], [\"Data1\", \"Data2\"]]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sheets",
+							"host": ["{{baseUrl}}"],
+							"path": ["sheets"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Webhook Integration",
+			"item": [
+				{
+					"name": "N8N Webhook",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"test_webhook\",\n  \"data\": {\n    \"message\": \"Test webhook integration\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/n8n-webhook",
+							"host": ["{{baseUrl}}"],
+							"path": ["n8n-webhook"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "V1 API Legacy",
+			"item": [
+				{
+					"name": "V1 Main Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/v1",
+							"host": ["{{baseUrl}}"],
+							"path": ["v1"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://wecare.techconnect.co.id/sm-admin/app/api",
+			"type": "string"
+		},
+		{
+			"key": "apiKey",
+			"value": "your-api-key-here",
+			"type": "string"
+		}
+	]
+}
