@@ -38,51 +38,80 @@ sleep 5
 echo "🧪 Testing API endpoints..."
 API_KEY="smm-prod-55b612d24a000915f3500ea652b75c14"
 BASE_URL="https://wecare.techconnect.co.id"
+API_BASE="$BASE_URL/sm-admin"
 
 echo ""
-echo "Testing new diagnostic endpoint..."
-DIAG_RESPONSE=$(curl -s "$BASE_URL/api/diagnostic")
-if echo "$DIAG_RESPONSE" | grep -q '"success":true'; then
-    echo "✅ Diagnostic endpoint working"
-else
-    echo "❌ Diagnostic endpoint failed: $DIAG_RESPONSE"
-fi
-
-echo ""
-echo "Testing basic health..."
+echo "Testing basic health (direct)..."
 HEALTH_RESPONSE=$(curl -s "$BASE_URL/api/health" -H "X-API-Key: $API_KEY")
 if echo "$HEALTH_RESPONSE" | grep -q '"status":"healthy"'; then
-    echo "✅ Health endpoint working"
+    echo "✅ Health endpoint working (direct)"
 else
-    echo "❌ Health endpoint failed: $HEALTH_RESPONSE"
+    echo "❌ Health endpoint failed (direct): $HEALTH_RESPONSE"
 fi
 
 echo ""
-echo "Testing V1 health..."
+echo "Testing basic health (basePath)..."
+HEALTH_BP_RESPONSE=$(curl -s "$API_BASE/api/health" -H "X-API-Key: $API_KEY")
+if echo "$HEALTH_BP_RESPONSE" | grep -q '"status":"healthy"'; then
+    echo "✅ Health endpoint working (basePath)"
+else
+    echo "❌ Health endpoint failed (basePath): $HEALTH_BP_RESPONSE"
+fi
+
+echo ""
+echo "Testing V1 health (direct)..."
 V1_HEALTH_RESPONSE=$(curl -s "$BASE_URL/api/v1/health" -H "X-API-Key: $API_KEY")
 if echo "$V1_HEALTH_RESPONSE" | grep -q '"status":"healthy"'; then
-    echo "✅ V1 Health endpoint working"
+    echo "✅ V1 Health endpoint working (direct)"
 else
-    echo "❌ V1 Health endpoint failed: $V1_HEALTH_RESPONSE"
+    echo "❌ V1 Health endpoint failed (direct): $V1_HEALTH_RESPONSE"
 fi
 
 echo ""
-echo "Testing V1 info..."
+echo "Testing V1 health (basePath)..."
+V1_HEALTH_BP_RESPONSE=$(curl -s "$API_BASE/api/v1/health" -H "X-API-Key: $API_KEY")
+if echo "$V1_HEALTH_BP_RESPONSE" | grep -q '"status":"healthy"'; then
+    echo "✅ V1 Health endpoint working (basePath)"
+else
+    echo "❌ V1 Health endpoint failed (basePath): $V1_HEALTH_BP_RESPONSE"
+fi
+
+echo ""
+echo "Testing V1 info (direct)..."
 V1_INFO_RESPONSE=$(curl -s -m 10 "$BASE_URL/api/v1" -H "X-API-Key: $API_KEY")
 if echo "$V1_INFO_RESPONSE" | grep -q '"success":true'; then
-    echo "✅ V1 Info endpoint working"
+    echo "✅ V1 Info endpoint working (direct)"
     echo "   Response preview: $(echo "$V1_INFO_RESPONSE" | cut -c1-100)..."
 else
-    echo "❌ V1 Info endpoint failed: $V1_INFO_RESPONSE"
+    echo "❌ V1 Info endpoint failed (direct): $V1_INFO_RESPONSE"
+fi
+
+echo ""
+echo "Testing V1 info (basePath)..."
+V1_INFO_BP_RESPONSE=$(curl -s -m 10 "$API_BASE/api/v1" -H "X-API-Key: $API_KEY")
+if echo "$V1_INFO_BP_RESPONSE" | grep -q '"success":true'; then
+    echo "✅ V1 Info endpoint working (basePath)"
+    echo "   Response preview: $(echo "$V1_INFO_BP_RESPONSE" | cut -c1-100)..."
+else
+    echo "❌ V1 Info endpoint failed (basePath): $V1_INFO_BP_RESPONSE"
 fi
 
 echo ""
 echo "Testing chat endpoints..."
 CHAT_RESPONSE=$(curl -s -m 10 "$BASE_URL/api/v1/chat?limit=1" -H "X-API-Key: $API_KEY")
 if echo "$CHAT_RESPONSE" | grep -q '"success"'; then
-    echo "✅ Chat endpoint working"
+    echo "✅ Chat endpoint working (direct)"
 else
-    echo "⚠️  Chat endpoint response: $CHAT_RESPONSE"
+    echo "⚠️  Chat endpoint response (direct): $CHAT_RESPONSE"
+fi
+
+echo ""
+echo "Testing chat endpoints (basePath)..."
+CHAT_BP_RESPONSE=$(curl -s -m 10 "$API_BASE/api/v1/chat?limit=1" -H "X-API-Key: $API_KEY")
+if echo "$CHAT_BP_RESPONSE" | grep -q '"success"'; then
+    echo "✅ Chat endpoint working (basePath)"
+else
+    echo "⚠️  Chat endpoint response (basePath): $CHAT_BP_RESPONSE"
 fi
 
 echo ""
