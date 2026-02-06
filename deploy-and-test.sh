@@ -40,63 +40,62 @@ API_KEY="smm-prod-55b612d24a000915f3500ea652b75c14"
 BASE_URL="https://wecare.techconnect.co.id"
 
 echo ""
-echo "Testing basic health (via nginx /sm-admin/ rewrite)..."
-HEALTH_RESPONSE=$(curl -s "$BASE_URL/sm-admin/api/health" -H "X-API-Key: $API_KEY")
-if echo "$HEALTH_RESPONSE" | grep -q '"status":"healthy"'; then
-    echo "✅ Health endpoint working via nginx"
+echo "🔍 Testing nginx rewrite behavior..."
+echo "Request: $BASE_URL/sm-admin/api/health"
+echo "Expected nginx flow: /sm-admin/api/health → rewrite to /api/health → proxy to localhost:3001/api/health"
+echo ""
+
+echo "Testing basic health..."
+HEALTH_RESPONSE=$(curl -s -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/health" -H "X-API-Key: $API_KEY")
+HTTP_CODE=$(echo "$HEALTH_RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
+RESPONSE_BODY=$(echo "$HEALTH_RESPONSE" | sed 's/HTTP_CODE:[0-9]*$//')
+
+if [ "$HTTP_CODE" = "200" ] && echo "$RESPONSE_BODY" | grep -q '"status":"healthy"'; then
+    echo "✅ Health endpoint working (HTTP $HTTP_CODE)"
+    echo "   Response: $(echo "$RESPONSE_BODY" | cut -c1-150)..."
 else
-    echo "❌ Health endpoint failed: $HEALTH_RESPONSE"
-    # Try with trailing slash (nginx behavior)
-    HEALTH_RESPONSE_SLASH=$(curl -s "$BASE_URL/sm-admin/api/health/" -H "X-API-Key: $API_KEY")
-    if echo "$HEALTH_RESPONSE_SLASH" | grep -q '"status":"healthy"'; then
-        echo "✅ Health endpoint working with trailing slash"
-    else
-        echo "❌ Health endpoint with slash also failed: $HEALTH_RESPONSE_SLASH"
-    fi
+    echo "❌ Health endpoint failed (HTTP $HTTP_CODE)"
+    echo "   Response: $(echo "$RESPONSE_BODY" | cut -c1-300)..."
 fi
 
 echo ""
-echo "Testing V1 health (via nginx /sm-admin/ rewrite)..."
-V1_HEALTH_RESPONSE=$(curl -s "$BASE_URL/sm-admin/api/v1/health" -H "X-API-Key: $API_KEY")
-if echo "$V1_HEALTH_RESPONSE" | grep -q '"status":"healthy"'; then
-    echo "✅ V1 Health endpoint working via nginx"
+echo "Testing V1 health..."
+V1_HEALTH_RESPONSE=$(curl -s -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/v1/health" -H "X-API-Key: $API_KEY")
+V1_HTTP_CODE=$(echo "$V1_HEALTH_RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
+V1_RESPONSE_BODY=$(echo "$V1_HEALTH_RESPONSE" | sed 's/HTTP_CODE:[0-9]*$//')
+
+if [ "$V1_HTTP_CODE" = "200" ] && echo "$V1_RESPONSE_BODY" | grep -q '"status":"healthy"'; then
+    echo "✅ V1 Health endpoint working (HTTP $V1_HTTP_CODE)"
 else
-    echo "❌ V1 Health endpoint failed: $V1_HEALTH_RESPONSE"
-    # Try with trailing slash
-    V1_HEALTH_RESPONSE_SLASH=$(curl -s "$BASE_URL/sm-admin/api/v1/health/" -H "X-API-Key: $API_KEY")
-    if echo "$V1_HEALTH_RESPONSE_SLASH" | grep -q '"status":"healthy"'; then
-        echo "✅ V1 Health endpoint working with trailing slash"
-    fi
+    echo "❌ V1 Health endpoint failed (HTTP $V1_HTTP_CODE)"
+    echo "   Response: $(echo "$V1_RESPONSE_BODY" | cut -c1-200)..."
 fi
 
 echo ""
-echo "Testing V1 info (via nginx /sm-admin/ rewrite)..."
-V1_INFO_RESPONSE=$(curl -s -m 10 "$BASE_URL/sm-admin/api/v1" -H "X-API-Key: $API_KEY")
-if echo "$V1_INFO_RESPONSE" | grep -q '"success":true'; then
-    echo "✅ V1 Info endpoint working via nginx"
-    echo "   Response preview: $(echo "$V1_INFO_RESPONSE" | cut -c1-100)..."
+echo "Testing V1 info..."
+V1_INFO_RESPONSE=$(curl -s -w "HTTP_CODE:%{http_code}" -m 10 "$BASE_URL/sm-admin/api/v1" -H "X-API-Key: $API_KEY")
+INFO_HTTP_CODE=$(echo "$V1_INFO_RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
+INFO_RESPONSE_BODY=$(echo "$V1_INFO_RESPONSE" | sed 's/HTTP_CODE:[0-9]*$//')
+
+if [ "$INFO_HTTP_CODE" = "200" ] && echo "$INFO_RESPONSE_BODY" | grep -q '"success":true'; then
+    echo "✅ V1 Info endpoint working (HTTP $INFO_HTTP_CODE)"
+    echo "   API Name: $(echo "$INFO_RESPONSE_BODY" | grep -o '"name":"[^"]*"' | head -1)"
 else
-    echo "❌ V1 Info endpoint failed: $V1_INFO_RESPONSE"
-    # Try with trailing slash
-    V1_INFO_RESPONSE_SLASH=$(curl -s -m 10 "$BASE_URL/sm-admin/api/v1/" -H "X-API-Key: $API_KEY")
-    if echo "$V1_INFO_RESPONSE_SLASH" | grep -q '"success":true'; then
-        echo "✅ V1 Info endpoint working with trailing slash"
-        echo "   Response preview: $(echo "$V1_INFO_RESPONSE_SLASH" | cut -c1-100)..."
-    fi
+    echo "❌ V1 Info endpoint failed (HTTP $INFO_HTTP_CODE)"
+    echo "   Response: $(echo "$INFO_RESPONSE_BODY" | cut -c1-200)..."
 fi
 
 echo ""
-echo "Testing diagnostic endpoint (via nginx /sm-admin/ rewrite)..."
-DIAG_RESPONSE=$(curl -s "$BASE_URL/sm-admin/api/diagnostic")
-if echo "$DIAG_RESPONSE" | grep -q '"success":true'; then
-    echo "✅ Diagnostic endpoint working via nginx"
+echo "Testing diagnostic endpoint..."
+DIAG_RESPONSE=$(curl -s -w "HTTP_CODE:%{http_code}" "$BASE_URL/sm-admin/api/diagnostic")
+DIAG_HTTP_CODE=$(echo "$DIAG_RESPONSE" | grep -o 'HTTP_CODE:[0-9]*' | cut -d: -f2)
+DIAG_RESPONSE_BODY=$(echo "$DIAG_RESPONSE" | sed 's/HTTP_CODE:[0-9]*$//')
+
+if [ "$DIAG_HTTP_CODE" = "200" ] && echo "$DIAG_RESPONSE_BODY" | grep -q '"success":true'; then
+    echo "✅ Diagnostic endpoint working (HTTP $DIAG_HTTP_CODE)"
 else
-    echo "❌ Diagnostic endpoint failed: $DIAG_RESPONSE"
-    # Try with trailing slash
-    DIAG_RESPONSE_SLASH=$(curl -s "$BASE_URL/sm-admin/api/diagnostic/")
-    if echo "$DIAG_RESPONSE_SLASH" | grep -q '"success":true'; then
-        echo "✅ Diagnostic endpoint working with trailing slash"
-    fi
+    echo "❌ Diagnostic endpoint failed (HTTP $DIAG_HTTP_CODE)"
+    echo "   Response: $(echo "$DIAG_RESPONSE_BODY" | cut -c1-200)..."
 fi
 
 echo ""

@@ -1,26 +1,13 @@
 import type { NextConfig } from 'next'
 
-// Configuration compatible with existing nginx rewrite rules
+// Simple configuration for nginx proxy_pass compatibility
 const nextConfig: NextConfig = {
-  // Enable trailing slash to match nginx proxy_pass behavior
-  trailingSlash: true,
+  // No basePath - nginx handles routing
+  trailingSlash: false,
   
-  // Simple rewrites for API routes - handle both with and without trailing slash
+  // No complex rewrites - let nginx and middleware handle routing
   async rewrites() {
-    return {
-      beforeFiles: [
-        // Handle trailing slash API requests from nginx
-        {
-          source: '/api/:path*/',
-          destination: '/api/:path*',
-        },
-        // Direct API access
-        {
-          source: '/api/:path*',
-          destination: '/api/:path*',
-        }
-      ],
-    };
+    return [];
   },
   // Ensure API routes have proper CORS headers
   async headers() {
